@@ -47,7 +47,7 @@
 
 TEST(MarginalConstraint, OneVariable)
 {
-  // Create a marginal constraint with one variable, no local parameterizations
+  // Create a marginal constraint with one variable, no manifolds
   std::vector<fuse_variables::Position2DStamped> variables;
   fuse_variables::Position2DStamped x1(ros::Time(1, 0));
   x1.x() = 1.0;
@@ -97,7 +97,7 @@ TEST(MarginalConstraint, OneVariable)
 
 TEST(MarginalConstraint, TwoVariables)
 {
-  // Create a marginal constraint with one variable, no local parameterizations
+  // Create a marginal constraint with one variable, no manifolds
   std::vector<fuse_variables::Position2DStamped> variables;
   fuse_variables::Position2DStamped x1(ros::Time(1, 0));
   x1.x() = 1.0;
@@ -161,9 +161,9 @@ TEST(MarginalConstraint, TwoVariables)
   delete cost_function;
 }
 
-TEST(MarginalConstraint, LocalParameterization)
+TEST(MarginalConstraint, Manifold)
 {
-  // Create a marginal constraint with one variable with a local parameterizations
+  // Create a marginal constraint with one variable with a manifolds
   std::vector<fuse_variables::Orientation3DStamped> variables;
   fuse_variables::Orientation3DStamped x1(ros::Time(1, 0));
   x1.w() = 0.842614977;
@@ -267,11 +267,11 @@ TEST(MarginalConstraint, Serialization)
   EXPECT_EQ(expected.b(), actual.b());
   EXPECT_EQ(expected.x_bar(), actual.x_bar());
   // The shared ptrs will not be the same instances, but they should point to the same types
-  using ExpectedLocalParam = fuse_variables::Orientation3DLocalParameterization;
-  ASSERT_EQ(expected.localParameterizations().size(), actual.localParameterizations().size());
-  for (auto i = 0u; i < actual.localParameterizations().size(); ++i)
+  using ExpectedLocalParam = fuse_variables::Orientation3DManifold;
+  ASSERT_EQ(expected.manifolds().size(), actual.manifolds().size());
+  for (auto i = 0u; i < actual.manifolds().size(); ++i)
   {
-    auto actual_derived = std::dynamic_pointer_cast<ExpectedLocalParam>(actual.localParameterizations()[i]);
+    auto actual_derived = std::dynamic_pointer_cast<ExpectedLocalParam>(actual.manifolds()[i]);
     EXPECT_TRUE(static_cast<bool>(actual_derived));
   }
 }

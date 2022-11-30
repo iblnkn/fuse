@@ -125,7 +125,7 @@ TEST(AbsoluteOrientation3DStampedConstraint, Optimization)
   problem.AddParameterBlock(
     orientation_variable->data(),
     orientation_variable->size(),
-    orientation_variable->localParameterization());
+    orientation_variable->manfiold());
 
   std::vector<double*> parameter_blocks;
   parameter_blocks.push_back(orientation_variable->data());
@@ -151,7 +151,7 @@ TEST(AbsoluteOrientation3DStampedConstraint, Optimization)
   ceres::Covariance::Options cov_options;
   ceres::Covariance covariance(cov_options);
   covariance.Compute(covariance_blocks, &problem);
-  fuse_core::Matrix3d actual_covariance(orientation_variable->localSize(), orientation_variable->localSize());
+  fuse_core::Matrix3d actual_covariance(orientation_variable->tangetnSize(), orientation_variable->tangentSize());
   covariance.GetCovarianceBlockInTangentSpace(
     orientation_variable->data(), orientation_variable->data(), actual_covariance.data());
 

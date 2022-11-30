@@ -350,7 +350,7 @@ void HashGraph::getCovariance(
     // Create the output covariance matrix
     if (use_tangent_space)
     {
-      covariance_matrices[i].resize(variable1_iter->second->localSize() * variable2_iter->second->localSize());
+      covariance_matrices[i].resize(variable1_iter->second->tangentSize() * variable2_iter->second->tangentSize());
     }
     else
     {
@@ -481,7 +481,7 @@ void HashGraph::createProblem(ceres::Problem& problem) const
     problem.AddParameterBlock(
       variable.data(),
       variable.size(),
-      variable.localParameterization());
+      variable.manifold());
     // Handle optimization bounds
     for (size_t index = 0; index < variable.size(); ++index)
     {

@@ -233,11 +233,11 @@ TEST(RelativeConstraint, Optimization)
     problem.AddParameterBlock(
       x1->data(),
       x1->size(),
-      x1->localParameterization());
+      x1->manifold());
     problem.AddParameterBlock(
       x2->data(),
       x2->size(),
-      x2->localParameterization());
+      x2->manifold());
     std::vector<double*> prior_parameter_blocks;
     prior_parameter_blocks.push_back(x1->data());
     problem.AddResidualBlock(
@@ -342,11 +342,11 @@ TEST(RelativeConstraint, Optimization)
     problem.AddParameterBlock(
       x1->data(),
       x1->size(),
-      x1->localParameterization());
+      x1->manifold());
     problem.AddParameterBlock(
       x2->data(),
       x2->size(),
-      x2->localParameterization());
+      x2->manifold());
     std::vector<double*> c1_parameter_blocks;
     c1_parameter_blocks.push_back(x1->data());
     problem.AddResidualBlock(
@@ -443,11 +443,11 @@ TEST(RelativeConstraint, RelativeOrientation2DOptimization)
   problem.AddParameterBlock(
     x1->data(),
     x1->size(),
-    x1->localParameterization());
+    x1->manifold());
   problem.AddParameterBlock(
     x2->data(),
     x2->size(),
-    x2->localParameterization());
+    x2->manifold());
   std::vector<double*> prior_parameter_blocks;
   prior_parameter_blocks.push_back(x1->data());
   problem.AddResidualBlock(

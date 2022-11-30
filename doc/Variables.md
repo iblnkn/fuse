@@ -127,11 +127,11 @@ for all derived Variables.
   `return Derived::make_unique(*this)`. Because this definition requires the use of the derived type, a common
   implementation could not be provided in the base class.
 
-* `Derived::localParameterization() -> ceres::LocalParameterization*`
+* `Derived::manifold() -> ceres::Manifold*`
 
   This is a complex topic on its own. See the
-  [Ceres documentation](http://ceres-solver.org/nnls_modeling.html#localparameterization) for an in-depth discussion
-  of "local parameterizations" and their uses. If the derived Variable requires a local parameterization, this
+  [Ceres documentation](http://ceres-solver.org/nnls_modeling.html#manifold) for an in-depth discussion
+  of "manifolds" and their uses. If the derived Variable requires a manifold, this
   method may be overridden to provide it.
 
 * `SMART_PTR_DEFINITIONS(Derived);`
@@ -328,21 +328,21 @@ std::string type() const { return boost::core::demangle(typeid(*this).name()); }
 The base class implementation is smart enough to return the correct `fuse_variables::Position2dStamped` type string
 here, so we don't need to reimplement the `type()` method.
 
-And our "position" type behaves linearly, so there is no need to use a "local parameterization" inside the optimizer.
+And our "position" type behaves linearly, so there is no need to use a "manifold" inside the optimizer.
 
 ```C++
-virtual ceres::LocalParameterization* localParameterization() const
+virtual ceres::Manifold* manifold() const
 {
   return nullptr;
 }
 ```
 
-Local parameterizations allow updating the dimensions of a Variable in a nonlinear way, in case the Variable describes
+Manifolds allow updating the dimensions of a Variable in a nonlinear way, in case the Variable describes
 some sort of nonlinear manifold. It also allows a Variable to represent a lower degree-of-freedom property to be
 embedded in a higher dimensional space. The classic example is a 3D rotation; a change in one of the rotation
 dimensions can affect the values of all three rotation dimensions (i.e. it has a nonlinear update), and its 3 dof are
 represented as a 4-dof quaternion. See the
-[Ceres documentation](http://ceres-solver.org/nnls_modeling.html#localparameterization) for more information.
+[Ceres documentation](http://ceres-solver.org/nnls_modeling.html#manifold) for more information.
 
 And finally we reach the recommended but optional implementation details.
 

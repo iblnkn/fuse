@@ -147,7 +147,6 @@ void loadSolverOptionsFromROS(const ros::NodeHandle& nh, ceres::Solver::Options&
 
   nh.param("use_explicit_schur_complement", solver_options.use_explicit_schur_complement,
            solver_options.use_explicit_schur_complement);
-  nh.param("use_postordering", solver_options.use_postordering, solver_options.use_postordering);
   nh.param("dynamic_sparsity", solver_options.dynamic_sparsity, solver_options.dynamic_sparsity);
 
 #if CERES_VERSION_AT_LEAST(2, 0, 0)

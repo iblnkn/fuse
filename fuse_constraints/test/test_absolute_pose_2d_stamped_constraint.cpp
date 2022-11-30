@@ -113,11 +113,11 @@ TEST(AbsolutePose2DStampedConstraint, OptimizationFull)
   problem.AddParameterBlock(
     orientation_variable->data(),
     orientation_variable->size(),
-    orientation_variable->localParameterization());
+    orientation_variable->manifold());
   problem.AddParameterBlock(
     position_variable->data(),
     position_variable->size(),
-    position_variable->localParameterization());
+    position_variable->manifold());
   std::vector<double*> parameter_blocks;
   parameter_blocks.push_back(position_variable->data());
   parameter_blocks.push_back(orientation_variable->data());
@@ -211,11 +211,11 @@ TEST(AbsolutePose2DStampedConstraint, OptimizationPartial)
   problem.AddParameterBlock(
     position_variable->data(),
     position_variable->size(),
-    position_variable->localParameterization());
+    position_variable->manifold());
   problem.AddParameterBlock(
     orientation_variable->data(),
     orientation_variable->size(),
-    orientation_variable->localParameterization());
+    orientation_variable->manifold());
 
   std::vector<double*> parameter_blocks;
   parameter_blocks.push_back(position_variable->data());

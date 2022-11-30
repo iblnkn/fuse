@@ -73,7 +73,7 @@ void MarginalConstraint::print(std::ostream& stream) const
 
 ceres::CostFunction* MarginalConstraint::costFunction() const
 {
-  return new MarginalCostFunction(A_, b_, x_bar_, local_parameterizations_);
+  return new MarginalCostFunction(A_, b_, x_bar_, manifolds_);
 }
 
 }  // namespace fuse_constraints

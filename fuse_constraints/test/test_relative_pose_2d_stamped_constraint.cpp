@@ -145,19 +145,19 @@ TEST(RelativePose2DStampedConstraint, OptimizationFull)
   problem.AddParameterBlock(
     orientation1->data(),
     orientation1->size(),
-    orientation1->localParameterization());
+    orientation1->manifold());
   problem.AddParameterBlock(
     position1->data(),
     position1->size(),
-    position1->localParameterization());
+    position1->manifold());
   problem.AddParameterBlock(
     orientation2->data(),
     orientation2->size(),
-    orientation2->localParameterization());
+    orientation2->manifold());
   problem.AddParameterBlock(
     position2->data(),
     position2->size(),
-    position2->localParameterization());
+    position2->manifold());
   std::vector<double*> prior_parameter_blocks;
   prior_parameter_blocks.push_back(position1->data());
   prior_parameter_blocks.push_back(orientation1->data());
@@ -318,19 +318,19 @@ TEST(RelativePose2DStampedConstraint, OptimizationPartial)
   problem.AddParameterBlock(
     orientation1->data(),
     orientation1->size(),
-    orientation1->localParameterization());
+    orientation1->manifold());
   problem.AddParameterBlock(
     position1->data(),
     position1->size(),
-    position1->localParameterization());
+    position1->manifold());
   problem.AddParameterBlock(
     orientation2->data(),
     orientation2->size(),
-    orientation2->localParameterization());
+    orientation2->manifold());
   problem.AddParameterBlock(
     position2->data(),
     position2->size(),
-    position2->localParameterization());
+    position2->manifold());
 
   std::vector<double*> prior_parameter_blocks;
   prior_parameter_blocks.push_back(position1->data());

@@ -150,11 +150,11 @@ TEST(AbsolutePose3DStampedConstraint, Optimization)
   problem.AddParameterBlock(
     position_variable->data(),
     position_variable->size(),
-    position_variable->localParameterization());
+    position_variable->manifold());
   problem.AddParameterBlock(
     orientation_variable->data(),
     orientation_variable->size(),
-    orientation_variable->localParameterization());
+    orientation_variable->manifold());
 
   std::vector<double*> parameter_blocks;
   parameter_blocks.push_back(position_variable->data());
@@ -191,11 +191,11 @@ TEST(AbsolutePose3DStampedConstraint, Optimization)
   fuse_core::MatrixXd cov_pos_pos(position_variable->size(), position_variable->size());
   covariance.GetCovarianceBlock(position_variable->data(), position_variable->data(), cov_pos_pos.data());
 
-  fuse_core::MatrixXd cov_or_or(orientation_variable->localSize(), orientation_variable->localSize());
+  fuse_core::MatrixXd cov_or_or(orientation_variable->tangentSize(), orientation_variable->tangentSize());
   covariance.GetCovarianceBlockInTangentSpace(
     orientation_variable->data(), orientation_variable->data(), cov_or_or.data());
 
-  fuse_core::MatrixXd cov_pos_or(position_variable->localSize(), orientation_variable->localSize());
+  fuse_core::MatrixXd cov_pos_or(position_variable->tangentSize(), orientation_variable->tangentSize());
   covariance.GetCovarianceBlockInTangentSpace(
     position_variable->data(), orientation_variable->data(), cov_pos_or.data());
 

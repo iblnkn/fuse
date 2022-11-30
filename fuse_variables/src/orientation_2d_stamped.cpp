@@ -33,7 +33,7 @@
  */
 #include <fuse_variables/orientation_2d_stamped.h>
 
-#include <fuse_core/local_parameterization.h>
+#include <fuse_core/manifold.h>
 #include <fuse_core/uuid.h>
 #include <fuse_variables/fixed_size_variable.h>
 #include <fuse_variables/stamped.h>
@@ -65,13 +65,13 @@ void Orientation2DStamped::print(std::ostream& stream) const
          << "  - yaw: " << yaw() << "\n";
 }
 
-fuse_core::LocalParameterization* Orientation2DStamped::localParameterization() const
+fuse_core::Manifold* Orientation2DStamped::manifold() const
 {
-  return new Orientation2DLocalParameterization();
+  return new Orientation2DManifold();
 }
 
 }  // namespace fuse_variables
 
-BOOST_CLASS_EXPORT_IMPLEMENT(fuse_variables::Orientation2DLocalParameterization);
+BOOST_CLASS_EXPORT_IMPLEMENT(fuse_variables::Orientation2DManifold);
 BOOST_CLASS_EXPORT_IMPLEMENT(fuse_variables::Orientation2DStamped);
 PLUGINLIB_EXPORT_CLASS(fuse_variables::Orientation2DStamped, fuse_core::Variable);

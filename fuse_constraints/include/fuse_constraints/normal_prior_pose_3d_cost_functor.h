@@ -57,8 +57,8 @@ namespace fuse_constraints
  *             ||     [  AngleAxis(b(3:6)^-1 * q) ] ||
  *
  * where, the matrix A and the vector b are fixed, p is the position variable, and q is the orientation variable.
- * Note that the covariance submatrix for the quaternion is 3x3, representing errors in the orientation local
- * parameterization tangent space. In case the user is interested in implementing a cost function of the form
+ * Note that the covariance submatrix for the quaternion is 3x3, representing errors in the orientation manifold
+ *  tangent space. In case the user is interested in implementing a cost function of the form
  *
  *   cost(X) = (X - mu)^T S^{-1} (X - mu)
  *
