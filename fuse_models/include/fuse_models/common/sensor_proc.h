@@ -57,7 +57,6 @@
 #include <tf2/LinearMath/Vector3.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 #include <tf2_ros/transform_listener.h>
-#include <geometry_msgs/Pose2D.h>
 #include <geometry_msgs/Twist.h>
 #include <geometry_msgs/Accel.h>
 
@@ -306,34 +305,41 @@ inline bool processAbsolutePoseWithCovariance(
   }
 
   // Convert the pose into tf2_2d transform
-  geometry_msgs::Pose2D absolute_pose_2d;
+  geometry_msgs::Pose absolute_pose_2d;
 
-  absolute_pose_2d.x = transformed_message.pose.pose.position.x;
-  absolute_pose_2d.y = transformed_message.pose.pose.position.y;
-  tf2::Quaternion abs_pose_quat;
-  double roll;
-  double pitch;
-  double yaw;
-  abs_pose_quat.setX(transformed_message.pose.pose.orientation.x);
-  abs_pose_quat.setY(transformed_message.pose.pose.orientation.y);
-  abs_pose_quat.setZ(transformed_message.pose.pose.orientation.z);
-  abs_pose_quat.setW(transformed_message.pose.pose.orientation.w);
+  absolute_pose_2d.position.x = transformed_message.pose.pose.position.x;
+  absolute_pose_2d.position.y = transformed_message.pose.pose.position.y;
+  absolute_pose_2d.position.z = transformed_message.pose.pose.position.z;
 
-  tf2::Matrix3x3 m;
-  m.setRotation(abs_pose_quat);
-  m.getRPY(roll, pitch, yaw);
-  absolute_pose_2d.theta = yaw;
+  absolute_pose_2d.orientation.x=transformed_message.pose.pose.orientation.x;
+  absolute_pose_2d.orientation.y=transformed_message.pose.pose.orientation.y;
+  absolute_pose_2d.orientation.z=transformed_message.pose.pose.orientation.z;
+  absolute_pose_2d.orientation.w=transformed_message.pose.pose.orientation.w;
 
   // Create the pose variable
   auto position = fuse_variables::Position2DStamped::make_shared(pose.header.stamp, device_id);
   auto orientation = fuse_variables::Orientation2DStamped::make_shared(pose.header.stamp, device_id);
-  position->x() = absolute_pose_2d.x;
-  position->y() = absolute_pose_2d.y;
-  orientation->yaw() = absolute_pose_2d.theta;
+  position->x() = absolute_pose_2d.position.x;
+  position->y() = absolute_pose_2d.position.y;
+
+  tf2::Quaternion abs_pose_quat;
+  double roll;
+  double pitch;
+  double yaw;
+  abs_pose_quat.setX(absolute_pose_2d.orientation.x);
+  abs_pose_quat.setY(absolute_pose_2d.orientation.y);
+  abs_pose_quat.setZ(absolute_pose_2d.orientation.z);
+  abs_pose_quat.setW(absolute_pose_2d.orientation.w);
+
+  tf2::Matrix3x3 m;
+  m.setRotation(abs_pose_quat);
+  m.getRPY(roll, pitch, yaw);
+
+  orientation->yaw() = yaw;
 
   // Create the pose for the constraint
   fuse_core::Vector3d pose_mean;
-  pose_mean << absolute_pose_2d.x, absolute_pose_2d.y, absolute_pose_2d.theta;
+  pose_mean << absolute_pose_2d.position.x, absolute_pose_2d.position.y, yaw;
 
   // Create the covariance for the constraint
   fuse_core::Matrix3d pose_covariance;
@@ -436,61 +442,75 @@ inline bool processDifferentialPoseWithCovariance(
   }
 
   // Convert the poses into tf2_2d transforms
-  geometry_msgs::Pose2D pose1_2d;
+  geometry_msgs::Pose pose1_2d;
 
-  pose1_2d.x = pose1.pose.pose.position.x;
-  pose1_2d.y = pose1.pose.pose.position.y;
+  pose1_2d.position.x = pose1.pose.pose.position.x;
+  pose1_2d.position.y = pose1.pose.pose.position.y;
+  pose1_2d.position.z = pose1.pose.pose.position.z;
+
+  pose1_2d.orientation.x =pose1.pose.pose.orientation.x;
+  pose1_2d.orientation.y =pose1.pose.pose.orientation.y;
+  pose1_2d.orientation.z =pose1.pose.pose.orientation.z;
+  pose1_2d.orientation.w =pose1.pose.pose.orientation.w;
+
   tf2::Quaternion abs_pose_quat;
-  double roll;
-  double pitch;
-  double yaw;
-  abs_pose_quat.setX(pose1.pose.pose.orientation.x);
-  abs_pose_quat.setY(pose1.pose.pose.orientation.y);
-  abs_pose_quat.setZ(pose1.pose.pose.orientation.z);
-  abs_pose_quat.setW(pose1.pose.pose.orientation.w);
+  double pose_1_roll;
+  double pose_1_pitch;
+  double pose_1_yaw;
+  abs_pose_quat.setX(pose1_2d.orientation.x);
+  abs_pose_quat.setY(pose1_2d.orientation.y);
+  abs_pose_quat.setZ(pose1_2d.orientation.z);
+  abs_pose_quat.setW(pose1_2d.orientation.w);
 
   tf2::Matrix3x3 m;
   m.setRotation(abs_pose_quat);
-  m.getRPY(roll, pitch, yaw);
-  pose1_2d.theta = yaw;
+  m.getRPY(pose_1_roll, pose_1_pitch, pose_1_yaw);
 
-  geometry_msgs::Pose2D pose2_2d;
+  geometry_msgs::Pose pose2_2d;
+  pose2_2d.position.x = pose2.pose.pose.position.x;
+  pose2_2d.position.y = pose2.pose.pose.position.y;
+  pose2_2d.position.z = pose2.pose.pose.position.z;
 
-  pose2_2d.x = pose2.pose.pose.position.x;
-  pose2_2d.y = pose2.pose.pose.position.y;
-  abs_pose_quat.setX(pose2.pose.pose.orientation.x);
-  abs_pose_quat.setY(pose2.pose.pose.orientation.y);
-  abs_pose_quat.setZ(pose2.pose.pose.orientation.z);
-  abs_pose_quat.setW(pose2.pose.pose.orientation.w);
+  pose2_2d.orientation.x =pose2.pose.pose.orientation.x;
+  pose2_2d.orientation.y =pose2.pose.pose.orientation.y;
+  pose2_2d.orientation.z =pose2.pose.pose.orientation.z;
+  pose2_2d.orientation.w =pose2.pose.pose.orientation.w;
+
+  double pose_2_roll;
+  double pose_2_pitch;
+  double pose_2_yaw;
+  abs_pose_quat.setX(pose2_2d.orientation.x);
+  abs_pose_quat.setY(pose2_2d.orientation.y);
+  abs_pose_quat.setZ(pose2_2d.orientation.z);
+  abs_pose_quat.setW(pose2_2d.orientation.w);
 
   m.setRotation(abs_pose_quat);
-  m.getRPY(roll, pitch, yaw);
-  pose2_2d.theta = yaw;
+  m.getRPY(pose_2_roll, pose_2_pitch, pose_2_yaw);
 
   // Create the pose variables
   auto position1 = fuse_variables::Position2DStamped::make_shared(pose1.header.stamp, device_id);
   auto orientation1 =
     fuse_variables::Orientation2DStamped::make_shared(pose1.header.stamp, device_id);
-  position1->x() = pose1_2d.x;
-  position1->y() = pose1_2d.y;
-  orientation1->yaw() = pose1_2d.theta;
+  position1->x() = pose1_2d.position.x;
+  position1->y() = pose1_2d.position.y;
+  orientation1->yaw() = pose_1_yaw;
 
   auto position2 = fuse_variables::Position2DStamped::make_shared(pose2.header.stamp, device_id);
   auto orientation2 = fuse_variables::Orientation2DStamped::make_shared(pose2.header.stamp, device_id);
-  position2->x() = pose2_2d.x;
-  position2->y() = pose2_2d.y;
-  orientation2->yaw() = pose2_2d.theta;
+  position2->x() = pose2_2d.position.x;
+  position2->y() = pose2_2d.position.y;
+  orientation2->yaw() = pose_2_yaw;
 
   // Create the delta for the constraint
-  const double sy = ::sin(-pose1_2d.theta);
-  const double cy = ::cos(-pose1_2d.theta);
-  double x_diff = pose2_2d.x - pose1_2d.x;
-  double y_diff = pose2_2d.y - pose1_2d.y;
+  const double sy = ::sin(-pose_2_yaw);
+  const double cy = ::cos(-pose_2_yaw);
+  double x_diff = pose2_2d.position.x - pose1_2d.position.x;
+  double y_diff = pose2_2d.position.y - pose1_2d.position.y;
   fuse_core::Vector3d pose_relative_mean;
   pose_relative_mean <<
     cy * x_diff - sy * y_diff,
     sy * x_diff + cy * y_diff,
-    (pose2_2d.theta - pose1_2d.theta);
+    (pose_2_yaw - pose_1_yaw);
 
   // Create the covariance components for the constraint
   fuse_core::Matrix3d cov1;
@@ -809,73 +829,92 @@ inline bool processDifferentialPoseWithTwistCovariance(
   }
 
   // Convert the poses into tf2_2d transforms
-  geometry_msgs::Pose2D pose1_2d;
-  pose1_2d.x = pose1.pose.pose.position.x;
-  pose1_2d.y = pose1.pose.pose.position.y;
+  geometry_msgs::Pose pose1_2d;
+  pose1_2d.position.x = pose1.pose.pose.position.x;
+  pose1_2d.position.y = pose1.pose.pose.position.y;
+  pose1_2d.position.z = pose1.pose.pose.position.z;
+
+  pose1_2d.orientation.x = pose1.pose.pose.orientation.x;
+  pose1_2d.orientation.y = pose1.pose.pose.orientation.y;
+  pose1_2d.orientation.z = pose1.pose.pose.orientation.z;
+  pose1_2d.orientation.w = pose1.pose.pose.orientation.w;
+
   tf2::Quaternion abs_pose_quat;
-  double roll;
-  double pitch;
-  double yaw;
-  abs_pose_quat.setX(pose1.pose.pose.orientation.x);
-  abs_pose_quat.setY(pose1.pose.pose.orientation.y);
-  abs_pose_quat.setZ(pose1.pose.pose.orientation.z);
-  abs_pose_quat.setW(pose1.pose.pose.orientation.w);
+  double pose1_2d_roll;
+  double pose1_2d_pitch;
+  double pose1_2d_yaw;
+  abs_pose_quat.setX(pose1_2d.orientation.x);
+  abs_pose_quat.setY(pose1_2d.orientation.y);
+  abs_pose_quat.setZ(pose1_2d.orientation.z);
+  abs_pose_quat.setW(pose1_2d.orientation.w);
 
   tf2::Matrix3x3 m;
   m.setRotation(abs_pose_quat);
-  m.getRPY(roll, pitch, yaw);
-  pose1_2d.theta = yaw;
+  m.getRPY(pose1_2d_roll, pose1_2d_pitch, pose1_2d_yaw);
 
-  geometry_msgs::Pose2D pose2_2d;
+  geometry_msgs::Pose pose2_2d;
 
-  pose2_2d.x = pose2.pose.pose.position.x;
-  pose2_2d.y = pose2.pose.pose.position.y;
-  abs_pose_quat.setX(pose2.pose.pose.orientation.x);
-  abs_pose_quat.setY(pose2.pose.pose.orientation.y);
-  abs_pose_quat.setZ(pose2.pose.pose.orientation.z);
-  abs_pose_quat.setW(pose2.pose.pose.orientation.w);
+  pose2_2d.position.x = pose2.pose.pose.position.x;
+  pose2_2d.position.y = pose2.pose.pose.position.y;
+  pose2_2d.position.z = pose2.pose.pose.position.z;
+
+  pose2_2d.orientation.x = pose2.pose.pose.orientation.x;
+  pose2_2d.orientation.y = pose2.pose.pose.orientation.y;
+  pose2_2d.orientation.z = pose2.pose.pose.orientation.z;
+  pose2_2d.orientation.w = pose2.pose.pose.orientation.w;
+
+  double pose2_2d_roll;
+  double pose2_2d_pitch;
+  double pose2_2d_yaw;
+  abs_pose_quat.setX(pose2_2d.orientation.x);
+  abs_pose_quat.setY(pose2_2d.orientation.y);
+  abs_pose_quat.setZ(pose2_2d.orientation.z);
+  abs_pose_quat.setW(pose2_2d.orientation.w);
 
   m.setRotation(abs_pose_quat);
-  m.getRPY(roll, pitch, yaw);
-  pose2_2d.theta = yaw;
+  m.getRPY(pose2_2d_roll, pose2_2d_pitch, pose2_2d_yaw);
 
   // Create the pose variables
   auto position1 = fuse_variables::Position2DStamped::make_shared(pose1.header.stamp, device_id);
   auto orientation1 =
     fuse_variables::Orientation2DStamped::make_shared(pose1.header.stamp, device_id);
-  position1->x() = pose1_2d.x;
-  position1->y() = pose1_2d.y;
-  orientation1->yaw() = pose1_2d.theta;
+  position1->x() = pose1_2d.position.x;
+  position1->y() = pose1_2d.position.y;
+  orientation1->yaw() = pose1_2d_yaw;
 
   auto position2 = fuse_variables::Position2DStamped::make_shared(pose2.header.stamp, device_id);
   auto orientation2 = fuse_variables::Orientation2DStamped::make_shared(pose2.header.stamp, device_id);
-  position2->x() = pose2_2d.x;
-  position2->y() = pose2_2d.y;
-  orientation2->yaw() = pose2_2d.theta;
+  position2->x() = pose2_2d.position.x;
+  position2->y() = pose2_2d.position.y;
+  orientation2->yaw() = pose1_2d_yaw;
 
   // Create the delta for the constraint
   tf2::Transform pose1_2d_transform;
   tf2::Transform pose2_2d_transform;
 
-  tf2::Vector3 position2_2d(pose2_2d.x, pose2_2d.y,0);
+  tf2::Vector3 position2_2d(pose2_2d.position.x, pose2_2d.position.y,0);
   tf2::Quaternion orientation_quat;
 
-  orientation_quat.setRPY(0,0,pose1_2d.theta);
+  orientation_quat.setRPY(0,0,pose1_2d_yaw);
 
-  pose2_2d_transform.setOrigin(tf2::Vector3(pose2_2d.x, pose2_2d.y,0));
+  pose2_2d_transform.setOrigin(tf2::Vector3(pose2_2d.position.x, pose2_2d.position.y,0));
   pose2_2d_transform.setRotation(orientation_quat);
 
-  position2_2d.setX(pose2_2d.x);
-  position2_2d.setY(pose2_2d.y);
+  position2_2d.setX(pose2_2d.position.x);
+  position2_2d.setY(pose2_2d.position.y);
   position2_2d.setZ(0);
-  orientation_quat.setRPY(0,0,pose2_2d.theta);
+  orientation_quat.setRPY(0,0,pose2_2d_yaw);
 
-  pose1_2d_transform.setOrigin(tf2::Vector3(pose1_2d.x, pose1_2d.y,0));
+  pose1_2d_transform.setOrigin(tf2::Vector3(pose1_2d.position.x, pose1_2d.position.y,0));
   pose1_2d_transform.setRotation(orientation_quat);
 
   const auto delta = pose1_2d_transform.inverseTimes(pose2_2d_transform);
 
   m.setRotation(orientation_quat);
+  double roll;
+  double pitch;
+  double yaw;
+
   m.getRPY(roll, pitch, yaw);
 
   fuse_core::Vector3d pose_relative_mean;
