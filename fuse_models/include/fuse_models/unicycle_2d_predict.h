@@ -37,7 +37,9 @@
 #include <ceres/jet.h>
 #include <fuse_core/util.h>
 #include <fuse_core/eigen.h>
-#include <tf2_2d/tf2_2d.h>
+#include <geometry_msgs/Pose2D.h>
+#include <geometry_msgs/Twist.h>
+#include <geometry_msgs/Accel.h>
 
 #include <array>
 
@@ -294,15 +296,15 @@ inline void predict(
  * @param[in] jacobian - The jacobian wrt the state
  */
 inline void predict(
-  const tf2_2d::Transform& pose1,
-  const tf2_2d::Vector2& vel_linear1,
+  const geometry_msgs::Pose2D& pose1,
+  const geometry_msgs::Twist& vel_linear1,
   const double vel_yaw1,
-  const tf2_2d::Vector2& acc_linear1,
+  const geometry_msgs::Accel& acc_linear1,
   const double dt,
-  tf2_2d::Transform& pose2,
-  tf2_2d::Vector2& vel_linear2,
+  geometry_msgs::Pose2D& pose2,
+  geometry_msgs::Twist& vel_linear2,
   double& vel_yaw2,
-  tf2_2d::Vector2& acc_linear2,
+  geometry_msgs::Accel& acc_linear2,
   fuse_core::Matrix8d& jacobian)
 {
   double x_pred {};
@@ -331,14 +333,14 @@ inline void predict(
   }
 
   predict(
-    pose1.x(),
-    pose1.y(),
-    pose1.yaw(),
-    vel_linear1.x(),
-    vel_linear1.y(),
+    pose1.x,
+    pose1.y,
+    pose1.theta,
+    vel_linear1.linear.x,
+    vel_linear1.linear.y,
     vel_yaw1,
-    acc_linear1.x(),
-    acc_linear1.y(),
+    acc_linear1.linear.x,
+    acc_linear1.linear.y,
     dt,
     x_pred,
     y_pred,
@@ -352,13 +354,13 @@ inline void predict(
 
   jacobian << J[0], J[1], J[2], J[3], J[4];
 
-  pose2.setX(x_pred);
-  pose2.setY(y_pred);
-  pose2.setYaw(yaw_pred);
-  vel_linear2.setX(vel_linear_x_pred);
-  vel_linear2.setY(vel_linear_y_pred);
-  acc_linear2.setX(acc_linear_x_pred);
-  acc_linear2.setY(acc_linear_y_pred);
+  pose2.x = (x_pred);
+  pose2.y = (y_pred);
+  pose2.theta = (yaw_pred);
+  vel_linear2.linear.x = (vel_linear_x_pred);
+  vel_linear2.linear. y = (vel_linear_y_pred);
+  acc_linear2.linear.x = (acc_linear_x_pred);
+  acc_linear2.linear.y =(acc_linear_y_pred);
 }
 
 /**
@@ -374,15 +376,15 @@ inline void predict(
  * @param[in] acc_linear2 - The second linear acceleration
  */
 inline void predict(
-  const tf2_2d::Transform& pose1,
-  const tf2_2d::Vector2& vel_linear1,
+  const geometry_msgs::Pose2D& pose1,
+  const geometry_msgs::Twist& vel_linear1,
   const double vel_yaw1,
-  const tf2_2d::Vector2& acc_linear1,
+  const geometry_msgs::Accel& acc_linear1,
   const double dt,
-  tf2_2d::Transform& pose2,
-  tf2_2d::Vector2& vel_linear2,
+  geometry_msgs::Pose2D& pose2,
+  geometry_msgs::Twist& vel_linear2,
   double& vel_yaw2,
-  tf2_2d::Vector2& acc_linear2)
+  geometry_msgs::Accel& acc_linear2)
 {
   double x_pred {};
   double y_pred {};
@@ -393,14 +395,14 @@ inline void predict(
   double acc_linear_y_pred {};
 
   predict(
-    pose1.x(),
-    pose1.y(),
-    pose1.yaw(),
-    vel_linear1.x(),
-    vel_linear1.y(),
+    pose1.x,
+    pose1.y,
+    pose1.theta,
+    vel_linear1.linear.x,
+    vel_linear1.linear.y,
     vel_yaw1,
-    acc_linear1.x(),
-    acc_linear1.y(),
+    acc_linear1.linear.x,
+    acc_linear1.linear.y,
     dt,
     x_pred,
     y_pred,
@@ -411,13 +413,13 @@ inline void predict(
     acc_linear_x_pred,
     acc_linear_y_pred);
 
-  pose2.setX(x_pred);
-  pose2.setY(y_pred);
-  pose2.setYaw(yaw_pred);
-  vel_linear2.setX(vel_linear_x_pred);
-  vel_linear2.setY(vel_linear_y_pred);
-  acc_linear2.setX(acc_linear_x_pred);
-  acc_linear2.setY(acc_linear_y_pred);
+  pose2.x = (x_pred);
+  pose2.y = (y_pred);
+  pose2.theta = (yaw_pred);
+  vel_linear2.linear.x = (vel_linear_x_pred);
+  vel_linear2.linear.y = (vel_linear_y_pred);
+  acc_linear2.linear.x = (acc_linear_x_pred);
+  acc_linear2.linear.y = (acc_linear_y_pred);
 }
 
 }  // namespace fuse_models

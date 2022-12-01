@@ -34,12 +34,15 @@
 #include <fuse_models/unicycle_2d_predict.h>
 
 #include <gtest/gtest.h>
-#include <tf2_2d/tf2_2d.h>
 #include <fuse_core/eigen_gtest.h>
 
 #include <array>
 #include <limits>
 #include <vector>
+
+#include <geometry_msgs/Pose2D.h>
+#include <geometry_msgs/Twist.h>
+#include <geometry_msgs/Accel.h>
 
 
 TEST(Predict, predictDirectVals)
@@ -245,17 +248,18 @@ TEST(Predict, predictPointers)
 
 TEST(Predict, predictObjects)
 {
-  tf2_2d::Transform pose1;
-  tf2_2d::Vector2 vel_linear1;
-  vel_linear1.setX(1.0);
+  
+  geometry_msgs::Pose2D pose1;
+  geometry_msgs::Twist vel_linear1;
+  vel_linear1.linear.x = (1.0);
   double vel_yaw1 = 1.570796327;
-  tf2_2d::Vector2 acc_linear1;
-  acc_linear1.setX(1.0);
+  geometry_msgs::Accel acc_linear1;
+  acc_linear1.linear.x = (1.0);
   double dt = 0.1;
-  tf2_2d::Transform pose2;
-  tf2_2d::Vector2 vel_linear2;
+  geometry_msgs::Pose2D pose2;
+  geometry_msgs::Twist vel_linear2;
   double vel_yaw2 = 0.0;
-  tf2_2d::Vector2 acc_linear2;
+  geometry_msgs::Accel acc_linear2;
 
   fuse_models::predict(
     pose1,
@@ -268,14 +272,14 @@ TEST(Predict, predictObjects)
     vel_yaw2,
     acc_linear2);
 
-  EXPECT_DOUBLE_EQ(0.105, pose2.x());
-  EXPECT_DOUBLE_EQ(0.0, pose2.y());
-  EXPECT_DOUBLE_EQ(0.1570796327, pose2.yaw());
-  EXPECT_DOUBLE_EQ(1.1, vel_linear2.x());
-  EXPECT_DOUBLE_EQ(0.0, vel_linear2.y());
+  EXPECT_DOUBLE_EQ(0.105, pose2.x);
+  EXPECT_DOUBLE_EQ(0.0, pose2.y);
+  EXPECT_DOUBLE_EQ(0.1570796327, pose2.theta);
+  EXPECT_DOUBLE_EQ(1.1, vel_linear2.linear.x);
+  EXPECT_DOUBLE_EQ(0.0, vel_linear2.linear.y);
   EXPECT_DOUBLE_EQ(1.570796327, vel_yaw2);
-  EXPECT_DOUBLE_EQ(1.0, acc_linear2.x());
-  EXPECT_DOUBLE_EQ(0.0, acc_linear2.y());
+  EXPECT_DOUBLE_EQ(1.0, acc_linear2.linear.x);
+  EXPECT_DOUBLE_EQ(0.0, acc_linear2.linear.y);
 
   // Carry on with the output state from last time - show in-place update support
   fuse_models::predict(
@@ -290,19 +294,19 @@ TEST(Predict, predictObjects)
     acc_linear2);
 
 
-  EXPECT_DOUBLE_EQ(0.21858415916807189, pose2.x());
-  EXPECT_DOUBLE_EQ(0.017989963481956205, pose2.y());
-  EXPECT_DOUBLE_EQ(0.3141592654, pose2.yaw());
-  EXPECT_DOUBLE_EQ(1.2, vel_linear2.x());
-  EXPECT_DOUBLE_EQ(0.0, vel_linear2.y());
+  EXPECT_DOUBLE_EQ(0.21858415916807189, pose2.x);
+  EXPECT_DOUBLE_EQ(0.017989963481956205, pose2.y);
+  EXPECT_DOUBLE_EQ(0.3141592654, pose2.theta);
+  EXPECT_DOUBLE_EQ(1.2, vel_linear2.linear.x);
+  EXPECT_DOUBLE_EQ(0.0, vel_linear2.linear.y);
   EXPECT_DOUBLE_EQ(1.570796327, vel_yaw2);
-  EXPECT_DOUBLE_EQ(1.0, acc_linear2.x());
-  EXPECT_DOUBLE_EQ(0.0, acc_linear2.y());
+  EXPECT_DOUBLE_EQ(1.0, acc_linear2.linear.x);
+  EXPECT_DOUBLE_EQ(0.0, acc_linear2.linear.y);
 
   // Use non-zero Y values
-  vel_linear1.setY(-1.0);
+  vel_linear1.linear.y = (-1.0);
   vel_yaw1 = -1.570796327;
-  acc_linear1.setY(-1.0);
+  acc_linear1.linear.y = (-1.0);
 
   fuse_models::predict(
     pose1,
@@ -315,14 +319,14 @@ TEST(Predict, predictObjects)
     vel_yaw2,
     acc_linear2);
 
-  EXPECT_DOUBLE_EQ(0.105, pose2.x());
-  EXPECT_DOUBLE_EQ(-0.105, pose2.y());
-  EXPECT_DOUBLE_EQ(-0.1570796327, pose2.yaw());
-  EXPECT_DOUBLE_EQ(1.1, vel_linear2.x());
-  EXPECT_DOUBLE_EQ(-1.1, vel_linear2.y());
+  EXPECT_DOUBLE_EQ(0.105, pose2.x);
+  EXPECT_DOUBLE_EQ(-0.105, pose2.y);
+  EXPECT_DOUBLE_EQ(-0.1570796327, pose2.theta);
+  EXPECT_DOUBLE_EQ(1.1, vel_linear2.linear.x);
+  EXPECT_DOUBLE_EQ(-1.1, vel_linear2.linear.y);
   EXPECT_DOUBLE_EQ(-1.570796327, vel_yaw2);
-  EXPECT_DOUBLE_EQ(1.0, acc_linear2.x());
-  EXPECT_DOUBLE_EQ(-1.0, acc_linear2.y());
+  EXPECT_DOUBLE_EQ(1.0, acc_linear2.linear.x);
+  EXPECT_DOUBLE_EQ(-1.0, acc_linear2.linear.y);
 }
 
 TEST(Predict, predictJacobians)

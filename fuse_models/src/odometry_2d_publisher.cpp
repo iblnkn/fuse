@@ -42,10 +42,13 @@
 #include <geometry_msgs/AccelWithCovarianceStamped.h>
 #include <nav_msgs/Odometry.h>
 #include <pluginlib/class_list_macros.h>
-#include <tf2_2d/tf2_2d.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 #include <tf2_ros/buffer.h>
 #include <tf2_ros/transform_listener.h>
+
+#include <geometry_msgs/Pose2D.h>
+#include <geometry_msgs/Twist.h>
+#include <geometry_msgs/Accel.h>
 
 #include <algorithm>
 #include <memory>
@@ -284,11 +287,15 @@ bool Odometry2DPublisher::getState(
     acceleration_linear_uuid = fuse_variables::AccelerationLinear2DStamped(stamp, device_id).uuid();
     auto acceleration_linear_variable = dynamic_cast<const fuse_variables::AccelerationLinear2DStamped&>(
       graph.getVariable(acceleration_linear_uuid));
-
+    tf2::Quaternion orientation_quat;
+    orientation_quat.setRPY(0, 0, orientation_variable.yaw());
     odometry.pose.pose.position.x = position_variable.x();
     odometry.pose.pose.position.y = position_variable.y();
     odometry.pose.pose.position.z = 0.0;
-    odometry.pose.pose.orientation = tf2::toMsg(tf2_2d::Rotation(orientation_variable.yaw()));
+    odometry.pose.pose.orientation.x = orientation_quat.getX();
+    odometry.pose.pose.orientation.y = orientation_quat.getY();
+    odometry.pose.pose.orientation.z = orientation_quat.getZ();
+    odometry.pose.pose.orientation.w = orientation_quat.getW();
     odometry.twist.twist.linear.x = velocity_linear_variable.x();
     odometry.twist.twist.linear.y = velocity_linear_variable.y();
     odometry.twist.twist.linear.z = 0.0;
@@ -340,20 +347,20 @@ void Odometry2DPublisher::publishTimerCallback(const ros::TimerEvent& event)
     return;
   }
 
-  tf2_2d::Transform pose;
+  geometry_msgs::Pose2D pose;
   tf2::fromMsg(odom_output.pose.pose, pose);
 
   // If requested, we need to project our state forward in time using the 2D kinematic model
   if (params_.predict_to_current_time)
   {
-    tf2_2d::Vector2 velocity_linear;
+    geometry_msgs::Twist velocity_linear;
     tf2::fromMsg(odom_output.twist.twist.linear, velocity_linear);
 
     const double dt = event.current_real.toSec() - odom_output.header.stamp.toSec();
 
     fuse_core::Matrix8d jacobian;
 
-    tf2_2d::Vector2 acceleration_linear;
+    geometry_msgs::Accel acceleration_linear;
     if (params_.predict_with_acceleration)
     {
       tf2::fromMsg(acceleration_output.accel.accel.linear, acceleration_linear);
@@ -373,18 +380,23 @@ void Odometry2DPublisher::publishTimerCallback(const ros::TimerEvent& event)
       acceleration_linear,
       jacobian);
 
-    odom_output.pose.pose.position.x = pose.getX();
-    odom_output.pose.pose.position.y = pose.getY();
-    odom_output.pose.pose.orientation = tf2::toMsg(pose.getRotation());
+    odom_output.pose.pose.position.x = pose.x;
+    odom_output.pose.pose.position.y = pose.y;
+    tf2::Quaternion orientation_quat;
+    orientation_quat.setRPY(0,0,pose.theta);
+    odom_output.pose.pose.orientation.x = orientation_quat.getX();
+    odom_output.pose.pose.orientation.y = orientation_quat.getY();
+    odom_output.pose.pose.orientation.z = orientation_quat.getZ();
+    odom_output.pose.pose.orientation.w = orientation_quat.getW();
 
-    odom_output.twist.twist.linear.x = velocity_linear.x();
-    odom_output.twist.twist.linear.y = velocity_linear.y();
+    odom_output.twist.twist.linear.x = velocity_linear.linear.x;
+    odom_output.twist.twist.linear.y = velocity_linear.linear.y;
     odom_output.twist.twist.angular.z = yaw_vel;
 
     if (params_.predict_with_acceleration)
     {
-      acceleration_output.accel.accel.linear.x = acceleration_linear.x();
-      acceleration_output.accel.accel.linear.y = acceleration_linear.y();
+      acceleration_output.accel.accel.linear.x = acceleration_linear.linear.x;
+      acceleration_output.accel.accel.linear.y = acceleration_linear.linear.y;
     }
 
     odom_output.header.stamp = event.current_real;
@@ -474,9 +486,37 @@ void Odometry2DPublisher::publishTimerCallback(const ros::TimerEvent& event)
     auto frame_id = odom_output.header.frame_id;
     auto child_frame_id = odom_output.child_frame_id;
 
-    if (params_.invert_tf)
+    if (params_.invert_tf) //TODO: This is ovecomplicated and not sure it does what it is supposed to. It definetly needs a second look. 
     {
-      pose = pose.inverse();
+      tf2::Transform pose_inv;
+      tf2::Vector3 positoin_inv;
+      tf2::Vector3 orientation_inv;
+      tf2::Quaternion orientation_inv_quat;
+      double roll;
+      double pitch;
+      double yaw;
+      orientation_inv_quat.setRPY(0,0,pose.theta);
+      positoin_inv.setX(pose.x);
+      positoin_inv.setY(pose.y);
+      positoin_inv.setZ(0);
+      orientation_inv.setX(orientation_inv_quat.getX());
+      orientation_inv.setY(orientation_inv_quat.getY());
+      orientation_inv.setZ(orientation_inv_quat.getZ());
+      orientation_inv.setW(orientation_inv_quat.getW());
+
+      pose_inv = pose_inv.inverse();
+
+      pose.x = pose_inv.getOrigin().getX();
+      pose.y = pose_inv.getOrigin().getY();
+      orientation_inv_quat.setX(pose_inv.getRotation().getX());
+      orientation_inv_quat.setY(pose_inv.getRotation().getY());
+      orientation_inv_quat.setZ(pose_inv.getRotation().getZ());
+      orientation_inv_quat.setW(pose_inv.getRotation().getW());
+      tf2::Matrix3x3 m;
+      m.setRotation(orientation_inv_quat);
+      m.getRPY(roll, pitch, yaw);
+      pose.theta = yaw;
+
       std::swap(frame_id, child_frame_id);
     }
 
@@ -484,10 +524,17 @@ void Odometry2DPublisher::publishTimerCallback(const ros::TimerEvent& event)
     trans.header.stamp = odom_output.header.stamp;
     trans.header.frame_id = frame_id;
     trans.child_frame_id = child_frame_id;
-    trans.transform.translation.x = pose.getX();
-    trans.transform.translation.y = pose.getY();
+    trans.transform.translation.x = pose.x;
+    trans.transform.translation.y = pose.y;
     trans.transform.translation.z = odom_output.pose.pose.position.z;
-    trans.transform.rotation = tf2::toMsg(pose.getRotation());
+
+    tf2::Quaternion orientation_quat;
+    orientation_quat.setRPY(0, 0, pose.theta);
+
+    trans.transform.rotation.x = orientation_quat.getX();
+    trans.transform.rotation.y = orientation_quat.getY();
+    trans.transform.rotation.z = orientation_quat.getZ();
+    trans.transform.rotation.w = orientation_quat.getW();
 
     if (!params_.invert_tf && params_.world_frame_id == params_.map_frame_id)
     {

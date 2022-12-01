@@ -57,6 +57,10 @@
 #include <utility>
 #include <vector>
 
+#include <geometry_msgs/Pose2D.h>
+#include <geometry_msgs/Twist.h>
+#include <geometry_msgs/Accel.h>
+
 
 // Register this motion model with ROS as a plugin.
 PLUGINLIB_EXPORT_CLASS(fuse_models::Unicycle2D, fuse_core::MotionModel)
@@ -64,24 +68,36 @@ PLUGINLIB_EXPORT_CLASS(fuse_models::Unicycle2D, fuse_core::MotionModel)
 namespace std
 {
 
-inline bool isfinite(const tf2_2d::Vector2& vector)
+inline bool isfinite(const geometry_msgs::Twist& vector)
 {
-  return std::isfinite(vector.x()) && std::isfinite(vector.y());
+  return std::isfinite(vector.linear.x) && std::isfinite(vector.linear.y);
 }
 
-inline bool isfinite(const tf2_2d::Transform& transform)
+inline bool isfinite(const geometry_msgs::Accel& vector)
 {
-  return std::isfinite(transform.x()) && std::isfinite(transform.y()) && std::isfinite(transform.yaw());
+  return std::isfinite(vector.linear.x) && std::isfinite(vector.linear.y);
 }
 
-std::string to_string(const tf2_2d::Vector2& vector)
+inline bool isfinite(const geometry_msgs::Pose2D& transform)
+{
+  return std::isfinite(transform.x) && std::isfinite(transform.y) && std::isfinite(transform.theta);
+}
+
+std::string to_string(const geometry_msgs::Twist& vector)
 {
   std::ostringstream oss;
   oss << vector;
   return oss.str();
 }
 
-std::string to_string(const tf2_2d::Transform& transform)
+std::string to_string(const geometry_msgs::Accel& vector)
+{
+  std::ostringstream oss;
+  oss << vector;
+  return oss.str();
+}
+
+std::string to_string(const geometry_msgs::Pose2D& transform)
 {
   std::ostringstream oss;
   oss << transform;
@@ -317,22 +333,22 @@ void Unicycle2D::generateMotionModel(
   auto velocity_yaw2 = fuse_variables::VelocityAngular2DStamped::make_shared(ending_stamp, device_id_);
   auto acceleration_linear2 = fuse_variables::AccelerationLinear2DStamped::make_shared(ending_stamp, device_id_);
 
-  position1->data()[fuse_variables::Position2DStamped::X] = state1.pose.x();
-  position1->data()[fuse_variables::Position2DStamped::Y] = state1.pose.y();
-  yaw1->data()[fuse_variables::Orientation2DStamped::YAW] = state1.pose.yaw();
-  velocity_linear1->data()[fuse_variables::VelocityLinear2DStamped::X] = state1.velocity_linear.x();
-  velocity_linear1->data()[fuse_variables::VelocityLinear2DStamped::Y] = state1.velocity_linear.y();
+  position1->data()[fuse_variables::Position2DStamped::X] = state1.pose.x;
+  position1->data()[fuse_variables::Position2DStamped::Y] = state1.pose.y;
+  yaw1->data()[fuse_variables::Orientation2DStamped::YAW] = state1.pose.theta;
+  velocity_linear1->data()[fuse_variables::VelocityLinear2DStamped::X] = state1.velocity_linear.linear.x;
+  velocity_linear1->data()[fuse_variables::VelocityLinear2DStamped::Y] = state1.velocity_linear.linear.y;
   velocity_yaw1->data()[fuse_variables::VelocityAngular2DStamped::YAW] = state1.velocity_yaw;
-  acceleration_linear1->data()[fuse_variables::AccelerationLinear2DStamped::X] = state1.acceleration_linear.x();
-  acceleration_linear1->data()[fuse_variables::AccelerationLinear2DStamped::Y] = state1.acceleration_linear.y();
-  position2->data()[fuse_variables::Position2DStamped::X] = state2.pose.x();
-  position2->data()[fuse_variables::Position2DStamped::Y] = state2.pose.y();
-  yaw2->data()[fuse_variables::Orientation2DStamped::YAW] = state2.pose.yaw();
-  velocity_linear2->data()[fuse_variables::VelocityLinear2DStamped::X] = state2.velocity_linear.x();
-  velocity_linear2->data()[fuse_variables::VelocityLinear2DStamped::Y] = state2.velocity_linear.y();
+  acceleration_linear1->data()[fuse_variables::AccelerationLinear2DStamped::X] = state1.acceleration_linear.linear.x;
+  acceleration_linear1->data()[fuse_variables::AccelerationLinear2DStamped::Y] = state1.acceleration_linear.linear.y;
+  position2->data()[fuse_variables::Position2DStamped::X] = state2.pose.x;
+  position2->data()[fuse_variables::Position2DStamped::Y] = state2.pose.y;
+  yaw2->data()[fuse_variables::Orientation2DStamped::YAW] = state2.pose.theta;
+  velocity_linear2->data()[fuse_variables::VelocityLinear2DStamped::X] = state2.velocity_linear.linear.x;
+  velocity_linear2->data()[fuse_variables::VelocityLinear2DStamped::Y] = state2.velocity_linear.linear.y;
   velocity_yaw2->data()[fuse_variables::VelocityAngular2DStamped::YAW] = state2.velocity_yaw;
-  acceleration_linear2->data()[fuse_variables::AccelerationLinear2DStamped::X] = state2.acceleration_linear.x();
-  acceleration_linear2->data()[fuse_variables::AccelerationLinear2DStamped::Y] = state2.acceleration_linear.y();
+  acceleration_linear2->data()[fuse_variables::AccelerationLinear2DStamped::X] = state2.acceleration_linear.linear.x;
+  acceleration_linear2->data()[fuse_variables::AccelerationLinear2DStamped::Y] = state2.acceleration_linear.linear.y;
 
   state1.position_uuid = position1->uuid();
   state1.yaw_uuid = yaw1->uuid();
@@ -447,14 +463,14 @@ void Unicycle2D::updateStateHistoryEstimates(
       const auto& vel_yaw = graph.getVariable(current_state.vel_yaw_uuid);
       const auto& acc_linear = graph.getVariable(current_state.acc_linear_uuid);
 
-      current_state.pose.setX(position.data()[fuse_variables::Position2DStamped::X]);
-      current_state.pose.setY(position.data()[fuse_variables::Position2DStamped::Y]);
-      current_state.pose.setAngle(yaw.data()[fuse_variables::Orientation2DStamped::YAW]);
-      current_state.velocity_linear.setX(vel_linear.data()[fuse_variables::VelocityLinear2DStamped::X]);
-      current_state.velocity_linear.setY(vel_linear.data()[fuse_variables::VelocityLinear2DStamped::Y]);
+      current_state.pose.x = (position.data()[fuse_variables::Position2DStamped::X]);
+      current_state.pose.y = (position.data()[fuse_variables::Position2DStamped::Y]);
+      current_state.pose.theta = (yaw.data()[fuse_variables::Orientation2DStamped::YAW]);
+      current_state.velocity_linear.linear.x = (vel_linear.data()[fuse_variables::VelocityLinear2DStamped::X]);
+      current_state.velocity_linear.linear.y = (vel_linear.data()[fuse_variables::VelocityLinear2DStamped::Y]);
       current_state.velocity_yaw = vel_yaw.data()[fuse_variables::VelocityAngular2DStamped::YAW];
-      current_state.acceleration_linear.setX(acc_linear.data()[fuse_variables::AccelerationLinear2DStamped::X]);
-      current_state.acceleration_linear.setY(acc_linear.data()[fuse_variables::AccelerationLinear2DStamped::Y]);
+      current_state.acceleration_linear.linear.x = (acc_linear.data()[fuse_variables::AccelerationLinear2DStamped::X]);
+      current_state.acceleration_linear.linear.y =(acc_linear.data()[fuse_variables::AccelerationLinear2DStamped::Y]);
     }
     else if (current_iter != state_history.begin())
     {

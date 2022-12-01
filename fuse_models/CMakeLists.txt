@@ -19,7 +19,6 @@ find_package(
     sensor_msgs
     std_srvs
     tf2
-    tf2_2d
     tf2_geometry_msgs
     tf2_ros)
 
@@ -64,7 +63,6 @@ catkin_package(
     sensor_msgs
     std_srvs
     tf2
-    tf2_2d
     tf2_geometry_msgs
     tf2_ros
   DEPENDS

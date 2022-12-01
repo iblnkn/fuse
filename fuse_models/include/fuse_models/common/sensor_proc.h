@@ -57,8 +57,9 @@
 #include <tf2/LinearMath/Vector3.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 #include <tf2_ros/transform_listener.h>
-#include <tf2_2d/tf2_2d.h>
-#include <tf2_2d/transform.h>
+#include <geometry_msgs/Pose2D.h>
+#include <geometry_msgs/Twist.h>
+#include <geometry_msgs/Accel.h>
 
 #include <boost/range/join.hpp>
 
@@ -305,19 +306,19 @@ inline bool processAbsolutePoseWithCovariance(
   }
 
   // Convert the pose into tf2_2d transform
-  tf2_2d::Transform absolute_pose_2d;
+  geometry_msgs::Pose2D absolute_pose_2d;
   tf2::fromMsg(transformed_message.pose.pose, absolute_pose_2d);
 
   // Create the pose variable
   auto position = fuse_variables::Position2DStamped::make_shared(pose.header.stamp, device_id);
   auto orientation = fuse_variables::Orientation2DStamped::make_shared(pose.header.stamp, device_id);
-  position->x() = absolute_pose_2d.x();
-  position->y() = absolute_pose_2d.y();
-  orientation->yaw() = absolute_pose_2d.yaw();
+  position->x() = absolute_pose_2d.x;
+  position->y() = absolute_pose_2d.y;
+  orientation->yaw() = absolute_pose_2d.theta;
 
   // Create the pose for the constraint
   fuse_core::Vector3d pose_mean;
-  pose_mean << absolute_pose_2d.x(), absolute_pose_2d.y(), absolute_pose_2d.yaw();
+  pose_mean << absolute_pose_2d.x, absolute_pose_2d.y, absolute_pose_2d.theta;
 
   // Create the covariance for the constraint
   fuse_core::Matrix3d pose_covariance;
@@ -420,36 +421,36 @@ inline bool processDifferentialPoseWithCovariance(
   }
 
   // Convert the poses into tf2_2d transforms
-  tf2_2d::Transform pose1_2d;
+  geometry_msgs::Pose2D pose1_2d;
   tf2::fromMsg(pose1.pose.pose, pose1_2d);
 
-  tf2_2d::Transform pose2_2d;
+  geometry_msgs::Pose2D pose2_2d;
   tf2::fromMsg(pose2.pose.pose, pose2_2d);
 
   // Create the pose variables
   auto position1 = fuse_variables::Position2DStamped::make_shared(pose1.header.stamp, device_id);
   auto orientation1 =
     fuse_variables::Orientation2DStamped::make_shared(pose1.header.stamp, device_id);
-  position1->x() = pose1_2d.x();
-  position1->y() = pose1_2d.y();
-  orientation1->yaw() = pose1_2d.yaw();
+  position1->x() = pose1_2d.x;
+  position1->y() = pose1_2d.y;
+  orientation1->yaw() = pose1_2d.theta;
 
   auto position2 = fuse_variables::Position2DStamped::make_shared(pose2.header.stamp, device_id);
   auto orientation2 = fuse_variables::Orientation2DStamped::make_shared(pose2.header.stamp, device_id);
-  position2->x() = pose2_2d.x();
-  position2->y() = pose2_2d.y();
-  orientation2->yaw() = pose2_2d.yaw();
+  position2->x() = pose2_2d.x;
+  position2->y() = pose2_2d.y;
+  orientation2->yaw() = pose2_2d.theta;
 
   // Create the delta for the constraint
-  const double sy = ::sin(-pose1_2d.yaw());
-  const double cy = ::cos(-pose1_2d.yaw());
-  double x_diff = pose2_2d.x() - pose1_2d.x();
-  double y_diff = pose2_2d.y() - pose1_2d.y();
+  const double sy = ::sin(-pose1_2d.theta);
+  const double cy = ::cos(-pose1_2d.theta);
+  double x_diff = pose2_2d.x - pose1_2d.x;
+  double y_diff = pose2_2d.y - pose1_2d.y;
   fuse_core::Vector3d pose_relative_mean;
   pose_relative_mean <<
     cy * x_diff - sy * y_diff,
     sy * x_diff + cy * y_diff,
-    (pose2_2d.rotation() - pose1_2d.rotation()).getAngle();
+    (pose2_2d.theta - pose1_2d.theta);
 
   // Create the covariance components for the constraint
   fuse_core::Matrix3d cov1;
@@ -768,30 +769,57 @@ inline bool processDifferentialPoseWithTwistCovariance(
   }
 
   // Convert the poses into tf2_2d transforms
-  tf2_2d::Transform pose1_2d;
+  geometry_msgs::Pose2D pose1_2d;
   tf2::fromMsg(pose1.pose.pose, pose1_2d);
 
-  tf2_2d::Transform pose2_2d;
+  geometry_msgs::Pose2D pose2_2d;
   tf2::fromMsg(pose2.pose.pose, pose2_2d);
 
   // Create the pose variables
   auto position1 = fuse_variables::Position2DStamped::make_shared(pose1.header.stamp, device_id);
   auto orientation1 =
     fuse_variables::Orientation2DStamped::make_shared(pose1.header.stamp, device_id);
-  position1->x() = pose1_2d.x();
-  position1->y() = pose1_2d.y();
-  orientation1->yaw() = pose1_2d.yaw();
+  position1->x() = pose1_2d.x;
+  position1->y() = pose1_2d.y;
+  orientation1->yaw() = pose1_2d.theta;
 
   auto position2 = fuse_variables::Position2DStamped::make_shared(pose2.header.stamp, device_id);
   auto orientation2 = fuse_variables::Orientation2DStamped::make_shared(pose2.header.stamp, device_id);
-  position2->x() = pose2_2d.x();
-  position2->y() = pose2_2d.y();
-  orientation2->yaw() = pose2_2d.yaw();
+  position2->x() = pose2_2d.x;
+  position2->y() = pose2_2d.y;
+  orientation2->yaw() = pose2_2d.theta;
 
   // Create the delta for the constraint
-  const auto delta = pose1_2d.inverseTimes(pose2_2d);
+  tf2::Transform pose1_2d_transform;
+  tf2::Transform pose2_2d_transform;
+
+  tf2::Vector3 position2_2d(pose2_2d.x, pose2_2d.y,0);
+  tf2::Quaternion orientation_quat;
+  double roll;
+  double pitch;
+  double yaw;
+
+  orientation_quat.setRPY(0,0,pose1_2d.theta);
+
+  pose1_2d_transform.setOrigin(tf2::Vector3(pose2_2d.x, pose2_2d.y,0));
+  pose1_2d_transform.setRotation(orientation_quat);
+
+  position2_2d.setX(pose2_2d.x);
+  position2_2d.setY(pose2_2d.y);
+  position2_2d.setZ(0);
+  orientation_quat.setRPY(0,0,pose2_2d.theta);
+
+  pose1_2d_transform.setOrigin(tf2::Vector3(pose1_2d.x, pose1_2d.y,0));
+  pose1_2d_transform.setRotation(orientation_quat);
+
+  const auto delta = pose1_2d_transform.inverseTimes(pose2_2d_transform);
+
+  tf2::Matrix3x3 m;
+  m.setRotation(orientation_quat);
+  m.getRPY(roll, pitch, yaw);
+
   fuse_core::Vector3d pose_relative_mean;
-  pose_relative_mean << delta.x(), delta.y(), delta.yaw();
+  pose_relative_mean << delta.getOrigin().getX(), delta.getOrigin().getY(), yaw;
 
   // Create the covariance components for the constraint
   fuse_core::Matrix3d cov;
@@ -1195,7 +1223,7 @@ inline bool processAccelWithCovariance(
  * @param[in] velocity_norm_min - The minimum velocity norm
  */
 inline void scaleProcessNoiseCovariance(fuse_core::Matrix8d& process_noise_covariance,
-                                        const tf2_2d::Vector2& velocity_linear, const double velocity_yaw,
+                                        const geometry_msgs::Twist& velocity_linear, const double velocity_yaw,
                                         const double velocity_norm_min)
 {
   // A more principled approach would be to get the current velocity from the state, make a diagonal matrix from it,
@@ -1214,7 +1242,7 @@ inline void scaleProcessNoiseCovariance(fuse_core::Matrix8d& process_noise_covar
   fuse_core::Matrix3d velocity;
   velocity.setIdentity();
   velocity.diagonal() *=
-      std::max(velocity_norm_min, fuse_core::Vector3d(velocity_linear.x(), velocity_linear.y(), velocity_yaw).norm());
+      std::max(velocity_norm_min, fuse_core::Vector3d(velocity_linear.linear.x, velocity_linear.linear.y, velocity_yaw).norm());
 
   process_noise_covariance.topLeftCorner<3, 3>() =
       velocity * process_noise_covariance.topLeftCorner<3, 3>() * velocity.transpose();

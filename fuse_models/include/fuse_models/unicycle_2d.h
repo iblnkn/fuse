@@ -43,7 +43,9 @@
 #include <fuse_core/transaction.h>
 #include <fuse_core/variable.h>
 #include <ros/ros.h>
-#include <tf2_2d/tf2_2d.h>
+#include <geometry_msgs/Pose2D.h>
+#include <geometry_msgs/Twist.h>
+#include <geometry_msgs/Accel.h>
 
 #include <map>
 #include <string>
@@ -99,10 +101,10 @@ protected:
     fuse_core::UUID vel_linear_uuid;      //!< The uuid of the associated linear velocity variable
     fuse_core::UUID vel_yaw_uuid;         //!< The uuid of the associated angular velocity variable
     fuse_core::UUID acc_linear_uuid;      //!< The uuid of the associated linear acceleration variable
-    tf2_2d::Transform pose;               //!< Map-frame pose
-    tf2_2d::Vector2 velocity_linear;      //!< Body-frame linear velocity
+    geometry_msgs::Pose2D pose;               //!< Map-frame pose
+    geometry_msgs::Twist velocity_linear;      //!< Body-frame linear velocity
     double velocity_yaw{ 0.0 };           //!< Body-frame yaw velocity
-    tf2_2d::Vector2 acceleration_linear;  //!< Body-frame linear acceleration
+    geometry_msgs::Accel acceleration_linear;  //!< Body-frame linear acceleration
 
     void print(std::ostream& stream = std::cout) const;
 

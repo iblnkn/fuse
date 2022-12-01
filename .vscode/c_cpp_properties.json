@@ -18,7 +18,6 @@
         "/home/isaac/fuse_ws/src/fuse/fuse_tutorials/include/**",
         "/home/isaac/fuse_ws/src/fuse/fuse_variables/include/**",
         "/home/isaac/fuse_ws/src/fuse/fuse_viz/include/**",
-        "/home/isaac/fuse_ws/src/tf2_2d/include/**",
         "/usr/include/**"
       ],
       "name": "ROS",

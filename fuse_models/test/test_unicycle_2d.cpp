@@ -16,6 +16,10 @@
 
 #include <gtest/gtest.h>
 
+#include <geometry_msgs/Pose2D.h>
+#include <geometry_msgs/Twist.h>
+#include <geometry_msgs/Accel.h>
+
 
 /**
  * @brief Derived class used in unit tests to expose protected functions
@@ -121,10 +125,10 @@ TEST(Unicycle2D, UpdateStateHistoryEstimates)
       linear_velocity1->uuid(),
       yaw_velocity1->uuid(),
       linear_acceleration1->uuid(),
-      tf2_2d::Transform(1.0, 0.0, 0.0),
-      tf2_2d::Vector2(0.0, 0.0),
+      geometry_msgs::Pose2D::(0,0,0),
+      geometry_msgs::Twist(0.0, 0.0),
       0.0,
-      tf2_2d::Vector2(0.0, 0.0)});  // NOLINT(whitespace/braces)
+      geometry_msgs::Accel(0.0, 0.0)});  // NOLINT(whitespace/braces)
   state_history.emplace(
     position2->stamp(),
     Unicycle2DModelTest::StateHistoryElement{  // NOLINT(whitespace/braces)
@@ -133,10 +137,10 @@ TEST(Unicycle2D, UpdateStateHistoryEstimates)
       linear_velocity2->uuid(),
       yaw_velocity2->uuid(),
       linear_acceleration2->uuid(),
-      tf2_2d::Transform(2.0, 0.0, 0.0),
-      tf2_2d::Vector2(0.0, 0.0),
+      geometry_msgs::Pose2D(2.0, 0.0, 0.0),
+      geometry_msgs::Twist(0.0, 0.0),
       0.0,
-      tf2_2d::Vector2(0.0, 0.0)});  // NOLINT(whitespace/braces)
+      geometry_msgs::Accel(0.0, 0.0)});  // NOLINT(whitespace/braces)
   state_history.emplace(
     position3->stamp(),
     Unicycle2DModelTest::StateHistoryElement{  // NOLINT(whitespace/braces)
@@ -145,10 +149,10 @@ TEST(Unicycle2D, UpdateStateHistoryEstimates)
       linear_velocity3->uuid(),
       yaw_velocity3->uuid(),
       linear_acceleration3->uuid(),
-      tf2_2d::Transform(3.0, 0.0, 0.0),
-      tf2_2d::Vector2(0.0, 0.0),
+      geometry_msgs::Pose2D(3.0, 0.0, 0.0),
+      geometry_msgs::Twist(0.0, 0.0),
       0.0,
-      tf2_2d::Vector2(0.0, 0.0)});  // NOLINT(whitespace/braces)
+      geometry_msgs::Accel(0.0, 0.0)});  // NOLINT(whitespace/braces)
   state_history.emplace(
     position4->stamp(),
     Unicycle2DModelTest::StateHistoryElement{  // NOLINT(whitespace/braces)
@@ -157,10 +161,10 @@ TEST(Unicycle2D, UpdateStateHistoryEstimates)
       linear_velocity4->uuid(),
       yaw_velocity4->uuid(),
       linear_acceleration4->uuid(),
-      tf2_2d::Transform(4.0, 0.0, 0.0),
-      tf2_2d::Vector2(0.0, 0.0),
+      geometry_msgs::Pose2D(4.0, 0.0, 0.0),
+      geometry_msgs::Twist(0.0, 0.0),
       0.0,
-      tf2_2d::Vector2(0.0, 0.0)});  // NOLINT(whitespace/braces)
+      geometry_msgs::Accel(0.0, 0.0)});  // NOLINT(whitespace/braces)
   state_history.emplace(
     position5->stamp(),
     Unicycle2DModelTest::StateHistoryElement{  // NOLINT(whitespace/braces)
@@ -169,10 +173,10 @@ TEST(Unicycle2D, UpdateStateHistoryEstimates)
       linear_velocity5->uuid(),
       yaw_velocity5->uuid(),
       linear_acceleration5->uuid(),
-      tf2_2d::Transform(5.0, 0.0, 0.0),
-      tf2_2d::Vector2(0.0, 0.0),
+      geometry_msgs::Pose2D(5.0, 0.0, 0.0),
+      geometry_msgs::Twist(0.0, 0.0),
       0.0,
-      tf2_2d::Vector2(0.0, 0.0)});  // NOLINT(whitespace/braces)
+      geometry_msgs::Accel(0.0, 0.0)});  // NOLINT(whitespace/braces)
 
   // Update the state history
   Unicycle2DModelTest::updateStateHistoryEstimates(graph, state_history, ros::Duration(10.0));
@@ -180,13 +184,13 @@ TEST(Unicycle2D, UpdateStateHistoryEstimates)
   // Check the state estimates in the state history
   {
     // The first entry is missing from the graph. It will not get updated.
-    auto expected_pose = tf2_2d::Transform(1.0, 0.0, 0.0);  // <-- original value in StateHistory
+    auto expected_pose = geometry_msgs::Pose2D(1.0, 0.0, 0.0);  // <-- original value in StateHistory
     auto actual_pose = state_history[ros::Time(1, 0)].pose;
     EXPECT_NEAR(expected_pose.x(), actual_pose.x(), 1.0e-9);
     EXPECT_NEAR(expected_pose.y(), actual_pose.y(), 1.0e-9);
     EXPECT_NEAR(expected_pose.angle(), actual_pose.angle(), 1.0e-9);
 
-    auto expected_linear_velocity = tf2_2d::Vector2(0.0, 0.0);
+    auto expected_linear_velocity = geometry_msgs::Twist(0.0, 0.0);
     auto actual_linear_velocity = state_history[ros::Time(1, 0)].velocity_linear;
     EXPECT_NEAR(expected_linear_velocity.x(), actual_linear_velocity.x(), 1.0e-9);
     EXPECT_NEAR(expected_linear_velocity.y(), actual_linear_velocity.y(), 1.0e-9);
@@ -195,20 +199,20 @@ TEST(Unicycle2D, UpdateStateHistoryEstimates)
     auto actual_yaw_velocity = state_history[ros::Time(1, 0)].velocity_yaw;
     EXPECT_NEAR(expected_yaw_velocity, actual_yaw_velocity, 1.0e-9);
 
-    auto expected_linear_acceleration = tf2_2d::Vector2(0.0, 0.0);
+    auto expected_linear_acceleration = geometry_msgs::Accel(0.0, 0.0);
     auto actual_linear_acceleration = state_history[ros::Time(1, 0)].acceleration_linear;
     EXPECT_NEAR(expected_linear_acceleration.x(), actual_linear_acceleration.x(), 1.0e-9);
     EXPECT_NEAR(expected_linear_acceleration.y(), actual_linear_acceleration.y(), 1.0e-9);
   }
   {
     // The second entry is included in the graph. It will get updated directly.
-    auto expected_pose = tf2_2d::Transform(1.2, 2.2, M_PI / 2.0);  // <-- value in the Graph
+    auto expected_pose = geometry_msgs::Pose2D(1.2, 2.2, M_PI / 2.0);  // <-- value in the Graph
     auto actual_pose = state_history[ros::Time(2, 0)].pose;
     EXPECT_NEAR(expected_pose.x(), actual_pose.x(), 1.0e-9);
     EXPECT_NEAR(expected_pose.y(), actual_pose.y(), 1.0e-9);
     EXPECT_NEAR(expected_pose.angle(), actual_pose.angle(), 1.0e-9);
 
-    auto expected_linear_velocity = tf2_2d::Vector2(0.0, 1.0);
+    auto expected_linear_velocity = geometry_msgs::Twist(0.0, 1.0);
     auto actual_linear_velocity = state_history[ros::Time(2, 0)].velocity_linear;
     EXPECT_NEAR(expected_linear_velocity.x(), actual_linear_velocity.x(), 1.0e-9);
     EXPECT_NEAR(expected_linear_velocity.y(), actual_linear_velocity.y(), 1.0e-9);
@@ -217,20 +221,20 @@ TEST(Unicycle2D, UpdateStateHistoryEstimates)
     auto actual_yaw_velocity = state_history[ros::Time(2, 0)].velocity_yaw;
     EXPECT_NEAR(expected_yaw_velocity, actual_yaw_velocity, 1.0e-9);
 
-    auto expected_linear_acceleration = tf2_2d::Vector2(0.0, 1.0);
+    auto expected_linear_acceleration = geometry_msgs::Accel(0.0, 1.0);
     auto actual_linear_acceleration = state_history[ros::Time(2, 0)].acceleration_linear;
     EXPECT_NEAR(expected_linear_acceleration.x(), actual_linear_acceleration.x(), 1.0e-9);
     EXPECT_NEAR(expected_linear_acceleration.y(), actual_linear_acceleration.y(), 1.0e-9);
   }
   {
     // The third entry is missing from the graph. It will get predicted from previous state.
-    auto expected_pose = tf2_2d::Transform(-0.3, 2.2, M_PI / 2.0);
+    auto expected_pose = geometry_msgs::Pose2D(-0.3, 2.2, M_PI / 2.0);
     auto actual_pose = state_history[ros::Time(3, 0)].pose;
     EXPECT_NEAR(expected_pose.x(), actual_pose.x(), 1.0e-9);
     EXPECT_NEAR(expected_pose.y(), actual_pose.y(), 1.0e-9);
     EXPECT_NEAR(expected_pose.angle(), actual_pose.angle(), 1.0e-9);
 
-    auto expected_linear_velocity = tf2_2d::Vector2(0.0, 2.0);
+    auto expected_linear_velocity = geometry_msgs::Twist(0.0, 2.0);
     auto actual_linear_velocity = state_history[ros::Time(3, 0)].velocity_linear;
     EXPECT_NEAR(expected_linear_velocity.x(), actual_linear_velocity.x(), 1.0e-9);
     EXPECT_NEAR(expected_linear_velocity.y(), actual_linear_velocity.y(), 1.0e-9);
@@ -239,20 +243,20 @@ TEST(Unicycle2D, UpdateStateHistoryEstimates)
     auto actual_yaw_velocity = state_history[ros::Time(3, 0)].velocity_yaw;
     EXPECT_NEAR(expected_yaw_velocity, actual_yaw_velocity, 1.0e-9);
 
-    auto expected_linear_acceleration = tf2_2d::Vector2(0.0, 1.0);
+    auto expected_linear_acceleration = geometry_msgs::Accel(0.0, 1.0);
     auto actual_linear_acceleration = state_history[ros::Time(3, 0)].acceleration_linear;
     EXPECT_NEAR(expected_linear_acceleration.x(), actual_linear_acceleration.x(), 1.0e-9);
     EXPECT_NEAR(expected_linear_acceleration.y(), actual_linear_acceleration.y(), 1.0e-9);
   }
   {
     // The forth entry is included in the graph. It will get updated directly.
-    auto expected_pose = tf2_2d::Transform(1.4, 2.4, 3.4);  // <-- value in the Graph
+    auto expected_pose = geometry_msgs::Pose2D(1.4, 2.4, 3.4);  // <-- value in the Graph
     auto actual_pose = state_history[ros::Time(4, 0)].pose;
     EXPECT_NEAR(expected_pose.x(), actual_pose.x(), 1.0e-9);
     EXPECT_NEAR(expected_pose.y(), actual_pose.y(), 1.0e-9);
     EXPECT_NEAR(expected_pose.angle(), actual_pose.angle(), 1.0e-9);
 
-    auto expected_linear_velocity = tf2_2d::Vector2(4.4, 5.4);
+    auto expected_linear_velocity = geometry_msgs::Twist(4.4, 5.4);
     auto actual_linear_velocity = state_history[ros::Time(4, 0)].velocity_linear;
     EXPECT_NEAR(expected_linear_velocity.x(), actual_linear_velocity.x(), 1.0e-9);
     EXPECT_NEAR(expected_linear_velocity.y(), actual_linear_velocity.y(), 1.0e-9);
@@ -261,7 +265,7 @@ TEST(Unicycle2D, UpdateStateHistoryEstimates)
     auto actual_yaw_velocity = state_history[ros::Time(4, 0)].velocity_yaw;
     EXPECT_NEAR(expected_yaw_velocity, actual_yaw_velocity, 1.0e-9);
 
-    auto expected_linear_acceleration = tf2_2d::Vector2(7.4, 8.4);
+    auto expected_linear_acceleration = geometry_msgs::Accel(7.4, 8.4);
     auto actual_linear_acceleration = state_history[ros::Time(4, 0)].acceleration_linear;
     EXPECT_NEAR(expected_linear_acceleration.x(), actual_linear_acceleration.x(), 1.0e-9);
     EXPECT_NEAR(expected_linear_acceleration.y(), actual_linear_acceleration.y(), 1.0e-9);
@@ -269,13 +273,13 @@ TEST(Unicycle2D, UpdateStateHistoryEstimates)
   {
     // The fifth entry is missing from the graph. It will get predicted from previous state.
     // These values were verified with Octave
-    auto expected_pose = tf2_2d::Transform(-3.9778707804360529, -8.9511455751801616, -2.7663706143591722);
+    auto expected_pose = geometry_msgs::Pose2D(-3.9778707804360529, -8.9511455751801616, -2.7663706143591722);
     auto actual_pose = state_history[ros::Time(5, 0)].pose;
     EXPECT_NEAR(expected_pose.x(), actual_pose.x(), 1.0e-9);
     EXPECT_NEAR(expected_pose.y(), actual_pose.y(), 1.0e-9);
     EXPECT_NEAR(expected_pose.angle(), actual_pose.angle(), 1.0e-9);
 
-    auto expected_linear_velocity = tf2_2d::Vector2(11.8, 13.8);
+    auto expected_linear_velocity = geometry_msgs::Twist(11.8, 13.8);
     auto actual_linear_velocity = state_history[ros::Time(5, 0)].velocity_linear;
     EXPECT_NEAR(expected_linear_velocity.x(), actual_linear_velocity.x(), 1.0e-9);
     EXPECT_NEAR(expected_linear_velocity.y(), actual_linear_velocity.y(), 1.0e-9);
@@ -284,7 +288,7 @@ TEST(Unicycle2D, UpdateStateHistoryEstimates)
     auto actual_yaw_velocity = state_history[ros::Time(5, 0)].velocity_yaw;
     EXPECT_NEAR(expected_yaw_velocity, actual_yaw_velocity, 1.0e-9);
 
-    auto expected_linear_acceleration = tf2_2d::Vector2(7.4, 8.4);
+    auto expected_linear_acceleration = geometry_msgs::Accel(7.4, 8.4);
     auto actual_linear_acceleration = state_history[ros::Time(5, 0)].acceleration_linear;
     EXPECT_NEAR(expected_linear_acceleration.x(), actual_linear_acceleration.x(), 1.0e-9);
     EXPECT_NEAR(expected_linear_acceleration.y(), actual_linear_acceleration.y(), 1.0e-9);
