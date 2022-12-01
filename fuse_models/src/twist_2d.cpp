@@ -96,7 +96,7 @@ void Twist2D::process(const geometry_msgs::TwistWithCovarianceStamped::ConstPtr&
   auto transaction = fuse_core::Transaction::make_shared();
   transaction->stamp(msg->header.stamp);
 
-  common::processTwistWithCovariance(
+  common::processTwist2DWithCovariance(
     name(),
     device_id_,
     *msg,

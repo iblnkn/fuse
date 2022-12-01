@@ -125,7 +125,7 @@ void Odometry2D::process(const nav_msgs::Odometry::ConstPtr& msg)
   }
   else
   {
-    common::processAbsolutePoseWithCovariance(
+    common::processAbsolutePose2DWithCovariance(
       name(),
       device_id_,
       *pose,
@@ -140,7 +140,7 @@ void Odometry2D::process(const nav_msgs::Odometry::ConstPtr& msg)
   }
 
   // Handle the twist data
-  common::processTwistWithCovariance(
+  common::processTwist2DWithCovariance(
     name(),
     device_id_,
     twist,
@@ -193,7 +193,7 @@ void Odometry2D::processDifferential(const geometry_msgs::PoseWithCovarianceStam
     }
     else
     {
-      common::processDifferentialPoseWithTwistCovariance(
+      common::processDifferentialPose2DWithTwistCovariance(
         name(),
         device_id_,
         *previous_pose_,
@@ -210,7 +210,7 @@ void Odometry2D::processDifferential(const geometry_msgs::PoseWithCovarianceStam
   }
   else
   {
-    common::processDifferentialPoseWithCovariance(
+    common::processDifferentialPose2DWithCovariance(
       name(),
       device_id_,
       *previous_pose_,

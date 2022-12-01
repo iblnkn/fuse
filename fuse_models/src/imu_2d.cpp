@@ -141,7 +141,7 @@ void Imu2D::process(const sensor_msgs::Imu::ConstPtr& msg)
   }
   else
   {
-    common::processAbsolutePoseWithCovariance(
+    common::processAbsolutePose2DWithCovariance(
       name(),
       device_id_,
       *pose,
@@ -156,7 +156,7 @@ void Imu2D::process(const sensor_msgs::Imu::ConstPtr& msg)
   }
 
   // Handle the twist data (only include indices for angular velocity)
-  common::processTwistWithCovariance(
+  common::processTwist2DWithCovariance(
     name(),
     device_id_,
     twist,
@@ -199,7 +199,7 @@ void Imu2D::process(const sensor_msgs::Imu::ConstPtr& msg)
     accel.accel.accel.linear.z -= accel_gravity.z;
   }
 
-  common::processAccelWithCovariance(
+  common::processAccel2DWithCovariance(
     name(),
     device_id_,
     accel,
@@ -251,7 +251,7 @@ void Imu2D::processDifferential(const geometry_msgs::PoseWithCovarianceStamped& 
     }
     else
     {
-      common::processDifferentialPoseWithTwistCovariance(
+      common::processDifferentialPose2DWithTwistCovariance(
         name(),
         device_id_,
         *previous_pose_,
@@ -268,7 +268,7 @@ void Imu2D::processDifferential(const geometry_msgs::PoseWithCovarianceStamped& 
   }
   else
   {
-    common::processDifferentialPoseWithCovariance(
+    common::processDifferentialPose2DWithCovariance(
       name(),
       device_id_,
       *previous_pose_,

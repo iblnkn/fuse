@@ -94,7 +94,7 @@ void Acceleration2D::process(const geometry_msgs::AccelWithCovarianceStamped::Co
   auto transaction = fuse_core::Transaction::make_shared();
   transaction->stamp(msg->header.stamp);
 
-  common::processAccelWithCovariance(
+  common::processAccel2DWithCovariance(
     name(),
     device_id_,
     *msg,
