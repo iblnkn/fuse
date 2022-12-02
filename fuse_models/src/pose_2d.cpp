@@ -38,6 +38,7 @@
 #include <fuse_core/uuid.h>
 
 #include <geometry_msgs/PoseWithCovarianceStamped.h>
+#include <geometry_msgs/Pose2D.h>
 #include <pluginlib/class_list_macros.h>
 #include <ros/ros.h>
 

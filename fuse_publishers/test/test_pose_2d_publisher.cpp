@@ -41,6 +41,7 @@
 #include <fuse_variables/position_2d_stamped.h>
 #include <geometry_msgs/PoseStamped.h>
 #include <geometry_msgs/PoseWithCovarianceStamped.h>
+#include <geometry_msgs/Pose2D.h>
 #include <ros/ros.h>
 #include <tf2/utils.h>
 #include <tf2_msgs/TFMessage.h>

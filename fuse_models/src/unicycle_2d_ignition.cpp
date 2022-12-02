@@ -50,6 +50,7 @@
 #include <fuse_variables/stamped.h>
 
 #include <geometry_msgs/PoseWithCovarianceStamped.h>
+#include <geometry_msgs/Pose2D.h>
 #include <pluginlib/class_list_macros.h>
 #include <std_srvs/Empty.h>
 #include <tf2/convert.h>

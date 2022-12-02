@@ -42,6 +42,7 @@
 #include <fuse_models/SetPoseDeprecated.h>
 
 #include <geometry_msgs/PoseWithCovarianceStamped.h>
+#include <geometry_msgs/Pose2D.h>
 #include <ros/ros.h>
 
 #include <atomic>

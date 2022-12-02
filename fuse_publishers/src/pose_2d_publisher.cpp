@@ -41,12 +41,12 @@
 #include <fuse_variables/position_2d_stamped.h>
 #include <geometry_msgs/PoseStamped.h>
 #include <geometry_msgs/PoseWithCovarianceStamped.h>
+#include <geometry_msgs/Pose2D.h>
 #include <geometry_msgs/TransformStamped.h>
 #include <pluginlib/class_list_macros.h>
 #include <ros/ros.h>
 #include <tf2/utils.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
-
 #include <exception>
 #include <memory>
 #include <string>
@@ -80,7 +80,11 @@ bool findPose(
     pose.position.x = position_variable.x();
     pose.position.y = position_variable.y();
     pose.position.z = 0.0;
-    pose.orientation = tf2::toMsg(tf2::Quaternion(tf2::Vector3(0, 0, 1), orientation_variable.yaw()));
+    pose.orientation.x = tf2::Quaternion(tf2::Vector3(0, 0, 1), orientation_variable.yaw()).getX();
+    pose.orientation.y = tf2::Quaternion(tf2::Vector3(0, 0, 1), orientation_variable.yaw()).getY();
+    pose.orientation.z = tf2::Quaternion(tf2::Vector3(0, 0, 1), orientation_variable.yaw()).getZ();
+    pose.orientation.w = tf2::Quaternion(tf2::Vector3(0, 0, 1), orientation_variable.yaw()).getW();
+    
   }
   catch (const std::exception& e)
   {

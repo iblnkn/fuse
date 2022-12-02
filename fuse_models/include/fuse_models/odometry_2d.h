@@ -41,6 +41,7 @@
 #include <fuse_core/uuid.h>
 
 #include <geometry_msgs/PoseWithCovarianceStamped.h>
+#include <geometry_msgs/Pose2D.h>
 #include <nav_msgs/Odometry.h>
 #include <ros/ros.h>
 #include <tf2_ros/transform_listener.h>

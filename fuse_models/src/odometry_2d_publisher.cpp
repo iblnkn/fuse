@@ -348,13 +348,41 @@ void Odometry2DPublisher::publishTimerCallback(const ros::TimerEvent& event)
   }
 
   geometry_msgs::Pose2D pose;
-  tf2::fromMsg(odom_output.pose.pose, pose);
+
+  pose.x = odom_output.pose.pose.position.x;
+  pose.y = odom_output.pose.pose.position.y;
+  tf2::Quaternion abs_pose_quat;
+  double roll;
+  double pitch;
+  double yaw;
+  abs_pose_quat.setX(odom_output.pose.pose.orientation.x);
+  abs_pose_quat.setY(odom_output.pose.pose.orientation.y);
+  abs_pose_quat.setZ(odom_output.pose.pose.orientation.z);
+  abs_pose_quat.setW(odom_output.pose.pose.orientation.w);
+
+  tf2::Matrix3x3 m;
+  m.setRotation(abs_pose_quat);
+  m.getRPY(roll, pitch, yaw);
+  pose.theta = yaw;
+
+
 
   // If requested, we need to project our state forward in time using the 2D kinematic model
   if (params_.predict_to_current_time)
   {
     geometry_msgs::Twist velocity_linear;
-    tf2::fromMsg(odom_output.twist.twist.linear, velocity_linear);
+
+      velocity_linear.linear.x = odom_output.twist.twist.linear.x;
+      velocity_linear.linear.y = odom_output.twist.twist.linear.y;
+      velocity_linear.linear.z = odom_output.twist.twist.linear.z;
+      tf2::Quaternion abs_pose_quat;
+
+      tf2::Matrix3x3 m;
+      m.setRotation(abs_pose_quat);
+      m.getRPY(roll, pitch, yaw);
+      velocity_linear.angular.x = odom_output.twist.twist.angular.x;
+      velocity_linear.angular.y = odom_output.twist.twist.angular.y;
+      velocity_linear.angular.z = odom_output.twist.twist.angular.z;
 
     const double dt = event.current_real.toSec() - odom_output.header.stamp.toSec();
 
@@ -363,7 +391,9 @@ void Odometry2DPublisher::publishTimerCallback(const ros::TimerEvent& event)
     geometry_msgs::Accel acceleration_linear;
     if (params_.predict_with_acceleration)
     {
-      tf2::fromMsg(acceleration_output.accel.accel.linear, acceleration_linear);
+      acceleration_linear.linear.x = acceleration_output.accel.accel.linear.x;
+      acceleration_linear.linear.y = acceleration_output.accel.accel.linear.y;
+      acceleration_linear.linear.z = acceleration_output.accel.accel.linear.z;
     }
 
     double yaw_vel;

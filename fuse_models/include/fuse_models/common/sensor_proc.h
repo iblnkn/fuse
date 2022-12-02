@@ -307,7 +307,22 @@ inline bool processAbsolutePoseWithCovariance(
 
   // Convert the pose into tf2_2d transform
   geometry_msgs::Pose2D absolute_pose_2d;
-  tf2::fromMsg(transformed_message.pose.pose, absolute_pose_2d);
+
+  absolute_pose_2d.x = transformed_message.pose.pose.position.x;
+  absolute_pose_2d.y = transformed_message.pose.pose.position.y;
+  tf2::Quaternion abs_pose_quat;
+  double roll;
+  double pitch;
+  double yaw;
+  abs_pose_quat.setX(transformed_message.pose.pose.orientation.x);
+  abs_pose_quat.setY(transformed_message.pose.pose.orientation.y);
+  abs_pose_quat.setZ(transformed_message.pose.pose.orientation.z);
+  abs_pose_quat.setW(transformed_message.pose.pose.orientation.w);
+
+  tf2::Matrix3x3 m;
+  m.setRotation(abs_pose_quat);
+  m.getRPY(roll, pitch, yaw);
+  absolute_pose_2d.theta = yaw;
 
   // Create the pose variable
   auto position = fuse_variables::Position2DStamped::make_shared(pose.header.stamp, device_id);
@@ -422,10 +437,35 @@ inline bool processDifferentialPoseWithCovariance(
 
   // Convert the poses into tf2_2d transforms
   geometry_msgs::Pose2D pose1_2d;
-  tf2::fromMsg(pose1.pose.pose, pose1_2d);
+
+  pose1_2d.x = pose1.pose.pose.position.x;
+  pose1_2d.y = pose1.pose.pose.position.y;
+  tf2::Quaternion abs_pose_quat;
+  double roll;
+  double pitch;
+  double yaw;
+  abs_pose_quat.setX(pose1.pose.pose.orientation.x);
+  abs_pose_quat.setY(pose1.pose.pose.orientation.y);
+  abs_pose_quat.setZ(pose1.pose.pose.orientation.z);
+  abs_pose_quat.setW(pose1.pose.pose.orientation.w);
+
+  tf2::Matrix3x3 m;
+  m.setRotation(abs_pose_quat);
+  m.getRPY(roll, pitch, yaw);
+  pose1_2d.theta = yaw;
 
   geometry_msgs::Pose2D pose2_2d;
-  tf2::fromMsg(pose2.pose.pose, pose2_2d);
+
+  pose2_2d.x = pose2.pose.pose.position.x;
+  pose2_2d.y = pose2.pose.pose.position.y;
+  abs_pose_quat.setX(pose2.pose.pose.orientation.x);
+  abs_pose_quat.setY(pose2.pose.pose.orientation.y);
+  abs_pose_quat.setZ(pose2.pose.pose.orientation.z);
+  abs_pose_quat.setW(pose2.pose.pose.orientation.w);
+
+  m.setRotation(abs_pose_quat);
+  m.getRPY(roll, pitch, yaw);
+  pose2_2d.theta = yaw;
 
   // Create the pose variables
   auto position1 = fuse_variables::Position2DStamped::make_shared(pose1.header.stamp, device_id);
@@ -770,10 +810,34 @@ inline bool processDifferentialPoseWithTwistCovariance(
 
   // Convert the poses into tf2_2d transforms
   geometry_msgs::Pose2D pose1_2d;
-  tf2::fromMsg(pose1.pose.pose, pose1_2d);
+  pose1_2d.x = pose1.pose.pose.position.x;
+  pose1_2d.y = pose1.pose.pose.position.y;
+  tf2::Quaternion abs_pose_quat;
+  double roll;
+  double pitch;
+  double yaw;
+  abs_pose_quat.setX(pose1.pose.pose.orientation.x);
+  abs_pose_quat.setY(pose1.pose.pose.orientation.y);
+  abs_pose_quat.setZ(pose1.pose.pose.orientation.z);
+  abs_pose_quat.setW(pose1.pose.pose.orientation.w);
+
+  tf2::Matrix3x3 m;
+  m.setRotation(abs_pose_quat);
+  m.getRPY(roll, pitch, yaw);
+  pose1_2d.theta = yaw;
 
   geometry_msgs::Pose2D pose2_2d;
-  tf2::fromMsg(pose2.pose.pose, pose2_2d);
+
+  pose2_2d.x = pose2.pose.pose.position.x;
+  pose2_2d.y = pose2.pose.pose.position.y;
+  abs_pose_quat.setX(pose2.pose.pose.orientation.x);
+  abs_pose_quat.setY(pose2.pose.pose.orientation.y);
+  abs_pose_quat.setZ(pose2.pose.pose.orientation.z);
+  abs_pose_quat.setW(pose2.pose.pose.orientation.w);
+
+  m.setRotation(abs_pose_quat);
+  m.getRPY(roll, pitch, yaw);
+  pose2_2d.theta = yaw;
 
   // Create the pose variables
   auto position1 = fuse_variables::Position2DStamped::make_shared(pose1.header.stamp, device_id);
@@ -795,14 +859,11 @@ inline bool processDifferentialPoseWithTwistCovariance(
 
   tf2::Vector3 position2_2d(pose2_2d.x, pose2_2d.y,0);
   tf2::Quaternion orientation_quat;
-  double roll;
-  double pitch;
-  double yaw;
 
   orientation_quat.setRPY(0,0,pose1_2d.theta);
 
-  pose1_2d_transform.setOrigin(tf2::Vector3(pose2_2d.x, pose2_2d.y,0));
-  pose1_2d_transform.setRotation(orientation_quat);
+  pose2_2d_transform.setOrigin(tf2::Vector3(pose2_2d.x, pose2_2d.y,0));
+  pose2_2d_transform.setRotation(orientation_quat);
 
   position2_2d.setX(pose2_2d.x);
   position2_2d.setY(pose2_2d.y);
@@ -814,7 +875,6 @@ inline bool processDifferentialPoseWithTwistCovariance(
 
   const auto delta = pose1_2d_transform.inverseTimes(pose2_2d_transform);
 
-  tf2::Matrix3x3 m;
   m.setRotation(orientation_quat);
   m.getRPY(roll, pitch, yaw);
 
