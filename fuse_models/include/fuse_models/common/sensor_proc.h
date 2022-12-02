@@ -1579,6 +1579,138 @@ inline bool processTwist2DWithCovariance(
 }
 
 /**
+ * @brief Extracts velocity data from a TwistWithCovarianceStamped and adds that data to a fuse Transaction
+ *
+ * This method effectively adds two variables (3D linear velocity and 3D angular velocity) and their respective
+ * constraints to the given \p transaction. The velocity data is extracted from the \p twist message. Only 3D data is
+ * used. The data will be automatically transformed into the \p target_frame before it is used.
+ *
+ * @param[in] source - The name of the sensor or motion model that generated this constraint
+ * @param[in] device_id - The UUID of the machine
+ * @param[in] twist - The TwistWithCovarianceStamped message from which we will extract the twist data
+ * @param[in] linear_velocity_loss - The loss function for the 3D linear velocity constraint generated
+ * @param[in] angular_velocity_loss - The loss function for the 3D angular velocity constraint generated
+ * @param[in] target_frame - The frame ID into which the twist data will be transformed before it is used
+ * @param[in] tf_buffer - The transform buffer with which we will lookup the required transform
+ * @param[in] validate - Whether to validate the measurements or not. If the validation fails no constraint is added
+ * @param[out] transaction - The generated variables and constraints are added to this transaction
+ * @return true if any constraints were added, false otherwise
+ */
+inline bool processTwist3DWithCovariance(
+  const std::string& source,
+  const fuse_core::UUID& device_id,
+  const geometry_msgs::TwistWithCovarianceStamped& twist,
+  const fuse_core::Loss::SharedPtr& linear_velocity_loss,
+  const fuse_core::Loss::SharedPtr& angular_velocity_loss,
+  const std::string& target_frame,
+  const tf2_ros::Buffer& tf_buffer,
+  const bool validate,
+  fuse_core::Transaction& transaction,
+  const ros::Duration& tf_timeout = ros::Duration(0, 0))
+{
+  geometry_msgs::TwistWithCovarianceStamped transformed_message;
+  if (target_frame.empty())
+  {
+    transformed_message = twist;
+  }
+  else
+  {
+    transformed_message.header.frame_id = target_frame;
+
+    if (!transformMessage(tf_buffer, twist, transformed_message, tf_timeout))
+    {
+      ROS_WARN_STREAM_DELAYED_THROTTLE(
+        10.0,
+        "Failed to transform twist message with stamp " << twist.header.stamp << ". Cannot create constraint.");
+      return false;
+    }
+  }
+
+  bool constraints_added = false;
+
+  // Create two absolute constraints
+  auto velocity_linear =
+    fuse_variables::VelocityLinear3DStamped::make_shared(twist.header.stamp, device_id);
+  velocity_linear->x() = transformed_message.twist.twist.linear.x;
+  velocity_linear->y() = transformed_message.twist.twist.linear.y;
+  velocity_linear->z() = transformed_message.twist.twist.linear.z;
+
+  // Create the mean twist vectors for the constraints
+  fuse_core::Vector3d linear_vel_mean;
+  linear_vel_mean << transformed_message.twist.twist.linear.x, transformed_message.twist.twist.linear.y, transformed_message.twist.twist.linear.z;
+
+  // Create the covariances for the constraints
+  fuse_core::Matrix6d linear_vel_covariance;
+  linear_vel_covariance <<
+    transformed_message.twist.covariance[0],  transformed_message.twist.covariance[1],  transformed_message.twist.covariance[2],  transformed_message.twist.covariance[3],  transformed_message.twist.covariance[4],  transformed_message.twist.covariance[5],
+    transformed_message.twist.covariance[6],  transformed_message.twist.covariance[7],  transformed_message.twist.covariance[8],  transformed_message.twist.covariance[9],  transformed_message.twist.covariance[10], transformed_message.twist.covariance[11],
+    transformed_message.twist.covariance[12], transformed_message.twist.covariance[13], transformed_message.twist.covariance[14], transformed_message.twist.covariance[15], transformed_message.twist.covariance[16], transformed_message.twist.covariance[17],
+    transformed_message.twist.covariance[18], transformed_message.twist.covariance[19], transformed_message.twist.covariance[20], transformed_message.twist.covariance[21], transformed_message.twist.covariance[22], transformed_message.twist.covariance[23],
+    transformed_message.twist.covariance[24], transformed_message.twist.covariance[25], transformed_message.twist.covariance[26], transformed_message.twist.covariance[27], transformed_message.twist.covariance[28], transformed_message.twist.covariance[29],
+    transformed_message.twist.covariance[30], transformed_message.twist.covariance[31], transformed_message.twist.covariance[32], transformed_message.twist.covariance[33], transformed_message.twist.covariance[34], transformed_message.twist.covariance[35];
+
+  // Build the sub-vector and sub-matrices based on the requested indices
+
+
+  auto linear_vel_constraint = fuse_constraints::AbsoluteVelocityLinear3DStampedConstraint::make_shared(
+    source, *velocity_linear, linear_vel_mean, linear_vel_covariance);
+
+  linear_vel_constraint->loss(linear_velocity_loss);
+
+  transaction.addVariable(velocity_linear);
+  transaction.addConstraint(linear_vel_constraint);
+  constraints_added = true;
+
+
+  // Create the twist variables
+  auto velocity_angular =
+    fuse_variables::VelocityAngular3DStamped::make_shared(twist.header.stamp, device_id);
+  velocity_angular->yaw() = transformed_message.twist.twist.angular.z;
+
+  fuse_core::Vector1d angular_vel_vector;
+  angular_vel_vector << transformed_message.twist.twist.angular.z;
+
+  fuse_core::Matrix1d angular_vel_covariance;
+  angular_vel_covariance << transformed_message.twist.covariance[35];
+
+  bool add_constraint = true;
+
+  if (validate)
+  {
+    try
+    {
+      validatePartialMeasurement(angular_vel_vector, angular_vel_covariance);
+    }
+    catch (const std::runtime_error& ex)
+    {
+      ROS_ERROR_STREAM_THROTTLE(10.0, "Invalid partial angular velocity measurement from '"
+                                          << source << "' source: " << ex.what());
+      add_constraint = false;
+    }
+    
+
+    if (add_constraint)
+    {
+      auto angular_vel_constraint = fuse_constraints::AbsoluteVelocityAngular3DStampedConstraint::make_shared(
+        source, *velocity_angular, angular_vel_vector, angular_vel_covariance);
+
+      angular_vel_constraint->loss(angular_velocity_loss);
+
+      transaction.addVariable(velocity_angular);
+      transaction.addConstraint(angular_vel_constraint);
+      constraints_added = true;
+    }
+  }
+
+  if (constraints_added)
+  {
+    transaction.addInvolvedStamp(twist.header.stamp);
+  }
+
+  return constraints_added;
+}
+
+/**
  * @brief Extracts linear acceleration data from an AccelWithCovarianceStamped and adds that data to a fuse Transaction
  *
  * This method effectively adds a linear acceleration variable and constraint to the given to the given \p transaction.
@@ -1687,6 +1819,90 @@ inline bool processAccel2DWithCovariance(
 }
 
 /**
+ * @brief Extracts linear acceleration data from an AccelWithCovarianceStamped and adds that data to a fuse Transaction
+ *
+ * This method effectively adds a linear acceleration variable and constraint to the given to the given \p transaction.
+ * The acceleration data is extracted from the \p acceleration message. Only 3D data is used. The data will be
+ * automatically transformed into the \p target_frame before it is used.
+ *
+ * @param[in] source - The name of the sensor or motion model that generated this constraint
+ * @param[in] device_id - The UUID of the machine
+ * @param[in] acceleration - The AccelWithCovarianceStamped message from which we will extract the acceleration data
+ * @param[in] loss - The loss function for the 3D linear acceleration constraint generated
+ * @param[in] target_frame - The frame ID into which the acceleration data will be transformed before it is used
+ * @param[in] tf_buffer - The transform buffer with which we will lookup the required transform
+ * @param[in] validate - Whether to validate the measurements or not. If the validation fails no constraint is added
+ * @param[out] transaction - The generated variables and constraints are added to this transaction
+ * @return true if any constraints were added, false otherwise
+ */
+inline bool processAccel3DWithCovariance(
+  const std::string& source,
+  const fuse_core::UUID& device_id,
+  const geometry_msgs::AccelWithCovarianceStamped& acceleration,
+  const fuse_core::Loss::SharedPtr& loss,
+  const std::string& target_frame,
+  const tf2_ros::Buffer& tf_buffer,
+  const bool validate,
+  fuse_core::Transaction& transaction,
+  const ros::Duration& tf_timeout = ros::Duration(0, 0))
+{
+  // Make sure we actually have work to do
+
+  geometry_msgs::AccelWithCovarianceStamped transformed_message;
+  if (target_frame.empty())
+  {
+    transformed_message = acceleration;
+  }
+  else
+  {
+    transformed_message.header.frame_id = target_frame;
+
+    if (!transformMessage(tf_buffer, acceleration, transformed_message, tf_timeout))
+    {
+      ROS_WARN_STREAM_DELAYED_THROTTLE(
+        10.0,
+        "Failed to transform acceleration message with stamp " << acceleration.header.stamp
+                                                               << ". Cannot create constraint.");
+      return false;
+    }
+  }
+
+  // Create the acceleration variables
+  auto acceleration_linear =
+    fuse_variables::AccelerationLinear3DStamped::make_shared(acceleration.header.stamp, device_id);
+  acceleration_linear->x() = transformed_message.accel.accel.linear.x;
+  acceleration_linear->y() = transformed_message.accel.accel.linear.y;
+
+  // Create the full mean vector and covariance for the constraint
+  fuse_core::Vector3d accel_mean;
+  accel_mean << transformed_message.accel.accel.linear.x, transformed_message.accel.accel.linear.y;
+
+  fuse_core::Matrix3d accel_covariance;
+  accel_covariance <<
+      transformed_message.accel.covariance[0],
+      transformed_message.accel.covariance[1],
+      transformed_message.accel.covariance[6],
+      transformed_message.accel.covariance[7];
+
+  // Build the sub-vector and sub-matrices based on the requested indices
+
+  // Create the constraint
+  auto linear_accel_constraint = fuse_constraints::AbsoluteAccelerationLinear3DStampedConstraint::make_shared(
+    source,
+    *acceleration_linear,
+    accel_mean,
+    accel_covariance);
+
+  linear_accel_constraint->loss(loss);
+
+  transaction.addVariable(acceleration_linear);
+  transaction.addConstraint(linear_accel_constraint);
+  transaction.addInvolvedStamp(acceleration.header.stamp);
+
+  return true;
+}
+
+/**
  * @brief Scales the process noise covariance pose by the norm of the velocity
  *
  * @param[in, out] process_noise_covariance - The process noise covariance to scale. Only the pose components (x, y,
@@ -1720,6 +1936,43 @@ inline void scaleProcessNoiseCovariance(fuse_core::Matrix8d& process_noise_covar
   process_noise_covariance.topLeftCorner<3, 3>() =
       velocity * process_noise_covariance.topLeftCorner<3, 3>() * velocity.transpose();
 }
+
+// /**
+//  * @brief Scales the process noise covariance pose by the norm of the velocity
+//  *
+//  * @param[in, out] process_noise_covariance - The process noise covariance to scale. Only the pose components (x, y,
+//  *                                            yaw) are scaled, and they are assumed to be in the top left 3x3 corner
+//  * @param[in] velocity_linear - The linear velocity
+//  * @param[in] velocity_yaw - The yaw velocity
+//  * @param[in] velocity_norm_min - The minimum velocity norm
+//  */
+// inline void scaleProcessNoiseCovariance(fuse_core::Matrix15d& process_noise_covariance,
+//                                         const geometry_msgs::Twist& velocity,
+//                                         const double velocity_norm_min)
+// {
+//   // A more principled approach would be to get the current velocity from the state, make a diagonal matrix from it,
+//   // and then rotate it to be in the world frame (i.e., the same frame as the pose data). We could then use this
+//   // rotated velocity matrix to scale the process noise covariance for the pose variables as
+//   // rotatedVelocityMatrix * poseCovariance * rotatedVelocityMatrix'
+//   // However, this presents trouble for robots that may incur rotational error as a result of linear motion (and
+//   // vice-versa). Instead, we create a diagonal matrix whose diagonal values are the vector norm of the state's
+//   // velocity. We use that to scale the process noise covariance.
+//   //
+//   // The comment above has been taken from:
+//   // https://github.com/cra-ros-pkg/robot_localization/blob/melodic-devel/src/filter_base.cpp#L138-L144
+//   //
+//   // We also need to make sure the norm is not zero, because otherwise the resulting process noise covariance for the
+//   // pose becomes zero and we get NaN when we compute the inverse to obtain the information
+//   fuse_core::Matrix6d velocity_m;
+//   fuse_core::Vector6d velocity_vect;
+//   velocity_vect<<velocity.linear.x, velocity.linear.y, velocity.linear.z, velocity.angular.x, velocity.angular.y, velocity.angular.z;
+//   velocity_m.setIdentity();
+//   velocity_m.diagonal() *=
+//       std::max(velocity_norm_min, velocity_vect.norm());
+
+//   process_noise_covariance.topLeftCorner<3, 3>() =
+//       velocity_m * process_noise_covariance.topLeftCorner<3, 3>() * velocity_m.transpose();
+// }
 
 }  // namespace common
 
