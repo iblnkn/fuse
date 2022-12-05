@@ -1872,17 +1872,46 @@ inline bool processAccel3DWithCovariance(
     fuse_variables::AccelerationLinear3DStamped::make_shared(acceleration.header.stamp, device_id);
   acceleration_linear->x() = transformed_message.accel.accel.linear.x;
   acceleration_linear->y() = transformed_message.accel.accel.linear.y;
+  acceleration_linear->z() = transformed_message.accel.accel.linear.z;
+
+  // Create the acceleration variables
+  auto acceleration_angular =
+    fuse_variables::AccelerationAngular3DStamped::make_shared(acceleration.header.stamp, device_id);
+  acceleration_angular->roll() = transformed_message.accel.accel.angular.x;
+  acceleration_angular->pitch() = transformed_message.accel.accel.angular.y;
+  acceleration_angular->yaw() = transformed_message.accel.accel.angular.z;
+
 
   // Create the full mean vector and covariance for the constraint
-  fuse_core::Vector3d accel_mean;
-  accel_mean << transformed_message.accel.accel.linear.x, transformed_message.accel.accel.linear.y;
+  fuse_core::Vector3d accel_linear_mean;
+  fuse_core::Vector3d accel_angular_mean;
+  accel_linear_mean << transformed_message.accel.accel.linear.x, transformed_message.accel.accel.linear.y, transformed_message.accel.accel.linear.z;
+  accel_angular_mean << transformed_message.accel.accel.angular.x, transformed_message.accel.accel.angular.y, transformed_message.accel.accel.angular.z;
 
-  fuse_core::Matrix3d accel_covariance;
-  accel_covariance <<
+  fuse_core::Matrix3d accel_linear_covariance;
+  accel_linear_covariance <<
       transformed_message.accel.covariance[0],
       transformed_message.accel.covariance[1],
+      transformed_message.accel.covariance[2],
       transformed_message.accel.covariance[6],
-      transformed_message.accel.covariance[7];
+      transformed_message.accel.covariance[7],
+      transformed_message.accel.covariance[8],
+      transformed_message.accel.covariance[12],
+      transformed_message.accel.covariance[13];
+      transformed_message.accel.covariance[14];
+
+  
+  fuse_core::Matrix3d accel_angular_covariance;
+  accel_angular_covariance <<
+      transformed_message.accel.covariance[21],
+      transformed_message.accel.covariance[22],
+      transformed_message.accel.covariance[23],
+      transformed_message.accel.covariance[27],
+      transformed_message.accel.covariance[28],
+      transformed_message.accel.covariance[29],
+      transformed_message.accel.covariance[33],
+      transformed_message.accel.covariance[34];
+      transformed_message.accel.covariance[35];
 
   // Build the sub-vector and sub-matrices based on the requested indices
 
@@ -1890,8 +1919,14 @@ inline bool processAccel3DWithCovariance(
   auto linear_accel_constraint = fuse_constraints::AbsoluteAccelerationLinear3DStampedConstraint::make_shared(
     source,
     *acceleration_linear,
-    accel_mean,
-    accel_covariance);
+    accel_linear_mean,
+    accel_linear_covariance);
+
+  auto angular_accel_constraint = fuse_constraints::AbsoluteAccelerationAngular3DStampedConstraint::make_shared(
+    source,
+    *acceleration_angular,
+    accel_angular_mean,
+    accel_angular_covariance);
 
   linear_accel_constraint->loss(loss);
 
@@ -1935,6 +1970,30 @@ inline void scaleProcessNoiseCovariance(fuse_core::Matrix8d& process_noise_covar
 
   process_noise_covariance.topLeftCorner<3, 3>() =
       velocity * process_noise_covariance.topLeftCorner<3, 3>() * velocity.transpose();
+}
+inline void scaleProcessNoiseCovariance(fuse_core::Matrix15d& process_noise_covariance,
+                                        const geometry_msgs::Twist& velocity_in,
+                                        const double velocity_norm_min)
+{
+  fuse_core::Matrix6d velocity;
+  velocity.setIdentity();
+  velocity.diagonal() *=
+      std::max(velocity_norm_min, pow((pow(velocity_in.linear.x, 2) + pow(velocity_in.linear.y, 2)+ pow(velocity_in.linear.z, 2)+ pow(velocity_in.angular.x, 2)+ pow(velocity_in.angular.y, 2)+ pow(velocity_in.angular.z, 2)),0.5));
+      //TODO:: While this technically should work. It is not very pretty. Probably better to take norm of the linear norm and the angular norm.  
+  process_noise_covariance.topLeftCorner<6, 6>() =
+      velocity * process_noise_covariance.topLeftCorner<6, 6>() * velocity.transpose();
+}
+inline void scaleProcessNoiseCovariance(fuse_core::Matrix18d& process_noise_covariance,
+                                        const geometry_msgs::Twist& velocity_in,
+                                        const double velocity_norm_min)
+{
+  fuse_core::Matrix6d velocity;
+  velocity.setIdentity();
+  velocity.diagonal() *=
+      std::max(velocity_norm_min, pow((pow(velocity_in.linear.x, 2) + pow(velocity_in.linear.y, 2)+ pow(velocity_in.linear.z, 2)+ pow(velocity_in.angular.x, 2)+ pow(velocity_in.angular.y, 2)+ pow(velocity_in.angular.z, 2)),0.5));
+//TODO:: While this technically should work. It is not very pretty. Probably better to take norm of the linear norm and the angular norm.  
+  process_noise_covariance.topLeftCorner<6, 6>() =
+      velocity * process_noise_covariance.topLeftCorner<6, 6>() * velocity.transpose();
 }
 
 // /**
