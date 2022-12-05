@@ -40,6 +40,7 @@
 #include <fuse_variables/velocity_angular_2d_stamped.h>
 #include <fuse_variables/velocity_linear_2d_stamped.h>
 
+#include <fuse_variables/acceleration_angular_3d_stamped.h>
 #include <fuse_variables/acceleration_linear_3d_stamped.h>
 #include <fuse_variables/orientation_3d_stamped.h>
 #include <fuse_variables/position_3d_stamped.h>
@@ -57,6 +58,7 @@ struct is_linear_3d
 {
   static const bool value = false;
 };
+
 
 template<>
 struct is_linear_3d<fuse_variables::AccelerationLinear3DStamped>
@@ -90,6 +92,11 @@ struct is_angular_3d<fuse_variables::Orientation3DStamped>
 
 template<>
 struct is_angular_3d<fuse_variables::VelocityAngular3DStamped>
+{
+  static const bool value = true;
+};
+template<>
+struct is_angular_3d<fuse_variables::AccelerationAngular3DStamped>
 {
   static const bool value = true;
 };

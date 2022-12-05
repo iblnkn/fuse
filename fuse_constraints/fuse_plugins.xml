@@ -5,9 +5,21 @@
     the 2D angular acceleration.
     </description>
   </class>
+  <class type="fuse_constraints::AbsoluteAccelerationAngular3DStampedConstraint" base_class_type="fuse_core::Constraint">
+    <description>
+    A constraint that represents either prior information about a 3D angular acceleration, or a direct measurement of
+    the 3D angular acceleration.
+    </description>
+  </class>
   <class type="fuse_constraints::AbsoluteAccelerationLinear2DStampedConstraint" base_class_type="fuse_core::Constraint">
     <description>
     A constraint that represents either prior information about a 2D linear acceleration, or a direct measurement of
+    the 2D linear acceleration.
+    </description>
+  </class>
+  <class type="fuse_constraints::AbsoluteAccelerationLinear3DStampedConstraint" base_class_type="fuse_core::Constraint">
+    <description>
+    A constraint that represents either prior information about a 3D linear acceleration, or a direct measurement of
     the 2D linear acceleration.
     </description>
   </class>
@@ -15,6 +27,12 @@
     <description>
     A constraint that represents either prior information about a 2D orientation, or a direct measurement of the
     2D orientation.
+    </description>
+  </class>
+  <class type="fuse_constraints::AbsoluteOrientation3DStampedConstraint" base_class_type="fuse_core::Constraint">
+    <description>
+    A constraint that represents either prior information about a 2D orientation, or a direct measurement of the
+    3D orientation.
     </description>
   </class>
   <class type="fuse_constraints::AbsolutePosition2DStampedConstraint" base_class_type="fuse_core::Constraint">
@@ -35,10 +53,22 @@
     the 2D angular velocity.
     </description>
   </class>
+  <class type="fuse_constraints::AbsoluteVelocityAngular3DStampedConstraint" base_class_type="fuse_core::Constraint">
+    <description>
+    A constraint that represents either prior information about a 3D angular velocity, or a direct measurement of
+    the 3D angular velocity.
+    </description>
+  </class>
   <class type="fuse_constraints::AbsoluteVelocityLinear2DStampedConstraint" base_class_type="fuse_core::Constraint">
     <description>
     A constraint that represents either prior information about a 2D linear velocity, or a direct measurement of
     the 2D linear velocity.
+    </description>
+  </class>
+  <class type="fuse_constraints::AbsoluteVelocityLinear3DStampedConstraint" base_class_type="fuse_core::Constraint">
+    <description>
+    A constraint that represents either prior information about a 3D linear velocity, or a direct measurement of
+    the 3D linear velocity.
     </description>
   </class>
   <class type="fuse_constraints::AbsoluteOrientation3DStampedConstraint" base_class_type="fuse_core::Constraint">
@@ -73,14 +103,39 @@
     A constraint that represents a measurement on the difference between 2D angular acceleration variables.
     </description>
   </class>
+  <class type="fuse_constraints::RelativeAccelerationAngular3DStampedConstraint" base_class_type="fuse_core::Constraint">
+    <description>
+    A constraint that represents a measurement on the difference between 3D angular acceleration variables.
+    </description>
+  </class>
+  <class type="fuse_constraints::RelativeAccelerationAngular2DStampedConstraint" base_class_type="fuse_core::Constraint">
+    <description>
+    A constraint that represents a measurement on the difference between 2D angular acceleration variables.
+    </description>
+  </class>
+  <class type="fuse_constraints::RelativeAccelerationAngular3DStampedConstraint" base_class_type="fuse_core::Constraint">
+    <description>
+    A constraint that represents a measurement on the difference between3D angular acceleration variables.
+    </description>
+  </class>
   <class type="fuse_constraints::RelativeAccelerationLinear2DStampedConstraint" base_class_type="fuse_core::Constraint">
     <description>
     A constraint that represents a measurement on the difference between 2D linear acceleration variables.
     </description>
   </class>
+  <class type="fuse_constraints::RelativeAccelerationLinear3DStampedConstraint" base_class_type="fuse_core::Constraint">
+    <description>
+    A constraint that represents a measurement on the difference between 3D linear acceleration variables.
+    </description>
+  </class>
   <class type="fuse_constraints::RelativeOrientation2DStampedConstraint" base_class_type="fuse_core::Constraint">
     <description>
     A constraint that represents a measurement on the difference between 2D orientation variables.
+    </description>
+  </class>
+  <class type="fuse_constraints::RelativeOrientation3DStampedConstraint" base_class_type="fuse_core::Constraint">
+    <description>
+    A constraint that represents a measurement on the difference between 3D orientation variables.
     </description>
   </class>
   <class type="fuse_constraints::RelativePosition2DStampedConstraint" base_class_type="fuse_core::Constraint">
@@ -98,14 +153,19 @@
     A constraint that represents a measurement on the difference between 2D angular velocity variables.
     </description>
   </class>
+  <class type="fuse_constraints::RelativeVelocityAngular3DStampedConstraint" base_class_type="fuse_core::Constraint">
+    <description>
+    A constraint that represents a measurement on the difference between 3D angular velocity variables.
+    </description>
+  </class>
   <class type="fuse_constraints::RelativeVelocityLinear2DStampedConstraint" base_class_type="fuse_core::Constraint">
     <description>
     A constraint that represents a measurement on the difference between 2D linear velocity variables.
     </description>
   </class>
-  <class type="fuse_constraints::RelativeOrientation3DStampedConstraint" base_class_type="fuse_core::Constraint">
+  <class type="fuse_constraints::RelativeVelocityLinear3DStampedConstraint" base_class_type="fuse_core::Constraint">
     <description>
-    A constraint that represents a measurement on the difference between 3D orientation variables.
+    A constraint that represents a measurement on the difference between 3D linear velocity variables.
     </description>
   </class>
   <class type="fuse_constraints::RelativePose2DStampedConstraint" base_class_type="fuse_core::Constraint">

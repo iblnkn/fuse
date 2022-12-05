@@ -35,6 +35,7 @@
 #define FUSE_CONSTRAINTS_ABSOLUTE_CONSTRAINT_IMPL_H
 
 #include <fuse_constraints/normal_prior_orientation_2d.h>
+#include <fuse_constraints/normal_prior_orientation_3d.h>
 
 #include <ceres/normal_prior.h>
 #include <Eigen/Dense>
@@ -138,11 +139,26 @@ inline ceres::CostFunction* AbsoluteConstraint<fuse_variables::Orientation2DStam
   return new NormalPriorOrientation2D(sqrt_information_(0, 0), mean_(0));
 }
 
+// Specialization for Orientation3D
+// We need to handle the 2*pi rollover for 3D orientations, so simple subtraction does not produce the correct cost
+template<>
+inline ceres::CostFunction* AbsoluteConstraint<fuse_variables::Orientation3DStamped>::costFunction() const
+{
+  return new NormalPriorOrientation3D(sqrt_information_(0, 0), mean_(0));
+}
+
 // Specialize the type() method to return the name that is registered with the plugins
 template<>
 inline std::string AbsoluteConstraint<fuse_variables::AccelerationAngular2DStamped>::type() const
 {
   return "fuse_constraints::AbsoluteAccelerationAngular2DStampedConstraint";
+}
+
+// Specialize the type() method to return the name that is registered with the plugins
+template<>
+inline std::string AbsoluteConstraint<fuse_variables::AccelerationAngular3DStamped>::type() const
+{
+  return "fuse_constraints::AbsoluteAccelerationAngular3DStampedConstraint";
 }
 
 template<>
@@ -152,9 +168,21 @@ inline std::string AbsoluteConstraint<fuse_variables::AccelerationLinear2DStampe
 }
 
 template<>
+inline std::string AbsoluteConstraint<fuse_variables::AccelerationLinear3DStamped>::type() const
+{
+  return "fuse_constraints::AbsoluteAccelerationLinear3DStampedConstraint";
+}
+
+template<>
 inline std::string AbsoluteConstraint<fuse_variables::Orientation2DStamped>::type() const
 {
   return "fuse_constraints::AbsoluteOrientation2DStampedConstraint";
+}
+
+template<>
+inline std::string AbsoluteConstraint<fuse_variables::Orientation3DStamped>::type() const
+{
+  return "fuse_constraints::AbsoluteOrientation3DStampedConstraint";
 }
 
 template<>
@@ -175,10 +203,24 @@ inline std::string AbsoluteConstraint<fuse_variables::VelocityAngular2DStamped>:
   return "fuse_constraints::AbsoluteVelocityAngular2DStampedConstraint";
 }
 
+
+template<>
+inline std::string AbsoluteConstraint<fuse_variables::VelocityAngular3DStamped>::type() const
+{
+  return "fuse_constraints::AbsoluteVelocityAngular3DStampedConstraint";
+}
+
 template<>
 inline std::string AbsoluteConstraint<fuse_variables::VelocityLinear2DStamped>::type() const
 {
   return "fuse_constraints::AbsoluteVelocityLinear2DStampedConstraint";
+}
+
+
+template<>
+inline std::string AbsoluteConstraint<fuse_variables::VelocityLinear3DStamped>::type() const
+{
+  return "fuse_constraints::AbsoluteVelocityLinear3DStampedConstraint";
 }
 
 }  // namespace fuse_constraints

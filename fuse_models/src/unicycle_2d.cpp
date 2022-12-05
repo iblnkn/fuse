@@ -68,14 +68,16 @@ PLUGINLIB_EXPORT_CLASS(fuse_models::Unicycle2D, fuse_core::MotionModel)
 namespace std
 {
 
-inline bool isfinite(const geometry_msgs::Twist& vector)
+inline bool isfinite(const geometry_msgs::Twist& twist)
 {
-  return std::isfinite(vector.linear.x) && std::isfinite(vector.linear.y);
+  return std::isfinite(twist.linear.x) && std::isfinite(twist.linear.y) && std::isfinite(twist.linear.z) &&
+         std::isfinite(twist.angular.x) && std::isfinite(twist.angular.y) && std::isfinite(twist.angular.z) ;
 }
 
-inline bool isfinite(const geometry_msgs::Accel& vector)
+inline bool isfinite(const geometry_msgs::Accel& accel)
 {
-  return std::isfinite(vector.linear.x) && std::isfinite(vector.linear.y);
+  return std::isfinite(accel.linear.x) && std::isfinite(accel.linear.y) && std::isfinite(accel.linear.z) && 
+         std::isfinite(accel.angular.x) && std::isfinite(accel.angular.y) && std::isfinite(accel.angular.z) ;
 }
 
 inline bool isfinite(const geometry_msgs::Pose2D& transform)

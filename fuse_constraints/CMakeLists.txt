@@ -40,8 +40,6 @@ add_compile_options(-Wall -Werror)
 # fuse_constraints library
 add_library(${PROJECT_NAME}
   src/absolute_constraint.cpp
-  src/absolute_orientation_3d_stamped_constraint.cpp
-  src/absolute_orientation_3d_stamped_euler_constraint.cpp
   src/absolute_pose_2d_stamped_constraint.cpp
   src/absolute_pose_3d_stamped_constraint.cpp
   src/marginal_constraint.cpp
@@ -49,11 +47,15 @@ add_library(${PROJECT_NAME}
   src/marginalize_variables.cpp
   src/normal_delta.cpp
   src/normal_delta_orientation_2d.cpp
+  src/normal_delta_orientation_3d.cpp
   src/normal_delta_pose_2d.cpp
+  src/normal_delta_pose_3d.cpp
   src/normal_prior_orientation_2d.cpp
+  src/normal_prior_orientation_3d.cpp
   src/normal_prior_pose_2d.cpp
+  src/normal_prior_pose_3d.cpp
   src/relative_constraint.cpp
-  src/relative_orientation_3d_stamped_constraint.cpp
+  # src/relative_orientation_3d_stamped_constraint.cpp
   src/relative_pose_2d_stamped_constraint.cpp
   src/relative_pose_3d_stamped_constraint.cpp
   src/uuid_ordering.cpp

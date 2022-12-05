@@ -77,7 +77,7 @@ template <typename PlusFunctor, typename MinusFunctor, int kAmbientSize, int kTa
 class AutoDiffManifold : public Manifold
 {
 public:
-  FUSE_SMART_PTR_DEFINITIONS(AutoDiffManifold<PlusFunctor, MinusFunctor, kAmbientSize, kTangentSize>);
+  SMART_PTR_DEFINITIONS(AutoDiffManifold<PlusFunctor, MinusFunctor, kAmbientSize, kTangentSize>);
 
   /**
    * @brief Constructs new PlusFunctor and MinusFunctor instances

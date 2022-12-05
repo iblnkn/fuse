@@ -1897,7 +1897,7 @@ inline bool processAccel3DWithCovariance(
       transformed_message.accel.covariance[7],
       transformed_message.accel.covariance[8],
       transformed_message.accel.covariance[12],
-      transformed_message.accel.covariance[13];
+      transformed_message.accel.covariance[13],
       transformed_message.accel.covariance[14];
 
   
@@ -1910,7 +1910,7 @@ inline bool processAccel3DWithCovariance(
       transformed_message.accel.covariance[28],
       transformed_message.accel.covariance[29],
       transformed_message.accel.covariance[33],
-      transformed_message.accel.covariance[34];
+      transformed_message.accel.covariance[34],
       transformed_message.accel.covariance[35];
 
   // Build the sub-vector and sub-matrices based on the requested indices
@@ -1991,6 +1991,20 @@ inline void scaleProcessNoiseCovariance(fuse_core::Matrix18d& process_noise_cova
   velocity.setIdentity();
   velocity.diagonal() *=
       std::max(velocity_norm_min, pow((pow(velocity_in.linear.x, 2) + pow(velocity_in.linear.y, 2)+ pow(velocity_in.linear.z, 2)+ pow(velocity_in.angular.x, 2)+ pow(velocity_in.angular.y, 2)+ pow(velocity_in.angular.z, 2)),0.5));
+//TODO:: While this technically should work. It is not very pretty. Probably better to take norm of the linear norm and the angular norm.  
+  process_noise_covariance.topLeftCorner<6, 6>() =
+      velocity * process_noise_covariance.topLeftCorner<6, 6>() * velocity.transpose();
+}
+
+inline void scaleProcessNoiseCovariance(fuse_core::Matrix18d& process_noise_covariance,
+                                        const geometry_msgs::Twist& velocity_linear,
+                                        const geometry_msgs::Twist& velocity_angular,
+                                        const double velocity_norm_min)
+{
+  fuse_core::Matrix6d velocity;
+  velocity.setIdentity();
+  velocity.diagonal() *=
+      std::max(velocity_norm_min, pow((pow(velocity_linear.linear.x, 2) + pow(velocity_linear.linear.y, 2)+ pow(velocity_linear.linear.z, 2)+ pow(velocity_angular.angular.x, 2)+ pow(velocity_angular.angular.y, 2)+ pow(velocity_angular.angular.z, 2)),0.5));
 //TODO:: While this technically should work. It is not very pretty. Probably better to take norm of the linear norm and the angular norm.  
   process_noise_covariance.topLeftCorner<6, 6>() =
       velocity * process_noise_covariance.topLeftCorner<6, 6>() * velocity.transpose();

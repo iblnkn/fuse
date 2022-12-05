@@ -40,12 +40,17 @@
 #include <fuse_core/serialization.h>
 #include <fuse_core/uuid.h>
 #include <fuse_variables/acceleration_angular_2d_stamped.h>
+#include <fuse_variables/acceleration_angular_3d_stamped.h>
 #include <fuse_variables/acceleration_linear_2d_stamped.h>
+#include <fuse_variables/acceleration_linear_3d_stamped.h>
 #include <fuse_variables/orientation_2d_stamped.h>
+#include <fuse_variables/orientation_3d_stamped.h>
 #include <fuse_variables/position_2d_stamped.h>
 #include <fuse_variables/position_3d_stamped.h>
 #include <fuse_variables/velocity_angular_2d_stamped.h>
+#include <fuse_variables/velocity_angular_3d_stamped.h>
 #include <fuse_variables/velocity_linear_2d_stamped.h>
+#include <fuse_variables/velocity_linear_3d_stamped.h>
 
 #include <boost/serialization/access.hpp>
 #include <boost/serialization/base_object.hpp>
@@ -194,23 +199,33 @@ private:
 
 // Define unique names for the different variations of the absolute constraint
 using RelativeAccelerationAngular2DStampedConstraint = RelativeConstraint<fuse_variables::AccelerationAngular2DStamped>;
+using RelativeAccelerationAngular3DStampedConstraint = RelativeConstraint<fuse_variables::AccelerationAngular3DStamped>;
 using RelativeAccelerationLinear2DStampedConstraint = RelativeConstraint<fuse_variables::AccelerationLinear2DStamped>;
+using RelativeAccelerationLinear3DStampedConstraint = RelativeConstraint<fuse_variables::AccelerationLinear3DStamped>;
 using RelativeOrientation2DStampedConstraint = RelativeConstraint<fuse_variables::Orientation2DStamped>;
+using RelativeOrientation3DStampedConstraint = RelativeConstraint<fuse_variables::Orientation3DStamped>;
 using RelativePosition2DStampedConstraint = RelativeConstraint<fuse_variables::Position2DStamped>;
 using RelativePosition3DStampedConstraint = RelativeConstraint<fuse_variables::Position3DStamped>;
 using RelativeVelocityAngular2DStampedConstraint = RelativeConstraint<fuse_variables::VelocityAngular2DStamped>;
+using RelativeVelocityAngular3DStampedConstraint = RelativeConstraint<fuse_variables::VelocityAngular3DStamped>;
 using RelativeVelocityLinear2DStampedConstraint = RelativeConstraint<fuse_variables::VelocityLinear2DStamped>;
+using RelativeVelocityLinear3DStampedConstraint = RelativeConstraint<fuse_variables::VelocityLinear3DStamped>;
 }  // namespace fuse_constraints
 
 // Include the template implementation
 #include <fuse_constraints/relative_constraint_impl.h>
 
 BOOST_CLASS_EXPORT_KEY(fuse_constraints::RelativeAccelerationAngular2DStampedConstraint);
+BOOST_CLASS_EXPORT_KEY(fuse_constraints::RelativeAccelerationAngular3DStampedConstraint);
 BOOST_CLASS_EXPORT_KEY(fuse_constraints::RelativeAccelerationLinear2DStampedConstraint);
+BOOST_CLASS_EXPORT_KEY(fuse_constraints::RelativeAccelerationLinear3DStampedConstraint);
 BOOST_CLASS_EXPORT_KEY(fuse_constraints::RelativeOrientation2DStampedConstraint);
+BOOST_CLASS_EXPORT_KEY(fuse_constraints::RelativeOrientation3DStampedConstraint);
 BOOST_CLASS_EXPORT_KEY(fuse_constraints::RelativePosition2DStampedConstraint);
 BOOST_CLASS_EXPORT_KEY(fuse_constraints::RelativePosition3DStampedConstraint);
 BOOST_CLASS_EXPORT_KEY(fuse_constraints::RelativeVelocityAngular2DStampedConstraint);
+BOOST_CLASS_EXPORT_KEY(fuse_constraints::RelativeVelocityAngular3DStampedConstraint);
 BOOST_CLASS_EXPORT_KEY(fuse_constraints::RelativeVelocityLinear2DStampedConstraint);
+BOOST_CLASS_EXPORT_KEY(fuse_constraints::RelativeVelocityLinear3DStampedConstraint);
 
 #endif  // FUSE_CONSTRAINTS_RELATIVE_CONSTRAINT_H

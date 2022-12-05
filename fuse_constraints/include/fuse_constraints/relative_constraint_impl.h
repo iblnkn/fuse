@@ -36,6 +36,7 @@
 
 #include <fuse_constraints/normal_delta.h>
 #include <fuse_constraints/normal_delta_orientation_2d.h>
+#include <fuse_constraints/normal_delta_orientation_3d.h>
 
 #include <Eigen/Dense>
 
@@ -143,11 +144,27 @@ inline ceres::CostFunction* RelativeConstraint<fuse_variables::Orientation2DStam
   return new NormalDeltaOrientation2D(sqrt_information_(0, 0), delta_(0));
 }
 
+// Specialization for Orientation3D
+template<>
+inline ceres::CostFunction* RelativeConstraint<fuse_variables::Orientation3DStamped>::costFunction() const
+{
+  // Create a Gaussian/Normal Delta constraint
+  return new NormalDeltaOrientation3D(sqrt_information_(0, 0), delta_(0));
+}
+
+
 // Specialize the type() method to return the name that is registered with the plugins
 template<>
 inline std::string RelativeConstraint<fuse_variables::AccelerationAngular2DStamped>::type() const
 {
   return "fuse_constraints::RelativeAccelerationAngular2DStampedConstraint";
+}
+
+// Specialize the type() method to return the name that is registered with the plugins
+template<>
+inline std::string RelativeConstraint<fuse_variables::AccelerationAngular3DStamped>::type() const
+{
+  return "fuse_constraints::RelativeAccelerationAngular3DStampedConstraint";
 }
 
 template<>
@@ -157,9 +174,21 @@ inline std::string RelativeConstraint<fuse_variables::AccelerationLinear2DStampe
 }
 
 template<>
+inline std::string RelativeConstraint<fuse_variables::AccelerationLinear3DStamped>::type() const
+{
+  return "fuse_constraints::RelativeAccelerationLinear3DStampedConstraint";
+}
+
+template<>
 inline std::string RelativeConstraint<fuse_variables::Orientation2DStamped>::type() const
 {
   return "fuse_constraints::RelativeOrientation2DStampedConstraint";
+}
+
+template<>
+inline std::string RelativeConstraint<fuse_variables::Orientation3DStamped>::type() const
+{
+  return "fuse_constraints::RelativeOrientation3DStampedConstraint";
 }
 
 template<>
@@ -181,9 +210,21 @@ inline std::string RelativeConstraint<fuse_variables::VelocityAngular2DStamped>:
 }
 
 template<>
+inline std::string RelativeConstraint<fuse_variables::VelocityAngular3DStamped>::type() const
+{
+  return "fuse_constraints::RelativeVelocityAngular3DStampedConstraint";
+}
+
+template<>
 inline std::string RelativeConstraint<fuse_variables::VelocityLinear2DStamped>::type() const
 {
   return "fuse_constraints::RelativeVelocityLinear2DStampedConstraint";
+}
+
+template<>
+inline std::string RelativeConstraint<fuse_variables::VelocityLinear3DStamped>::type() const
+{
+  return "fuse_constraints::RelativeVelocityLinear3DStampedConstraint";
 }
 
 }  // namespace fuse_constraints

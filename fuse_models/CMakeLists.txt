@@ -92,6 +92,15 @@ add_library(${PROJECT_NAME}
   src/unicycle_2d.cpp
   src/unicycle_2d_ignition.cpp
   src/unicycle_2d_state_kinematic_constraint.cpp
+  src/acceleration_3d.cpp
+  src/imu_3d.cpp
+  src/odometry_3d.cpp
+  src/odometry_3d_publisher.cpp
+  src/pose_3d.cpp
+  src/twist_3d.cpp
+  src/skid_steer_3d.cpp
+  src/skid_steer_3d_ignition.cpp
+  src/skid_steer_3d_state_kinematic_constraint.cpp
 )
 add_dependencies(${PROJECT_NAME}
   ${${PROJECT_NAME}_EXPORTED_TARGETS}
