@@ -150,6 +150,9 @@ void Odometry3D::process(const nav_msgs::Odometry::ConstPtr& msg)
     params_.tf_timeout);
 
   // Send the transaction object to the plugin's parent
+  ROS_WARN("Printing Odometry3D Transaction");
+  transaction->print();
+
   sendTransaction(transaction);
 }
 

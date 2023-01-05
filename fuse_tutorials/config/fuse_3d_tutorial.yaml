@@ -41,7 +41,7 @@ odometry_sensor:
 imu_sensor:
   topic: 'imu'
   twist_target_frame: 'base_footprint'
-  linear_velocity_dimensions: ['x', 'y', 'z']
+  linear_acceleration_dimensions: ['x', 'y', 'z']
   angular_velocity_dimensions: ['x', 'y', 'z']
 
 publishers:

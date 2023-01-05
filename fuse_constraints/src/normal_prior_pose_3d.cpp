@@ -55,10 +55,15 @@ bool NormalPriorPose3D::Evaluate(
   double* residuals,
   double** jacobians) const
 {
-  fuse_core::Vector3d full_residuals_vector;
+  fuse_core::Vector6d full_residuals_vector;
   full_residuals_vector[0] = parameters[0][0] - b_[0];  // position x
   full_residuals_vector[1] = parameters[0][1] - b_[1];  // position y
-  full_residuals_vector[2] = fuse_core::wrapAngle2D(parameters[1][0] - b_[2]);  // orientation
+  full_residuals_vector[2] = parameters[0][2] - b_[2];  // position y
+  full_residuals_vector[3] = fuse_core::wrapAngle2D(parameters[1][0] - b_[3]);  // orientation
+  full_residuals_vector[4] = fuse_core::wrapAngle2D(parameters[1][1] - b_[4]);  // orientation
+  full_residuals_vector[5] = fuse_core::wrapAngle2D(parameters[1][2] - b_[5]);
+  full_residuals_vector[6] = fuse_core::wrapAngle2D(parameters[1][3] - b_[6]);  // orientation  // orientation
+
 
   // Scale the residuals by the square root information matrix to account for the measurement uncertainty.
   Eigen::Map<fuse_core::VectorXd> residuals_vector(residuals, num_residuals());

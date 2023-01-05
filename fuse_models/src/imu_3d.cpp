@@ -207,6 +207,8 @@ void Imu3D::process(const sensor_msgs::Imu::ConstPtr& msg)
     params_.tf_timeout);
 
   // Send the transaction object to the plugin's parent
+  ROS_WARN("Printing IMU3D Transaction");
+  transaction->print();
   sendTransaction(transaction);
 }
 

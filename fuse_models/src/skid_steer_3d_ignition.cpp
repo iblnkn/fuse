@@ -119,22 +119,85 @@ void SkidSteer3DIgnition::start()
     tempQ.setRPY(params_.initial_state[3], params_.initial_state[4], params_.initial_state[5]);
     auto pose = geometry_msgs::PoseWithCovarianceStamped();
     pose.header.stamp = ros::Time::now();
-    pose.pose.pose.position.x = params_.initial_state[0];
-    pose.pose.pose.position.y = params_.initial_state[1];
-    pose.pose.pose.position.z  = params_.initial_state[2];
-    pose.pose.pose.orientation.x = tempQ.getX();
-    pose.pose.pose.orientation.y = tempQ.getY();
-    pose.pose.pose.orientation.z = tempQ.getZ();
-    pose.pose.pose.orientation.w = tempQ.getW();
+    if(isnan(params_.initial_state[0]) || isnan(params_.initial_state[0]) || isnan(params_.initial_state[0]))
+    {
+      ROS_WARN("Invalid initial position. Setting to 0.");
+      pose.pose.pose.position.x = 0;
+      pose.pose.pose.position.y = 0;
+      pose.pose.pose.position.z  = 0;
+    }
+    else
+    {
+      pose.pose.pose.position.x = params_.initial_state[0];
+      pose.pose.pose.position.y = params_.initial_state[1];
+      pose.pose.pose.position.z  = params_.initial_state[2];
+    }
+    if(isnan(tempQ.getX()) || isnan(tempQ.getY()) || isnan(tempQ.getZ()))
+    {
+      ROS_WARN("Invalid initial Orientation. Setting to 0.");
+      pose.pose.pose.orientation.x = 0;
+      pose.pose.pose.orientation.y = 0;
+      pose.pose.pose.orientation.z = 0;
+      pose.pose.pose.orientation.w = 0;
+    }
+    else
+    {
+      pose.pose.pose.orientation.x = tempQ.getX();
+      pose.pose.pose.orientation.y = tempQ.getY();
+      pose.pose.pose.orientation.z = tempQ.getZ();
+      pose.pose.pose.orientation.w = tempQ.getW();
+    }
+    
+    if(std::pow(params_.initial_sigma[0],2) || std::pow(params_.initial_sigma[1],2) || std::pow(params_.initial_sigma[2],2) || std::pow(params_.initial_sigma[3],2) || std::pow(params_.initial_sigma[4],2) ||std::pow(params_.initial_sigma[5],2))
+    {
+      ROS_WARN("Invalid initial Covariance. Setting to 1.");
+      pose.pose.covariance[0] = 1;
+      pose.pose.covariance[7] = 1;
+      pose.pose.covariance[14] = 1;
+      pose.pose.covariance[21] = 1;
+      pose.pose.covariance[28] = 1;
+      pose.pose.covariance[35] = 1;
+    }
+    else
+    {
+      pose.pose.covariance[0] = std::pow(params_.initial_sigma[1],2);
+      pose.pose.covariance[7] = std::pow(params_.initial_sigma[2],2);
+      pose.pose.covariance[14] = std::pow(params_.initial_sigma[3],2);
+      pose.pose.covariance[21] = std::pow(params_.initial_sigma[4],2);
+      pose.pose.covariance[28] = std::pow(params_.initial_sigma[5],2);
+      pose.pose.covariance[35] = std::pow(params_.initial_sigma[6],2);
+    }
 
-    pose.pose.covariance[0] = params_.initial_sigma[0] * params_.initial_sigma[0];
-    pose.pose.covariance[7] = params_.initial_sigma[1] * params_.initial_sigma[1];
-    pose.pose.covariance[14] = params_.initial_sigma[2] * params_.initial_sigma[2];
-    pose.pose.covariance[21] = params_.initial_sigma[3] * params_.initial_sigma[3];
-    sendPrior(pose);
-    pose.pose.covariance[28] = params_.initial_sigma[4] * params_.initial_sigma[4];
-    sendPrior(pose);
-    pose.pose.covariance[35] = params_.initial_sigma[5] * params_.initial_sigma[5];
+    pose.pose.covariance[1] = 0;
+    pose.pose.covariance[2] = 0;
+    pose.pose.covariance[3] = 0;
+    pose.pose.covariance[4] = 0;
+    pose.pose.covariance[5] = 0;
+    pose.pose.covariance[6] = 0;
+    pose.pose.covariance[8] = 0;
+    pose.pose.covariance[9] = 0;
+    pose.pose.covariance[10] = 0;
+    pose.pose.covariance[11] = 0;
+    pose.pose.covariance[12] = 0;
+    pose.pose.covariance[13] = 0;
+    pose.pose.covariance[15] = 0;
+    pose.pose.covariance[16] = 0;
+    pose.pose.covariance[17] = 0;
+    pose.pose.covariance[18] = 0;
+    pose.pose.covariance[19] = 0;
+    pose.pose.covariance[20] = 0;
+    pose.pose.covariance[22] = 0;
+    pose.pose.covariance[23] = 0;
+    pose.pose.covariance[24] = 0;
+    pose.pose.covariance[25] = 0;
+    pose.pose.covariance[26] = 0;
+    pose.pose.covariance[27] = 0;
+    pose.pose.covariance[29] = 0;
+    pose.pose.covariance[30] = 0;
+    pose.pose.covariance[31] = 0;
+    pose.pose.covariance[32] = 0;
+    pose.pose.covariance[33] = 0;
+    pose.pose.covariance[34] = 0;
     sendPrior(pose);
     initial_transaction_sent_ = true;
   }
@@ -351,7 +414,7 @@ void SkidSteer3DIgnition::sendPrior(const geometry_msgs::PoseWithCovarianceStamp
   auto orientation_constraint = fuse_constraints::AbsoluteOrientation3DStampedConstraint::make_shared(
     name(),
     *orientation,
-    fuse_core::Vector4d(orientation->x(), orientation->y(), orientation->z(), orientation->w()),
+    fuse_core::Vector3d(orientation->x(), orientation->y(), orientation->z()), //TODO: Not exactly correct but shouldn't make too much difference. Probably best to fix when there is time. 
     orientation_cov);
   auto linear_velocity_constraint = fuse_constraints::AbsoluteVelocityLinear3DStampedConstraint::make_shared(
     name(),
@@ -393,6 +456,8 @@ void SkidSteer3DIgnition::sendPrior(const geometry_msgs::PoseWithCovarianceStamp
   transaction->addConstraint(angular_acceleration_constraint);
 
   // Send the transaction to the optimizer.
+  ROS_WARN("Printing SkidSteer3D Transaction");
+  transaction->print();
   sendTransaction(transaction);
 
   ROS_INFO_STREAM("Received a set_pose request (stamp: " << stamp << ", x: " << position->x() << ", y: "<< position->y() << ", z: " <<

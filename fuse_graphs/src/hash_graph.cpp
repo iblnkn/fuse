@@ -309,6 +309,7 @@ void HashGraph::getCovariance(
   // Avoid doing a bunch of work if the request is empty
   if (covariance_requests.empty())
   {
+    ROS_INFO("The Covariance Request was empty.");
     return;
   }
   // Construct the ceres::Problem object from scratch
@@ -368,6 +369,7 @@ void HashGraph::getCovariance(
                      std::bind<bool>(symmetric_equal, block, std::placeholders::_1)))
     {
       unique_covariance_blocks.push_back(block);
+      ROS_INFO("Unique Covariance Block Added.");
     }
   }
   // Call the Ceres function to compute the unique set of requested covariance blocks
@@ -475,6 +477,7 @@ void HashGraph::print(std::ostream& stream) const
 void HashGraph::createProblem(ceres::Problem& problem) const
 {
   // Add all the variables to the problem
+  ROS_INFO("Creating Problem");
   for (auto& uuid__variable : variables_)
   {
     fuse_core::Variable& variable = *(uuid__variable.second);

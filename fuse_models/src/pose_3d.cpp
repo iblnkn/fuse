@@ -98,6 +98,8 @@ void Pose3D::process(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& m
   // Create a transaction object
   auto transaction = fuse_core::Transaction::make_shared();
   transaction->stamp(msg->header.stamp);
+  ROS_WARN("Printing Pose3D Transaction");
+  transaction->print();
 
   const bool validate = !params_.disable_checks;
 

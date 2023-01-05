@@ -175,15 +175,22 @@ void Odometry3DPublisher::notifyCallback(
         std::vector<std::vector<double>> covariance_matrices;
         graph->getCovariance(covariance_requests, covariance_matrices, params_.covariance_options);
 
+
         odom_output.pose.covariance[0] = covariance_matrices[0][0];
         odom_output.pose.covariance[1] = covariance_matrices[0][1];
-        odom_output.pose.covariance[5] = covariance_matrices[1][0];
-        odom_output.pose.covariance[6] = covariance_matrices[0][2];
-        odom_output.pose.covariance[7] = covariance_matrices[0][3];
-        odom_output.pose.covariance[11] = covariance_matrices[1][1];
-        odom_output.pose.covariance[30] = covariance_matrices[1][0];
-        odom_output.pose.covariance[31] = covariance_matrices[1][1];
-        odom_output.pose.covariance[35] = covariance_matrices[2][0];
+        odom_output.pose.covariance[2] = covariance_matrices[0][2];
+
+        odom_output.pose.covariance[3] = covariance_matrices[1][0];
+        odom_output.pose.covariance[4] = covariance_matrices[1][1];
+        odom_output.pose.covariance[5] = covariance_matrices[1][2];
+
+        odom_output.pose.covariance[6] = covariance_matrices[0][3];
+        odom_output.pose.covariance[7] = covariance_matrices[0][4];
+        odom_output.pose.covariance[7] = covariance_matrices[0][5];
+
+        odom_output.pose.covariance[9] = covariance_matrices[1][3];
+        odom_output.pose.covariance[10] = covariance_matrices[1][4];
+        odom_output.pose.covariance[11] = covariance_matrices[1][5];
 
         odom_output.twist.covariance[0] = covariance_matrices[3][0];
         odom_output.twist.covariance[1] = covariance_matrices[3][1];

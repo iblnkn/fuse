@@ -104,14 +104,23 @@ Optimizer::Optimizer(
 
   // Wait for a valid time before loading any of the plugins
   ros::Time::waitForValid();
+  ROS_WARN("Time is valid.");
 
   // Load all configured plugins
+  ROS_WARN("Loading Motion Models:");
   loadMotionModels();
+  ROS_WARN("Motion Models Loaded:");
+  ROS_WARN("Loading Sensor Models:");
   loadSensorModels();
+  ROS_WARN("Sensor Models Loaded:");
+  ROS_WARN("Loading Publishers");
   loadPublishers();
+  ROS_WARN("Sensor Models Loaded:");
 
   // Start all the plugins
+  ROS_WARN("Starting Plugins");
   startPlugins();
+  ROS_WARN("Pluggins Started:");
 }
 
 Optimizer::~Optimizer()

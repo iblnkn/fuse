@@ -156,6 +156,8 @@ void GraphIgnition::sendGraph(const fuse_core::Graph& graph, const ros::Time& st
   // Create a transaction equivalent to the graph
   auto transaction = fuse_core::Transaction::make_shared();
   transaction->stamp(stamp);
+  ROS_WARN("Printing Graph Ignition Transaction");
+  transaction->print();
 
   // Add variables
   for (const auto& variable : graph.getVariables())

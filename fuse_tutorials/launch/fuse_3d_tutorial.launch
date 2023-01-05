@@ -1,7 +1,7 @@
 <launch>
   <param name="/use_sim_time" value="true"/>
 
-  <node name="state_estimator" pkg="fuse_optimizers" type="fixed_lag_smoother_node">
+  <node name="state_estimator" pkg="fuse_optimizers" type="fixed_lag_smoother_node" output="screen">
     <rosparam command="load" file="$(find fuse_tutorials)/config/fuse_3d_tutorial.yaml"/>
   </node>
 

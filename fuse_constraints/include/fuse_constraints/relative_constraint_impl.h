@@ -144,7 +144,7 @@ inline ceres::CostFunction* RelativeConstraint<fuse_variables::Orientation2DStam
   return new NormalDeltaOrientation2D(sqrt_information_(0, 0), delta_(0));
 }
 
-// Specialization for Orientation3D
+// Specialization for Orientation3D //TODO:: Figure out what is going on here
 template<>
 inline ceres::CostFunction* RelativeConstraint<fuse_variables::Orientation3DStamped>::costFunction() const
 {

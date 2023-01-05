@@ -40,6 +40,7 @@
 int main(int argc, char **argv)
 {
   ros::init(argc, argv, "fixed_lag_smoother_node");
+  ROS_WARN("1");
   ros::NodeHandle private_node_handle("~");
   fuse_graphs::HashGraphParams hash_graph_params;
   hash_graph_params.loadFromROS(private_node_handle);

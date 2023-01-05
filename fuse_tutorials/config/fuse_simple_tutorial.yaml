@@ -35,7 +35,7 @@ initial_localization_sensor:
 odometry_sensor:
   topic: 'odom'
   twist_target_frame: 'base_footprint'
-  linear_velocity_dimensions: ['x', 'y',]
+  linear_velocity_dimensions: ['x', 'y']
   angular_velocity_dimensions: ['yaw']
 
 imu_sensor:
@@ -46,7 +46,7 @@ imu_sensor:
 
 publishers:
   filtered_publisher:
-    type: fuse_models::Odometry3DPublisher
+    type: fuse_models::Odometry2DPublisher
 
 filtered_publisher:
   topic: 'odom_filtered'
