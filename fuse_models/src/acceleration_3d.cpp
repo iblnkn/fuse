@@ -98,13 +98,15 @@ void Acceleration3D::process(const geometry_msgs::AccelWithCovarianceStamped::Co
     name(),
     device_id_,
     *msg,
-    params_.loss,
+    params_.linear_loss,
+    params_.angular_loss,
     params_.target_frame,
+    params_.linear_indices,
+    params_.angular_indices,
     tf_buffer_,
     !params_.disable_checks,
     *transaction,
     params_.tf_timeout);
-
   // Send the transaction object to the plugin's parent
   sendTransaction(transaction);
 }

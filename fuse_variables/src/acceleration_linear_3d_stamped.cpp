@@ -63,7 +63,7 @@ void AccelerationLinear3DStamped::print(std::ostream& stream) const
          << "  data:\n"
          << "  - x: " << x() << "\n"
          << "  - y: " << y() << "\n"
-         << "  - z: " << z() << "\n";
+         << "  - y: " << z() << "\n";
 }
 
 }  // namespace fuse_variables

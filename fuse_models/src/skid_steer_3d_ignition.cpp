@@ -414,7 +414,7 @@ void SkidSteer3DIgnition::sendPrior(const geometry_msgs::PoseWithCovarianceStamp
   auto orientation_constraint = fuse_constraints::AbsoluteOrientation3DStampedConstraint::make_shared(
     name(),
     *orientation,
-    fuse_core::Vector3d(orientation->x(), orientation->y(), orientation->z()), //TODO: Not exactly correct but shouldn't make too much difference. Probably best to fix when there is time. 
+    fuse_core::Vector3d(orientation->x(), orientation->y(), orientation->z()), // TODO(iblankenau) Not exactly correct but shouldn't make too much difference. Probably best to fix when there is time. 
     orientation_cov);
   auto linear_velocity_constraint = fuse_constraints::AbsoluteVelocityLinear3DStampedConstraint::make_shared(
     name(),
@@ -460,8 +460,9 @@ void SkidSteer3DIgnition::sendPrior(const geometry_msgs::PoseWithCovarianceStamp
   transaction->print();
   sendTransaction(transaction);
 
-  ROS_INFO_STREAM("Received a set_pose request (stamp: " << stamp << ", x: " << position->x() << ", y: "<< position->y() << ", z: " <<
-                  position->z() << ", roll: " << orientation->roll() << ", pitch: " << orientation->pitch() << ", yaw: " << orientation->yaw() << ")");
+  ROS_INFO_STREAM("Received a set_pose request (stamp: " << 
+  stamp << ", x: " << position->x() << ", y: "<< position->y() << ", z: " << position->z() << 
+  ", roll: " << orientation->roll() << ", pitch: " << orientation->pitch() << ", yaw: " << orientation->yaw() << ")");
 }
 
 }  // namespace fuse_models

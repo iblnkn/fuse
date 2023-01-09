@@ -41,7 +41,7 @@
 #include <fuse_core/uuid.h>
 
 #include <geometry_msgs/PoseWithCovarianceStamped.h>
-#include <geometry_msgs/TwistWithCovarianceStamped.h>
+#include <geometry_msgs/Pose.h>
 #include <ros/ros.h>
 #include <sensor_msgs/Imu.h>
 #include <tf2_ros/buffer.h>

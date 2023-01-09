@@ -63,7 +63,7 @@ void Orientation3DStamped::print(std::ostream& stream) const
          << "  stamp: " << stamp() << "\n"
          << "  size: " << size() << "\n"
          << "  data:\n"
-         << "  - w: " << w() << "\n"
+        << "  - w: " << w() << "\n"
          << "  - x: " << x() << "\n"
          << "  - y: " << y() << "\n"
          << "  - z: " << z() << "\n";

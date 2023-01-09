@@ -39,6 +39,7 @@
 
 #include <geometry_msgs/AccelWithCovarianceStamped.h>
 #include <geometry_msgs/PoseWithCovarianceStamped.h>
+#include <geometry_msgs/Pose.h>
 #include <geometry_msgs/TwistWithCovarianceStamped.h>
 #include <pluginlib/class_list_macros.h>
 #include <ros/ros.h>
@@ -146,6 +147,8 @@ void Imu3D::process(const sensor_msgs::Imu::ConstPtr& msg)
       *pose,
       params_.pose_loss,
       params_.orientation_target_frame,
+      {},
+      params_.orientation_indices,
       tf_buffer_,
       validate,
       *transaction,
@@ -160,6 +163,8 @@ void Imu3D::process(const sensor_msgs::Imu::ConstPtr& msg)
     nullptr,
     params_.angular_velocity_loss,
     params_.twist_target_frame,
+    {},
+    params_.angular_velocity_indices,
     tf_buffer_,
     validate,
     *transaction,
@@ -194,21 +199,20 @@ void Imu3D::process(const sensor_msgs::Imu::ConstPtr& msg)
     accel.accel.accel.linear.z -= accel_gravity.z;
   }
 
-
   common::processAccel3DWithCovariance(
     name(),
     device_id_,
     accel,
     params_.linear_acceleration_loss,
+    nullptr,
     params_.acceleration_target_frame,
+    params_.linear_acceleration_indices,
+    {},
     tf_buffer_,
     validate,
     *transaction,
     params_.tf_timeout);
-
   // Send the transaction object to the plugin's parent
-  ROS_WARN("Printing IMU3D Transaction");
-  transaction->print();
   sendTransaction(transaction);
 }
 
@@ -257,6 +261,8 @@ void Imu3D::processDifferential(const geometry_msgs::PoseWithCovarianceStamped& 
         params_.minimum_pose_relative_covariance,
         params_.twist_covariance_offset,
         params_.pose_loss,
+        {},
+        params_.orientation_indices,
         validate,
         transaction);
     }
@@ -271,6 +277,8 @@ void Imu3D::processDifferential(const geometry_msgs::PoseWithCovarianceStamped& 
       params_.independent,
       params_.minimum_pose_relative_covariance,
       params_.pose_loss,
+      {},
+      params_.orientation_indices,
       validate,
       transaction);
   }

@@ -71,13 +71,13 @@ namespace std
 inline bool isfinite(const geometry_msgs::Twist& twist)
 {
   return std::isfinite(twist.linear.x) && std::isfinite(twist.linear.y) && std::isfinite(twist.linear.z) &&
-         std::isfinite(twist.angular.x) && std::isfinite(twist.angular.y) && std::isfinite(twist.angular.z) ;
+         std::isfinite(twist.angular.x) && std::isfinite(twist.angular.y) && std::isfinite(twist.angular.z);
 }
 
 inline bool isfinite(const geometry_msgs::Accel& accel)
 {
   return std::isfinite(accel.linear.x) && std::isfinite(accel.linear.y) && std::isfinite(accel.linear.z) && 
-         std::isfinite(accel.angular.x) && std::isfinite(accel.angular.y) && std::isfinite(accel.angular.z) ;
+         std::isfinite(accel.angular.x) && std::isfinite(accel.angular.y) && std::isfinite(accel.angular.z);
 }
 
 inline bool isfinite(const geometry_msgs::Pose2D& transform)

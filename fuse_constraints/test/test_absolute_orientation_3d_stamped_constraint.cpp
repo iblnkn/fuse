@@ -51,7 +51,6 @@
 using fuse_constraints::AbsoluteOrientation3DStampedConstraint;
 using fuse_variables::Orientation3DStamped;
 
-
 TEST(AbsoluteOrientation3DStampedConstraint, Constructor)
 {
   // Construct a constraint just to make sure it compiles.
@@ -67,7 +66,7 @@ TEST(AbsoluteOrientation3DStampedConstraint, Constructor)
 
   geometry_msgs::Quaternion quat_geom;
   quat_geom.w = 1.0;
-  std::array<double, 9> cov_arr = {1.0, 0.1, 0.2, 0.1, 2.0, 0.3, 0.2, 0.3, 3.0};
+  std::array<double, 9> cov_arr = { 1.0, 0.1, 0.2, 0.1, 2.0, 0.3, 0.2, 0.3, 3.0 };
   EXPECT_NO_THROW(AbsoluteOrientation3DStampedConstraint constraint("test", orientation_variable, quat_geom, cov_arr));
 }
 
@@ -83,9 +82,8 @@ TEST(AbsoluteOrientation3DStampedConstraint, Covariance)
 
   // Define the expected matrices (used Octave to compute sqrt_info: 'chol(inv(A))')
   fuse_core::Matrix3d expected_sqrt_info;
-  expected_sqrt_info <<  1.008395589795798, -0.040950074712520, -0.063131365181801,
-                         0.000000000000000,  0.712470499879096, -0.071247049987910,
-                         0.000000000000000,  0.000000000000000,  0.577350269189626;
+  expected_sqrt_info << 1.008395589795798, -0.040950074712520, -0.063131365181801, 0.000000000000000, 0.712470499879096,
+      -0.071247049987910, 0.000000000000000, 0.000000000000000, 0.577350269189626;
   fuse_core::Matrix3d expected_cov = cov;
 
   // Compare
@@ -108,31 +106,19 @@ TEST(AbsoluteOrientation3DStampedConstraint, Optimization)
   mean << 1.0, 0.0, 0.0, 0.0;
 
   fuse_core::Matrix3d cov;
-  cov <<
-    1.0, 0.1, 0.2,
-    0.1, 2.0, 0.3,
-    0.2, 0.3, 3.0;
-  auto constraint = AbsoluteOrientation3DStampedConstraint::make_shared(
-    "test",
-    *orientation_variable,
-    mean,
-    cov);
+  cov << 1.0, 0.1, 0.2, 0.1, 2.0, 0.3, 0.2, 0.3, 3.0;
+  auto constraint = AbsoluteOrientation3DStampedConstraint::make_shared("test", *orientation_variable, mean, cov);
 
   // Build the problem
   ceres::Problem::Options problem_options;
   problem_options.loss_function_ownership = fuse_core::Loss::Ownership;
   ceres::Problem problem(problem_options);
-  problem.AddParameterBlock(
-    orientation_variable->data(),
-    orientation_variable->size(),
-    orientation_variable->manfiold());
+  problem.AddParameterBlock(orientation_variable->data(), orientation_variable->size(),
+                            orientation_variable->manifold());
 
   std::vector<double*> parameter_blocks;
   parameter_blocks.push_back(orientation_variable->data());
-  problem.AddResidualBlock(
-    constraint->costFunction(),
-    constraint->lossFunction(),
-    parameter_blocks);
+  problem.AddResidualBlock(constraint->costFunction(), constraint->lossFunction(), parameter_blocks);
 
   // Run the solver
   ceres::Solver::Options options;
@@ -151,16 +137,13 @@ TEST(AbsoluteOrientation3DStampedConstraint, Optimization)
   ceres::Covariance::Options cov_options;
   ceres::Covariance covariance(cov_options);
   covariance.Compute(covariance_blocks, &problem);
-  fuse_core::Matrix3d actual_covariance(orientation_variable->tangetnSize(), orientation_variable->tangentSize());
-  covariance.GetCovarianceBlockInTangentSpace(
-    orientation_variable->data(), orientation_variable->data(), actual_covariance.data());
+  fuse_core::Matrix3d actual_covariance(orientation_variable->tangentSize(), orientation_variable->tangentSize());
+  covariance.GetCovarianceBlockInTangentSpace(orientation_variable->data(), orientation_variable->data(),
+                                              actual_covariance.data());
 
   // Define the expected covariance
   fuse_core::Matrix3d expected_covariance;
-  expected_covariance <<
-    1.0, 0.1, 0.2,
-    0.1, 2.0, 0.3,
-    0.2, 0.3, 3.0;
+  expected_covariance << 1.0, 0.1, 0.2, 0.1, 2.0, 0.3, 0.2, 0.3, 3.0;
   EXPECT_MATRIX_NEAR(expected_covariance, actual_covariance, 1.0e-3);
 }
 
@@ -195,7 +178,7 @@ TEST(AbsoluteOrientation3DStampedConstraint, Serialization)
   EXPECT_MATRIX_EQ(expected.sqrtInformation(), actual.sqrtInformation());
 }
 
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
   testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();

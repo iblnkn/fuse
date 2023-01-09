@@ -115,6 +115,8 @@ void Pose3D::process(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& m
       *msg,
       params_.loss,
       params_.target_frame,
+      params_.position_indices,
+      params_.orientation_indices,
       tf_buffer_,
       validate,
       *transaction,
@@ -141,13 +143,15 @@ void Pose3D::processDifferential(const geometry_msgs::PoseWithCovarianceStamped&
   if (previous_pose_msg_)
   {
     common::processDifferentialPose3DWithCovariance(
-      name(),
+       name(),
       device_id_,
       *previous_pose_msg_,
       *transformed_pose,
       params_.independent,
       params_.minimum_pose_relative_covariance,
       params_.loss,
+      params_.position_indices,
+      params_.orientation_indices,
       validate,
       transaction);
   }

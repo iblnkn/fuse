@@ -79,7 +79,8 @@ struct Acceleration3DParams : public ParameterBase
       fuse_core::getParamRequired(nh, "topic", topic);
       fuse_core::getParamRequired(nh, "target_frame", target_frame);
 
-      loss = fuse_core::loadLossConfig(nh, "loss");
+      linear_loss = fuse_core::loadLossConfig(nh, "linear_loss");
+      angular_loss = fuse_core::loadLossConfig(nh, "angular_loss");
     }
 
     bool disable_checks { false };
@@ -96,7 +97,8 @@ struct Acceleration3DParams : public ParameterBase
     std::string target_frame {};
     std::vector<size_t> linear_indices;
     std::vector<size_t> angular_indices;
-    fuse_core::Loss::SharedPtr loss;
+    fuse_core::Loss::SharedPtr linear_loss;
+    fuse_core::Loss::SharedPtr angular_loss;
 };
 
 }  // namespace parameters

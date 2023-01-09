@@ -103,6 +103,8 @@ void Twist3D::process(const geometry_msgs::TwistWithCovarianceStamped::ConstPtr&
     params_.linear_loss,
     params_.angular_loss,
     params_.target_frame,
+    params_.linear_indices,
+    params_.angular_indices,
     tf_buffer_,
     !params_.disable_checks,
     *transaction,

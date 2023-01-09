@@ -42,6 +42,8 @@ add_library(${PROJECT_NAME}
   src/absolute_constraint.cpp
   src/absolute_pose_2d_stamped_constraint.cpp
   src/absolute_pose_3d_stamped_constraint.cpp
+  src/absolute_orientation_3d_stamped_constraint.cpp
+  src/absolute_orientation_3d_stamped_euler_constraint.cpp
   src/marginal_constraint.cpp
   src/marginal_cost_function.cpp
   src/marginalize_variables.cpp
@@ -55,7 +57,7 @@ add_library(${PROJECT_NAME}
   src/normal_prior_pose_2d.cpp
   src/normal_prior_pose_3d.cpp
   src/relative_constraint.cpp
-  # src/relative_orientation_3d_stamped_constraint.cpp
+  src/relative_orientation_3d_stamped_constraint.cpp
   src/relative_pose_2d_stamped_constraint.cpp
   src/relative_pose_3d_stamped_constraint.cpp
   src/uuid_ordering.cpp

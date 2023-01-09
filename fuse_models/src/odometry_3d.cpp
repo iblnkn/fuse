@@ -130,6 +130,8 @@ void Odometry3D::process(const nav_msgs::Odometry::ConstPtr& msg)
       *pose,
       params_.pose_loss,
       params_.pose_target_frame,
+      params_.position_indices,
+      params_.orientation_indices,
       tf_buffer_,
       validate,
       *transaction,
@@ -144,6 +146,8 @@ void Odometry3D::process(const nav_msgs::Odometry::ConstPtr& msg)
     params_.linear_velocity_loss,
     params_.angular_velocity_loss,
     params_.twist_target_frame,
+    params_.linear_velocity_indices,
+    params_.angular_velocity_indices,
     tf_buffer_,
     validate,
     *transaction,
@@ -200,6 +204,8 @@ void Odometry3D::processDifferential(const geometry_msgs::PoseWithCovarianceStam
         params_.minimum_pose_relative_covariance,
         params_.twist_covariance_offset,
         params_.pose_loss,
+        params_.position_indices,
+        params_.orientation_indices,
         validate,
         transaction);
     }
@@ -214,6 +220,8 @@ void Odometry3D::processDifferential(const geometry_msgs::PoseWithCovarianceStam
       params_.independent,
       params_.minimum_pose_relative_covariance,
       params_.pose_loss,
+      params_.position_indices,
+      params_.orientation_indices,
       validate,
       transaction);
   }

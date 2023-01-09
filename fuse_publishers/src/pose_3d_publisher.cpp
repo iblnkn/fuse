@@ -84,7 +84,6 @@ bool findPose(
     pose.orientation.y = orientation_variable.y();
     pose.orientation.z = orientation_variable.z();
     pose.orientation.w = orientation_variable.w();
-    
   }
   catch (const std::exception& e)
   {

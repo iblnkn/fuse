@@ -88,8 +88,11 @@ public:
     const std::string& source,
     const fuse_variables::Position3DStamped& position,
     const fuse_variables::Orientation3DStamped& orientation,
-    const fuse_core::Vector7d& mean,
-    const fuse_core::Matrix6d& covariance);
+    const fuse_core::VectorXd& partial_mean,
+    const fuse_core::MatrixXd& partial_covariance,
+    const std::vector<size_t>& linear_indices =
+      {fuse_variables::Position3DStamped::X, fuse_variables::Position3DStamped::Y, fuse_variables::Position3DStamped::Z},             // NOLINT
+    const std::vector<size_t>& angular_indices = {fuse_variables::Orientation3DStamped::X, fuse_variables::Orientation3DStamped::Y, fuse_variables::Orientation3DStamped::Z, fuse_variables::Orientation3DStamped::W });  // NOLINT;
 
   /**
    * @brief Destructor
@@ -108,14 +111,14 @@ public:
    *
    * Order is (x, y, z, qx, qy, qz)
    */
-  const fuse_core::Matrix6d& sqrtInformation() const { return sqrt_information_; }
+  const fuse_core::MatrixXd& sqrtInformation() const { return sqrt_information_; }
 
   /**
    * @brief Compute the measurement covariance matrix.
    *
    * Order is (x, y, z, qx, qy, qz)
    */
-  fuse_core::Matrix6d covariance() const { return (sqrt_information_.transpose() * sqrt_information_).inverse(); }
+  fuse_core::Matrix6d covariance() const;
 
   /**
    * @brief Print a human-readable description of the constraint to the provided stream.
@@ -137,7 +140,7 @@ public:
 
 protected:
   fuse_core::Vector7d mean_;  //!< The measured/prior mean vector for this variable
-  fuse_core::Matrix6d sqrt_information_;  //!< The square root information matrix
+  fuse_core::MatrixXd sqrt_information_;  //!< The square root information matrix
 
 private:
   // Allow Boost Serialization access to private methods

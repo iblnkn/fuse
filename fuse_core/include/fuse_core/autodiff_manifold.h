@@ -190,7 +190,7 @@ bool AutoDiffManifold<PlusFunctor, MinusFunctor, kAmbientSize, kTangentSize>::Pl
   return ceres::internal::AutoDiff<PlusFunctor, double, kAmbientSize, kTangentSize>
     ::Differentiate(*plus_functor_, parameter_ptrs, kAmbientSize, x_plus_delta, jacobian_ptrs);
 #else
-  return ceres::internal::AutoDifferentiate<ceres::internal::StaticParameterDims<kAmbientSize, kTangentSize>>(
+  return ceres::internal::AutoDifferentiate<kAmbientSize, ceres::internal::StaticParameterDims<kAmbientSize, kTangentSize>>(
       *plus_functor_, parameter_ptrs, kAmbientSize, x_plus_delta, jacobian_ptrs);
 #endif
 }
@@ -212,12 +212,12 @@ bool AutoDiffManifold<PlusFunctor, MinusFunctor, kAmbientSize, kTangentSize>::Mi
   double delta[kTangentSize] = {};  // zero-initialize
 
   const double* parameter_ptrs[2] = {x, x};
-  double* jacobian_ptrs[2] = {NULL, jacobian};
+  double* jacobian_ptrs[2] = {jacobian, nullptr};
 #if !CERES_VERSION_AT_LEAST(2, 0, 0)
   return ceres::internal::AutoDiff<MinusFunctor, double, kAmbientSize, kAmbientSize>
     ::Differentiate(*minus_functor_, parameter_ptrs, kTangentSize, delta, jacobian_ptrs);
 #else
-  return ceres::internal::AutoDifferentiate<ceres::internal::StaticParameterDims<kAmbientSize, kAmbientSize>>(
+  return ceres::internal::AutoDifferentiate<kTangentSize, ceres::internal::StaticParameterDims<kAmbientSize, kAmbientSize>>(
       *minus_functor_, parameter_ptrs, kTangentSize, delta, jacobian_ptrs);
 #endif
 }

@@ -52,13 +52,12 @@ namespace fuse_variables
 {
 
 /**
- * @brief Variable representing a 3D linear acceleration (ax, ay, az) at a specific time, with a specific piece
- * of hardware.
+ * @brief Variable representing a 3D linear acceleration (vx, vy) at a specific time, with a specific piece of hardware.
  *
  * This is commonly used to represent a robot's acceleration. The UUID of this class is static after construction.
  * As such, the timestamp and device id cannot be modified. The value of the acceleration can be modified.
  */
-class AccelerationLinear3DStamped : public FixedSizeVariable<3>,  public Stamped
+class AccelerationLinear3DStamped : public FixedSizeVariable<3>, public Stamped
 {
 public:
   FUSE_VARIABLE_DEFINITIONS(AccelerationLinear3DStamped);
@@ -83,10 +82,9 @@ public:
    *
    * @param[in] stamp     The timestamp attached to this acceleration.
    * @param[in] device_id An optional device id, for use when variables originate from multiple robots or devices
+   *
    */
-  explicit AccelerationLinear3DStamped(
-    const ros::Time& stamp,
-    const fuse_core::UUID& device_id = fuse_core::uuid::NIL);
+  explicit AccelerationLinear3DStamped(const ros::Time& stamp, const fuse_core::UUID& device_id = fuse_core::uuid::NIL);
 
   /**
    * @brief Read-write access to the X-axis linear acceleration.
