@@ -41,19 +41,12 @@
 #include <vector>
 #include <iostream>
 
-
 namespace fuse_constraints
 {
-
-MarginalCostFunction::MarginalCostFunction(
-    const std::vector<fuse_core::MatrixXd>& A,
-    const fuse_core::VectorXd& b,
-    const std::vector<fuse_core::VectorXd>& x_bar,
-    const std::vector<fuse_core::Manifold::SharedPtr>& manifolds) :
-  A_(A),
-  b_(b),
-  manifolds_(manifolds),
-  x_bar_(x_bar)
+MarginalCostFunction::MarginalCostFunction(const std::vector<fuse_core::MatrixXd>& A, const fuse_core::VectorXd& b,
+                                           const std::vector<fuse_core::VectorXd>& x_bar,
+                                           const std::vector<fuse_core::Manifold::SharedPtr>& manifolds)
+  : A_(A), b_(b), manifolds_(manifolds), x_bar_(x_bar)
 {
   set_num_residuals(b_.rows());
   for (const auto& x_bar : x_bar_)
@@ -62,10 +55,7 @@ MarginalCostFunction::MarginalCostFunction(
   }
 }
 
-bool MarginalCostFunction::Evaluate(
-  double const* const* parameters,
-  double* residuals,
-  double** jacobians) const
+bool MarginalCostFunction::Evaluate(double const* const* parameters, double* residuals, double** jacobians) const
 {
   // Compute cost
   Eigen::Map<fuse_core::VectorXd> residuals_map(residuals, num_residuals());
@@ -75,7 +65,7 @@ bool MarginalCostFunction::Evaluate(
     fuse_core::VectorXd delta(A_[i].cols());
     if (manifolds_[i])
     {
-      manifolds_[i]->Minus(x_bar_[i].data(), parameters[i], delta.data());
+      manifolds_[i]->Minus(parameters[i], x_bar_[i].data(), delta.data());  // TODO: THIS NEEDS UPDATED
     }
     else
     {

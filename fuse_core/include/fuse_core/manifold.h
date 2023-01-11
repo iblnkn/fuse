@@ -66,8 +66,8 @@ public:
    *  - Minus(x, x) -> 0
    *  - if Plus(x, delta) -> y, then Minus(x2, x1) -> delta
    *
-   * @param[in]  x1    The value of the first variable, of size \p AmbientSize()
-   * @param[in]  x2    The value of the second variable, of size \p AmbientSize()
+   * @param[in]  x2    The value of the first variable, of size \p AmbientSize()
+   * @param[in]  x1    The value of the second variable, of size \p AmbientSize()
    * @param[out] delta The difference between the second variable and the first, of size \p TangentSize()
    * @return True if successful, false otherwise
    */
