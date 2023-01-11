@@ -40,17 +40,15 @@
 #include <boost/serialization/access.hpp>
 #include <ceres/manifold.h>
 
-
 namespace fuse_core
 {
-
 /**
  * @brief The Manifold interface definition.
  *
  * This class extends the Ceres Manifold class, adding the additional requirement of a
  * \p Minus() method, the conceptual inverse of the already required \p Plus() method.
  *
- * If Plus(x1, delta) -> x2, then Minus(x1, x2) -> delta
+ * If Plus(x, delta) -> y, then Minus(x2, x1) -> delta
  *
  * See the Ceres documentation for more details. http://ceres-solver.org/nnls_modeling.html#localparameterization
  */
@@ -62,32 +60,27 @@ public:
   /**
    * @brief Generalization of the subtraction operation
    *
-   * Minus(x1, x2) -> delta
+   * Minus(x2, x1) -> delta
    *
    * with the conditions that:
    *  - Minus(x, x) -> 0
-   *  - if Plus(x1, delta) -> x2, then Minus(x1, x2) -> delta
+   *  - if Plus(x, delta) -> y, then Minus(x2, x1) -> delta
    *
    * @param[in]  x1    The value of the first variable, of size \p AmbientSize()
    * @param[in]  x2    The value of the second variable, of size \p AmbientSize()
    * @param[out] delta The difference between the second variable and the first, of size \p TangentSize()
    * @return True if successful, false otherwise
    */
-  virtual bool Minus(
-    const double* x1,
-    const double* x2,
-    double* delta) const = 0;
+  virtual bool Minus(const double* x2, const double* x1, double* delta) const = 0;
 
   /**
-   * @brief The jacobian of Minus(x1, x2) w.r.t x2 at x1 == x2 == x
+   * @brief The jacobian of Minus(x2, x1) w.r.t y at x == y == x
    *
    * @param[in]  x        The value used to evaluate the Jacobian, of size \p AmbientSize()
    * @param[out] jacobian The first-order derivative in row-major order, of size \p TangentSize() x \p AmbientSize()
    * @return True if successful, false otherwise
    */
-  virtual bool MinusJacobian(
-    const double* x,
-    double* jacobian) const = 0;
+  virtual bool MinusJacobian(const double* x, double* jacobian) const = 0;
 
 private:
   // Allow Boost Serialization access to private methods
@@ -99,7 +92,7 @@ private:
    * @param[in/out] archive - The archive object that holds the serialized class members
    * @param[in] version - The version of the archive being read/written. Generally unused.
    */
-  template<class Archive>
+  template <class Archive>
   void serialize(Archive& /* archive */, const unsigned int /* version */)
   {
   }

@@ -37,10 +37,9 @@
 
 #include <gtest/gtest.h>
 
-
 struct Plus
 {
-  template<typename T>
+  template <typename T>
   bool operator()(const T* x, const T* delta, T* x_plus_delta) const
   {
     x_plus_delta[0] = x[0] + 2.0 * delta[0];
@@ -52,8 +51,8 @@ struct Plus
 
 struct Minus
 {
-  template<typename T>
-  bool operator()(const T* x1, const T* x2, T* delta) const
+  template <typename T>
+  bool operator()(const T* x2, const T* x1, T* delta) const
   {
     delta[0] = (x2[0] - x1[0]) / 2.0;
     delta[1] = (x2[1] - x1[1]) / 5.0;
@@ -63,14 +62,13 @@ struct Minus
 
 using TestManifold = fuse_core::AutoDiffManifold<Plus, Minus, 3, 2>;
 
-
 TEST(Manifold, Plus)
 {
   TestManifold manifold;
 
-  double x[3] = {1.0, 2.0, 3.0};
-  double delta[2] = {0.5, 1.0};
-  double actual[3] = {0.0, 0.0, 0.0};
+  double x[3] = { 1.0, 2.0, 3.0 };
+  double delta[2] = { 0.5, 1.0 };
+  double actual[3] = { 0.0, 0.0, 0.0 };
   bool success = manifold.Plus(x, delta, actual);
 
   EXPECT_TRUE(success);
@@ -83,14 +81,12 @@ TEST(Manifold, PlusJacobian)
 {
   TestManifold manifold;
 
-  double x[3] = {1.0, 2.0, 3.0};
+  double x[3] = { 1.0, 2.0, 3.0 };
   fuse_core::MatrixXd actual(3, 2);
   bool success = manifold.PlusJacobian(x, actual.data());
 
   fuse_core::MatrixXd expected(3, 2);
-  expected << 2.0, 0.0,
-              0.0, 5.0,
-              0.0, 0.0;
+  expected << 2.0, 0.0, 0.0, 5.0, 0.0, 0.0;
 
   EXPECT_TRUE(success);
   EXPECT_MATRIX_NEAR(expected, actual, 1.0e-5);
@@ -100,10 +96,10 @@ TEST(Manifold, Minus)
 {
   TestManifold manifold;
 
-  double x1[3] = {1.0, 2.0, 3.0};
-  double x2[3] = {2.0, 7.0, 3.0};
-  double actual[2] = {0.0, 0.0};
-  bool success = manifold.Minus(x1, x2, actual);
+  double x1[3] = { 1.0, 2.0, 3.0 };
+  double x2[3] = { 2.0, 7.0, 3.0 };
+  double actual[2] = { 0.0, 0.0 };
+  bool success = manifold.Minus(x2, x1, actual);
 
   EXPECT_TRUE(success);
   EXPECT_NEAR(0.5, actual[0], 1.0e-5);
@@ -114,19 +110,18 @@ TEST(Manifold, MinusJacobian)
 {
   TestManifold manifold;
 
-  double x[3] = {1.0, 2.0, 3.0};
+  double x[3] = { 1.0, 2.0, 3.0 };
   fuse_core::MatrixXd actual(2, 3);
   bool success = manifold.MinusJacobian(x, actual.data());
 
   fuse_core::MatrixXd expected(2, 3);
-  expected << 0.5, 0.0, 0.0,
-              0.0, 0.2, 0.0;
+  expected << 0.5, 0.0, 0.0, 0.0, 0.2, 0.0;
 
   EXPECT_TRUE(success);
   EXPECT_MATRIX_NEAR(expected, actual, 1.0e-5);
 }
 
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
   testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();

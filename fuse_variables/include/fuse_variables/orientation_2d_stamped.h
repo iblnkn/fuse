@@ -49,10 +49,8 @@
 
 #include <ostream>
 
-
 namespace fuse_variables
 {
-
 /**
  * @brief A Manifold class for 2D Orientations.
  *
@@ -73,37 +71,27 @@ public:
     return 1;
   }
 
-  bool Plus(
-    const double* x,
-    const double* delta,
-    double* x_plus_delta) const override
+  bool Plus(const double* x, const double* delta, double* x_plus_delta) const override
   {
     // Compute the angle increment as a linear update, and handle the 2*Pi rollover
     x_plus_delta[0] = fuse_core::wrapAngle2D(x[0] + delta[0]);
     return true;
   }
 
-  bool PlusJacobian(
-    const double* /*x*/,
-    double* jacobian) const override
+  bool PlusJacobian(const double* /*x*/, double* jacobian) const override
   {
     jacobian[0] = 1.0;
     return true;
   }
 
-  bool Minus(
-    const double* x1,
-    const double* x2,
-    double* delta) const override
+  bool Minus(const double* x2, const double* x1, double* delta) const override
   {
     // Compute the difference from x2 to x1, and handle the 2*Pi rollover
     delta[0] = fuse_core::wrapAngle2D(x2[0] - x1[0]);
     return true;
   }
 
-  bool MinusJacobian(
-    const double* /*x*/,
-    double* jacobian) const override
+  bool MinusJacobian(const double* /*x*/, double* jacobian) const override
   {
     jacobian[0] = 1.0;
     return true;
@@ -119,10 +107,10 @@ private:
    * @param[in/out] archive - The archive object that holds the serialized class members
    * @param[in] version - The version of the archive being read/written. Generally unused.
    */
-  template<class Archive>
+  template <class Archive>
   void serialize(Archive& archive, const unsigned int /* version */)
   {
-    archive & boost::serialization::base_object<fuse_core::Manifold>(*this);
+    archive& boost::serialization::base_object<fuse_core::Manifold>(*this);
   }
 };
 
@@ -161,12 +149,18 @@ public:
   /**
    * @brief Read-write access to the heading angle.
    */
-  double& yaw() { return data_[YAW]; }
+  double& yaw()
+  {
+    return data_[YAW];
+  }
 
   /**
    * @brief Read-only access to the heading angle.
    */
-  const double& yaw() const { return data_[YAW]; }
+  const double& yaw() const
+  {
+    return data_[YAW];
+  }
 
   /**
    * @brief Print a human-readable description of the variable to the provided stream.
@@ -181,7 +175,10 @@ public:
    * Since we are overriding the \p manifold() method, it is good practice to override the \p tangentSize()
    * method as well.
    */
-  size_t tangentSize() const override { return 1u; }
+  size_t tangentSize() const override
+  {
+    return 1u;
+  }
 
   /**
    * @brief Create a new Ceres manifold object to apply to updates of this variable
@@ -203,11 +200,11 @@ private:
    * @param[in/out] archive - The archive object that holds the serialized class members
    * @param[in] version - The version of the archive being read/written. Generally unused.
    */
-  template<class Archive>
+  template <class Archive>
   void serialize(Archive& archive, const unsigned int /* version */)
   {
-    archive & boost::serialization::base_object<FixedSizeVariable<SIZE>>(*this);
-    archive & boost::serialization::base_object<Stamped>(*this);
+    archive& boost::serialization::base_object<FixedSizeVariable<SIZE>>(*this);
+    archive& boost::serialization::base_object<Stamped>(*this);
   }
 };
 

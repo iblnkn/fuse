@@ -42,10 +42,8 @@
 
 #include <memory>
 
-
 namespace fuse_core
 {
-
 /**
  * @brief Create a manifold with the Jacobians computed via automatic differentiation.
  *
@@ -58,9 +56,9 @@ namespace fuse_core
  *
  * And the second functor should compute the inverse operation:
  *
- *   Minus(x1, x2) -> delta
+ *   Minus(x2, x1) -> delta
  *
- * Minus() should be defined such that if Plus(x1, delta) -> x2, then Minus(x1, x2) -> delta
+ * Minus() should be defined such that if Plus(x1, delta) -> x2, then Minus(x2, x1) -> delta
  *
  * The autodiff framework substitutes appropriate "Jet" objects for the template parameter T in order to compute
  * the derivative when necessary, but this is hidden, and you should write the function as if T were a scalar type
@@ -97,10 +95,7 @@ public:
    * @param[out] x_plus_delta The final variable value, of size \p AmbientSize()
    * @return True if successful, false otherwise
    */
-  bool Plus(
-    const double* x,
-    const double* delta,
-    double* x_plus_delta) const override;
+  bool Plus(const double* x, const double* delta, double* x_plus_delta) const override;
 
   /**
    * @brief The Jacobian of Plus(x, delta) w.r.t delta at delta = 0, computed using automatic differentiation
@@ -109,42 +104,41 @@ public:
    * @param[out] jacobian The Jacobian in row-major order, of size \p AmbientSize() x \p TangentSize()
    * @return True is successful, false otherwise
    */
-  bool PlusJacobian(
-    const double* x,
-    double* jacobian) const override;
+  bool PlusJacobian(const double* x, double* jacobian) const override;
 
   /**
    * @brief Generalization of the subtraction operation, implemented by the provided MinusFunctor
    *
-   * @param[in]  x1    The value of the first variable, of size \p AmbientSize()
-   * @param[in]  x2    The value of the second variable, of size \p AmbientSize()
+   * @param[in]  x2    The value of the first variable, of size \p AmbientSize()
+   * @param[in]  x1    The value of the second variable, of size \p AmbientSize()
    * @param[out] delta The difference between the second variable and the first, of size \p TangentSize()
    * @return True if successful, false otherwise
    */
-  bool Minus(
-    const double* x1,
-    const double* x2,
-    double* delta) const override;
+  bool Minus(const double* x2, const double* x1, double* delta) const override;
 
   /**
-   * @brief The Jacobian of Minus(x1, x2) w.r.t x2 evaluated at x1 = x2 = x, computed using automatic differentiation
+   * @brief The Jacobian of Minus(x2, x1) w.r.t x2 evaluated at x1 = x2 = x, computed using automatic differentiation
    * @param[in]  x        The value used to evaluate the Jacobian, of size \p AmbientSize()
    * @param[out] jacobian The Jacobian in row-major order, of size \p TangentSize() x \p AmbientSize()
    * @return True is successful, false otherwise
    */
-  bool MinusJacobian(
-    const double* x,
-    double* jacobian) const override;
+  bool MinusJacobian(const double* x, double* jacobian) const override;
 
   /**
    * @brief The size of the variable parameterization in the nonlinear manifold
    */
-  int AmbientSize() const override { return kAmbientSize; }
+  int AmbientSize() const override
+  {
+    return kAmbientSize;
+  }
 
   /**
    * @brief The size of a delta vector in the linear tangent space to the nonlinear manifold
    */
-  int TangentSize() const override { return kTangentSize; }
+  int TangentSize() const override
+  {
+    return kTangentSize;
+  }
 
 private:
   std::unique_ptr<PlusFunctor> plus_functor_;
@@ -152,72 +146,65 @@ private:
 };
 
 template <typename PlusFunctor, typename MinusFunctor, int kAmbientSize, int kTangentSize>
-AutoDiffManifold<PlusFunctor, MinusFunctor, kAmbientSize, kTangentSize>::AutoDiffManifold() :
-  plus_functor_(new PlusFunctor()),
-  minus_functor_(new MinusFunctor())
+AutoDiffManifold<PlusFunctor, MinusFunctor, kAmbientSize, kTangentSize>::AutoDiffManifold()
+  : plus_functor_(new PlusFunctor()), minus_functor_(new MinusFunctor())
 {
 }
 
 template <typename PlusFunctor, typename MinusFunctor, int kAmbientSize, int kTangentSize>
-AutoDiffManifold<PlusFunctor, MinusFunctor, kAmbientSize, kTangentSize>::AutoDiffManifold(
-  PlusFunctor* plus_functor,
-  MinusFunctor* minus_functor) :
-    plus_functor_(plus_functor),
-    minus_functor_(minus_functor)
+AutoDiffManifold<PlusFunctor, MinusFunctor, kAmbientSize, kTangentSize>::AutoDiffManifold(PlusFunctor* plus_functor,
+                                                                                          MinusFunctor* minus_functor)
+  : plus_functor_(plus_functor), minus_functor_(minus_functor)
 {
 }
 
 template <typename PlusFunctor, typename MinusFunctor, int kAmbientSize, int kTangentSize>
-bool AutoDiffManifold<PlusFunctor, MinusFunctor, kAmbientSize, kTangentSize>::Plus(
-  const double* x,
-  const double* delta,
-  double* x_plus_delta) const
+bool AutoDiffManifold<PlusFunctor, MinusFunctor, kAmbientSize, kTangentSize>::Plus(const double* x, const double* delta,
+                                                                                   double* x_plus_delta) const
 {
   return (*plus_functor_)(x, delta, x_plus_delta);
 }
 
 template <typename PlusFunctor, typename MinusFunctor, int kAmbientSize, int kTangentSize>
-bool AutoDiffManifold<PlusFunctor, MinusFunctor, kAmbientSize, kTangentSize>::PlusJacobian(
-  const double* x,
-  double* jacobian) const
+bool AutoDiffManifold<PlusFunctor, MinusFunctor, kAmbientSize, kTangentSize>::PlusJacobian(const double* x,
+                                                                                           double* jacobian) const
 {
   double zero_delta[kTangentSize] = {};  // zero-initialize
   double x_plus_delta[kAmbientSize];
 
-  const double* parameter_ptrs[2] = {x, zero_delta};
-  double* jacobian_ptrs[2] = {NULL, jacobian};
+  const double* parameter_ptrs[2] = { x, zero_delta };
+  double* jacobian_ptrs[2] = { NULL, jacobian };
 #if !CERES_VERSION_AT_LEAST(2, 0, 0)
-  return ceres::internal::AutoDiff<PlusFunctor, double, kAmbientSize, kTangentSize>
-    ::Differentiate(*plus_functor_, parameter_ptrs, kAmbientSize, x_plus_delta, jacobian_ptrs);
+  return ceres::internal::AutoDiff<PlusFunctor, double, kAmbientSize, kTangentSize>::Differentiate(
+      *plus_functor_, parameter_ptrs, kAmbientSize, x_plus_delta, jacobian_ptrs);
 #else
-  return ceres::internal::AutoDifferentiate<kAmbientSize, ceres::internal::StaticParameterDims<kAmbientSize, kTangentSize>>(
+  return ceres::internal::AutoDifferentiate<kAmbientSize,
+                                            ceres::internal::StaticParameterDims<kAmbientSize, kTangentSize> >(
       *plus_functor_, parameter_ptrs, kAmbientSize, x_plus_delta, jacobian_ptrs);
 #endif
 }
 
 template <typename PlusFunctor, typename MinusFunctor, int kAmbientSize, int kTangentSize>
-bool AutoDiffManifold<PlusFunctor, MinusFunctor, kAmbientSize, kTangentSize>::Minus(
-  const double* x1,
-  const double* x2,
-  double* delta) const
+bool AutoDiffManifold<PlusFunctor, MinusFunctor, kAmbientSize, kTangentSize>::Minus(const double* x2, const double* x1,
+                                                                                    double* delta) const
 {
-  return (*minus_functor_)(x1, x2, delta);
+  return (*minus_functor_)(x2, x1, delta);
 }
 
 template <typename PlusFunctor, typename MinusFunctor, int kAmbientSize, int kTangentSize>
-bool AutoDiffManifold<PlusFunctor, MinusFunctor, kAmbientSize, kTangentSize>::MinusJacobian(
-  const double* x,
-  double* jacobian) const
+bool AutoDiffManifold<PlusFunctor, MinusFunctor, kAmbientSize, kTangentSize>::MinusJacobian(const double* x,
+                                                                                            double* jacobian) const
 {
   double delta[kTangentSize] = {};  // zero-initialize
 
-  const double* parameter_ptrs[2] = {x, x};
-  double* jacobian_ptrs[2] = {jacobian, nullptr};
+  const double* parameter_ptrs[2] = { x, x };
+  double* jacobian_ptrs[2] = { jacobian, nullptr };
 #if !CERES_VERSION_AT_LEAST(2, 0, 0)
-  return ceres::internal::AutoDiff<MinusFunctor, double, kAmbientSize, kAmbientSize>
-    ::Differentiate(*minus_functor_, parameter_ptrs, kTangentSize, delta, jacobian_ptrs);
+  return ceres::internal::AutoDiff<MinusFunctor, double, kAmbientSize, kAmbientSize>::Differentiate(
+      *minus_functor_, parameter_ptrs, kTangentSize, delta, jacobian_ptrs);
 #else
-  return ceres::internal::AutoDifferentiate<kTangentSize, ceres::internal::StaticParameterDims<kAmbientSize, kAmbientSize>>(
+  return ceres::internal::AutoDifferentiate<kTangentSize,
+                                            ceres::internal::StaticParameterDims<kAmbientSize, kAmbientSize> >(
       *minus_functor_, parameter_ptrs, kTangentSize, delta, jacobian_ptrs);
 #endif
 }

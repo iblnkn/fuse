@@ -115,8 +115,8 @@ public:
   }
 
   bool Minus(
-    const double* x1,
     const double* x2,
+    const double* x1,
     double* delta) const override
   {
     double x1_inverse[4];

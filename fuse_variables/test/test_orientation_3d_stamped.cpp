@@ -121,7 +121,7 @@ struct Orientation3DPlus
 struct Orientation3DMinus
 {
   template <typename T>
-  bool operator()(const T* q1, const T* q2, T* delta) const
+  bool operator()(const T* q2, const T* q1, T* delta) const
   {
     T q1_inverse[4];
     q1_inverse[0] = q1[0];
@@ -162,7 +162,7 @@ TEST(Orientation3DStamped, Minus)
   double x1[4] = { 0.842614977, 0.2, 0.3, 0.4 };
   double x2[4] = { 0.745561, 0.360184, 0.194124, 0.526043 };
   double result[3] = { 0.0, 0.0, 0.0 };
-  bool success = manifold->Minus(x1, x2, result);
+  bool success = manifold->Minus(x2, x1, result);
 
   EXPECT_TRUE(success);
   EXPECT_NEAR(0.15, result[0], 1.0e-5);

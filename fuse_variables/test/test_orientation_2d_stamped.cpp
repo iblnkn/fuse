@@ -115,7 +115,7 @@ struct Orientation2DPlus
 struct Orientation2DMinus
 {
   template<typename T>
-  bool operator()(const T* x1, const T* x2, T* delta) const
+  bool operator()(const T* x2, const T* x1, T* delta) const
   {
     delta[0] = fuse_core::wrapAngle2D(x2[0] - x1[0]);
     return true;
@@ -185,7 +185,7 @@ TEST(Orientation2DStamped, Minus)
     double x1[1] = {1.0};
     double x2[1] = {1.5};
     double actual[1] = {0.0};
-    bool success = manifold->Minus(x1, x2, actual);
+    bool success = manifold->Minus(x2, x1, actual);
 
     EXPECT_TRUE(success);
     EXPECT_NEAR(0.5, actual[0], 1.0e-5);
@@ -196,7 +196,7 @@ TEST(Orientation2DStamped, Minus)
     double x1[1] = {2.0};
     double x2[1] = {5 - 2*M_PI};
     double actual[1] = {0.0};
-    bool success = manifold->Minus(x1, x2, actual);
+    bool success = manifold->Minus(x2, x1, actual);
 
     EXPECT_TRUE(success);
     EXPECT_NEAR(3.0, actual[0], 1.0e-5);
