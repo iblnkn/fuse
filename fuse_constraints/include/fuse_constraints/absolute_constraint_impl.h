@@ -38,10 +38,10 @@
 #include <fuse_constraints/normal_prior_orientation_3d.h>
 // #include <fuse_constraints/absolute_orientation_3d_stamped_constraint.h>
 
-// #include <fuse_constraints/normal_prior_orientation_3d_cost_functor.h>
+#include <fuse_constraints/normal_prior_orientation_3d_cost_functor.h>
 
 #include <ceres/normal_prior.h>
-// #include <ceres/autodiff_cost_function.h>
+#include <ceres/autodiff_cost_function.h>
 #include <Eigen/Dense>
 
 #include <string>
@@ -137,15 +137,15 @@ inline ceres::CostFunction* AbsoluteConstraint<fuse_variables::Orientation2DStam
   return new NormalPriorOrientation2D(sqrt_information_(0, 0), mean_(0));
 }
 
-// // Specialization for Orientation3D
-// // We need to handle the 2*pi rollover for 3D orientations, so simple subtraction does not produce the correct cost
-// template <>
-// inline ceres::CostFunction* AbsoluteConstraint<fuse_variables::Orientation3DStamped>::costFunction() const
-// {
-//   // return new ceres::AutoDiffCostFunction<NormalPriorOrientation3DCostFunctor, 3, 4>(
-//   //   new NormalPriorOrientation3DCostFunctor(sqrt_information_, mean_));
-//   return new NormalPriorOrientation3D(sqrt_information_, mean_);
-// }
+// Specialization for Orientation3D
+// We need to handle the 2*pi rollover for 3D orientations, so simple subtraction does not produce the correct cost
+template <>
+inline ceres::CostFunction* AbsoluteConstraint<fuse_variables::Orientation3DStamped>::costFunction() const
+{
+  return new ceres::AutoDiffCostFunction<NormalPriorOrientation3DCostFunctor, 3, 4>(
+    new NormalPriorOrientation3DCostFunctor(sqrt_information_, mean_));
+  // return new NormalPriorOrientation3D(sqrt_information_, mean_);
+}
 
 // Specialize the type() method to return the name that is registered with the plugins
 template <>
