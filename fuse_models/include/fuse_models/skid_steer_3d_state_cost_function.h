@@ -42,13 +42,11 @@
 
 #include <ceres/sized_cost_function.h>
 
-
 namespace fuse_models
 {
-
 /**
  * @brief Create a cost function for a 3D state vector
- * 
+ *
  * The state vector includes the following quantities, given in this order:
  *   x position
  *   y position
@@ -72,7 +70,7 @@ namespace fuse_models
  *             ||    [  yaw_vel_t2 - proj(yaw_vel_t1) ] ||
  *             ||    [    x_acc_t2 - proj(x_acc_t1)   ] ||
  *             ||    [    y_acc_t2 - proj(y_acc_t1)   ] ||
- * 
+ *
  * where, the matrix A is fixed, the state variables are provided at two discrete time steps, and proj is a function
  * that projects the state variables from time t1 to time t2. In case the user is interested in implementing a cost
  * function of the form
@@ -115,9 +113,7 @@ public:
    *                         computed for the parameters where jacobians[i] is not NULL.
    * @return The return value indicates whether the computation of the residuals and/or jacobians was successful or not.
    */
-  bool Evaluate(double const* const* parameters,
-                double* residuals,
-                double** jacobians) const override
+  bool Evaluate(double const* const* parameters, double* residuals, double** jacobians) const override
   {
     double position_pred_x;
     double position_pred_y;
@@ -137,45 +133,28 @@ public:
     double acc_angular_pred_x;
     double acc_angular_pred_y;
     double acc_angular_pred_z;
-    predict(
-      parameters[0][0],  // position1_x
-      parameters[0][1],  // position1_y
-      parameters[0][2],  // position1_y
-      parameters[1][0],  // orientation1_x
-      parameters[1][1],  // orientation1_y
-      parameters[1][2],  // orientation1_z
-      parameters[2][0],  // vel_linear1_x
-      parameters[2][1],  // vel_linear1_y
-      parameters[2][2],  // vel_linear1_z
-      parameters[3][0],  // vel_angular1_x
-      parameters[3][1],  // vel_angular1_y
-      parameters[3][2],  // vel_angular1_z
-      parameters[4][0],  // acc_linear1_x
-      parameters[4][1],  // acc_linear1_y
-      parameters[4][2],  // acc_linear1_z
-      parameters[5][0],  // acc_angular1_x
-      parameters[5][1],  // acc_angular1_y
-      parameters[5][2],  // acc_angular1_z
-      dt_,
-      position_pred_x,
-      position_pred_y,
-      position_pred_z,
-      orientation_pred_x,
-      orientation_pred_y,
-      orientation_pred_z,
-      vel_linear_pred_x,
-      vel_linear_pred_y,
-      vel_linear_pred_z,
-      vel_angular_pred_x,
-      vel_angular_pred_y,
-      vel_angular_pred_z,
-      acc_linear_pred_x,
-      acc_linear_pred_y,
-      acc_linear_pred_z,
-      acc_angular_pred_x,
-      acc_angular_pred_y,
-      acc_angular_pred_z,
-      jacobians);
+    predict(parameters[0][0],  // position1_x
+            parameters[0][1],  // position1_y
+            parameters[0][2],  // position1_y
+            parameters[1][0],  // orientation1_x
+            parameters[1][1],  // orientation1_y
+            parameters[1][2],  // orientation1_z
+            parameters[2][0],  // vel_linear1_x
+            parameters[2][1],  // vel_linear1_y
+            parameters[2][2],  // vel_linear1_z
+            parameters[3][0],  // vel_angular1_x
+            parameters[3][1],  // vel_angular1_y
+            parameters[3][2],  // vel_angular1_z
+            parameters[4][0],  // acc_linear1_x
+            parameters[4][1],  // acc_linear1_y
+            parameters[4][2],  // acc_linear1_z
+            parameters[5][0],  // acc_angular1_x
+            parameters[5][1],  // acc_angular1_y
+            parameters[5][2],  // acc_angular1_z
+            dt_, position_pred_x, position_pred_y, position_pred_z, orientation_pred_x, orientation_pred_y,
+            orientation_pred_z, vel_linear_pred_x, vel_linear_pred_y, vel_linear_pred_z, vel_angular_pred_x,
+            vel_angular_pred_y, vel_angular_pred_z, acc_linear_pred_x, acc_linear_pred_y, acc_linear_pred_z,
+            acc_angular_pred_x, acc_angular_pred_y, acc_angular_pred_z, jacobians);
 
     residuals[0] = parameters[6][0] - position_pred_x;
     residuals[1] = parameters[6][1] - position_pred_y;
@@ -197,14 +176,14 @@ public:
     residuals[17] = parameters[11][2] - acc_angular_pred_z;
 
     fuse_core::wrapAngle2D(residuals[3]);
-    fuse_core::wrapAngle2D(residuals[4]); 
-    fuse_core::wrapAngle2D(residuals[5]); 
-    fuse_core::wrapAngle2D(residuals[9]); 
-    fuse_core::wrapAngle2D(residuals[10]); 
-    fuse_core::wrapAngle2D(residuals[11]);  
-    fuse_core::wrapAngle2D(residuals[15]); 
-    fuse_core::wrapAngle2D(residuals[16]); 
-    fuse_core::wrapAngle2D(residuals[17]);  
+    fuse_core::wrapAngle2D(residuals[4]);
+    fuse_core::wrapAngle2D(residuals[5]);
+    fuse_core::wrapAngle2D(residuals[9]);
+    fuse_core::wrapAngle2D(residuals[10]);
+    fuse_core::wrapAngle2D(residuals[11]);
+    fuse_core::wrapAngle2D(residuals[15]);
+    fuse_core::wrapAngle2D(residuals[16]);
+    fuse_core::wrapAngle2D(residuals[17]);
 
     // Scale the residuals by the square root information matrix to account for
     // the measurement uncertainty.
@@ -318,7 +297,7 @@ public:
         Eigen::Map<fuse_core::Matrix<double, 18, 3>> jacobian(jacobians[10]);
         jacobian = A_.block<18, 3>(0, 12);
       }
-            // Jacobian wrt acc_linear2
+      // Jacobian wrt acc_linear2
       if (jacobians[11])
       {
         Eigen::Map<fuse_core::Matrix<double, 18, 3>> jacobian(jacobians[11]);
@@ -334,9 +313,8 @@ private:
   fuse_core::Matrix18d A_;  //!< The residual weighting matrix, most likely the square root information matrix
 };
 
-SkidSteer3DStateCostFunction::SkidSteer3DStateCostFunction(const double dt, const fuse_core::Matrix18d& A) :
-  dt_(dt),
-  A_(A)
+SkidSteer3DStateCostFunction::SkidSteer3DStateCostFunction(const double dt, const fuse_core::Matrix18d& A)
+  : dt_(dt), A_(A)
 {
 }
 

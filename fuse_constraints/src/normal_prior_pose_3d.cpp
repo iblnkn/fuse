@@ -46,7 +46,7 @@ NormalPriorPose3D::NormalPriorPose3D(const fuse_core::MatrixXd& A, const fuse_co
   b_(b)
 {
   CHECK_GT(A_.rows(), 0);
-  CHECK_EQ(A_.cols(), 3);
+  CHECK_EQ(A_.cols(), 7);
   set_num_residuals(A_.rows());
 }
 

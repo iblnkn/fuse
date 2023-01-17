@@ -61,10 +61,8 @@
 #include <string>
 #include <vector>
 
-
 namespace fuse_constraints
 {
-
 /**
  * @brief A constraint that represents a measurement on the difference between two variables.
  *
@@ -76,7 +74,7 @@ namespace fuse_constraints
  * correct operation for a specific variable type (e.g. 3D rotations), a custom constraint or template specialization
  * will be needed.
  */
-template<class Variable>
+template <class Variable>
 class RelativeConstraint : public fuse_core::Constraint
 {
 public:
@@ -96,12 +94,8 @@ public:
    * @param[in] delta      The measured change between variable1 and variable2
    * @param[in] covariance The measurement uncertainty
    */
-  RelativeConstraint(
-    const std::string& source,
-    const Variable& variable1,
-    const Variable& variable2,
-    const fuse_core::VectorXd& delta,
-    const fuse_core::MatrixXd& covariance);
+  RelativeConstraint(const std::string& source, const Variable& variable1, const Variable& variable2,
+                     const fuse_core::VectorXd& delta, const fuse_core::MatrixXd& covariance);
 
   /**
    * @brief Constructor
@@ -112,16 +106,13 @@ public:
    * @param[in] variable1          The first variable
    * @param[in] variable2          The second variable
    * @param[in] partial_delta      The measured change of the subset of dimensions in the order defined by \p indices
-   * @param[in] partial_covariance The uncertainty of the change of the subset of dimensions in the order defined by \p indices.
+   * @param[in] partial_covariance The uncertainty of the change of the subset of dimensions in the order defined by \p
+   * indices.
    * @param[in] indices            The set of indices corresponding to the measured dimensions
    */
-  RelativeConstraint(
-    const std::string& source,
-    const Variable& variable1,
-    const Variable& variable2,
-    const fuse_core::VectorXd& delta,
-    const fuse_core::MatrixXd& covariance,
-    const std::vector<size_t>& indices);
+  RelativeConstraint(const std::string& source, const Variable& variable1, const Variable& variable2,
+                     const fuse_core::VectorXd& delta, const fuse_core::MatrixXd& covariance,
+                     const std::vector<size_t>& indices);
 
   /**
    * @brief Destructor
@@ -135,7 +126,10 @@ public:
    * defined by the variable, not the order defined by the \p indices parameter. All unmeasured variable dimensions
    * are set to zero.
    */
-  const fuse_core::VectorXd& delta() const { return delta_; }
+  const fuse_core::VectorXd& delta() const
+  {
+    return delta_;
+  }
 
   /**
    * @brief Read-only access to the square root information matrix.
@@ -144,7 +138,10 @@ public:
    * square root information matrix will have size measured_dimensions X variable_dimensions. If only a partial set
    * of dimensions are measured, then this matrix will not be square.
    */
-  const fuse_core::MatrixXd& sqrtInformation() const { return sqrt_information_; }
+  const fuse_core::MatrixXd& sqrtInformation() const
+  {
+    return sqrt_information_;
+  }
 
   /**
    * @brief Compute the measurement covariance matrix.
@@ -175,7 +172,7 @@ public:
   ceres::CostFunction* costFunction() const override;
 
 protected:
-  fuse_core::VectorXd delta_;  //!< The measured change between the two variables
+  fuse_core::VectorXd delta_;             //!< The measured change between the two variables
   fuse_core::MatrixXd sqrt_information_;  //!< The square root information matrix
 
 private:
@@ -188,12 +185,12 @@ private:
    * @param[in/out] archive - The archive object that holds the serialized class members
    * @param[in] version - The version of the archive being read/written. Generally unused.
    */
-  template<class Archive>
+  template <class Archive>
   void serialize(Archive& archive, const unsigned int /* version */)
   {
-    archive & boost::serialization::base_object<fuse_core::Constraint>(*this);
-    archive & delta_;
-    archive & sqrt_information_;
+    archive& boost::serialization::base_object<fuse_core::Constraint>(*this);
+    archive& delta_;
+    archive& sqrt_information_;
   }
 };
 

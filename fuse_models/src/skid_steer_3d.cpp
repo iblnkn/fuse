@@ -55,36 +55,33 @@
 #include <geometry_msgs/Twist.h>
 #include <geometry_msgs/Accel.h>
 
-
-
 #include <stdexcept>
 #include <string>
 #include <utility>
 #include <vector>
-
 
 // Register this motion model with ROS as a plugin.
 PLUGINLIB_EXPORT_CLASS(fuse_models::SkidSteer3D, fuse_core::MotionModel)
 
 namespace std
 {
-
 inline bool isfinite3d(const geometry_msgs::Pose& pose)
 {
-  return std::isfinite(pose.position.x) && std::isfinite(pose.position.y) && std::isfinite(pose.position.z)&&
-         std::isfinite(pose.orientation.x) && std::isfinite(pose.orientation.y) && std::isfinite(pose.orientation.z) && std::isfinite(pose.orientation.w);
+  return std::isfinite(pose.position.x) && std::isfinite(pose.position.y) && std::isfinite(pose.position.z) &&
+         std::isfinite(pose.orientation.x) && std::isfinite(pose.orientation.y) && std::isfinite(pose.orientation.z) &&
+         std::isfinite(pose.orientation.w);
 }
 
 inline bool isfinite3d(const geometry_msgs::Twist& twist)
 {
   return std::isfinite(twist.linear.x) && std::isfinite(twist.linear.y) && std::isfinite(twist.linear.z) &&
-         std::isfinite(twist.angular.x) && std::isfinite(twist.angular.y) && std::isfinite(twist.angular.z) ;
+         std::isfinite(twist.angular.x) && std::isfinite(twist.angular.y) && std::isfinite(twist.angular.z);
 }
 
 inline bool isfinite3d(const geometry_msgs::Accel& accel)
 {
-  return std::isfinite(accel.linear.x) && std::isfinite(accel.linear.y) && std::isfinite(accel.linear.z) && 
-         std::isfinite(accel.angular.x) && std::isfinite(accel.angular.y) && std::isfinite(accel.angular.z) ;
+  return std::isfinite(accel.linear.x) && std::isfinite(accel.linear.y) && std::isfinite(accel.linear.z) &&
+         std::isfinite(accel.angular.x) && std::isfinite(accel.angular.y) && std::isfinite(accel.angular.z);
 }
 
 std::string to_string3d(const geometry_msgs::Pose& pose)
@@ -112,7 +109,6 @@ std::string to_string3d(const geometry_msgs::Accel& accel)
 
 namespace fuse_core
 {
-
 template <typename Derived>
 inline void validateCovariance(const Eigen::DenseBase<Derived>& covariance,
                                const double precision = Eigen::NumTraits<double>::dummy_precision())
@@ -134,12 +130,11 @@ inline void validateCovariance(const Eigen::DenseBase<Derived>& covariance,
 
 namespace fuse_models
 {
-
-SkidSteer3D::SkidSteer3D() :
-  fuse_core::AsyncMotionModel(1),
-  buffer_length_(ros::DURATION_MAX),
-  device_id_(fuse_core::uuid::NIL),
-  timestamp_manager_(&SkidSteer3D::generateMotionModel, this, ros::DURATION_MAX)
+SkidSteer3D::SkidSteer3D()
+  : fuse_core::AsyncMotionModel(1)
+  , buffer_length_(ros::DURATION_MAX)
+  , device_id_(fuse_core::uuid::NIL)
+  , timestamp_manager_(&SkidSteer3D::generateMotionModel, this, ros::DURATION_MAX)
 {
 }
 
@@ -165,7 +160,8 @@ void SkidSteer3D::StateHistoryElement::print(std::ostream& stream) const
          << "  velocity linear: " << velocity_linear << "\n"
          << "  velocity angular: " << velocity_angular << "\n"
          << "  acceleration linear: " << acceleration_linear << "\n"
-         << "  acceleration angular: "<< acceleration_angular << "\n";;
+         << "  acceleration angular: " << acceleration_angular << "\n";
+  ;
 }
 
 void SkidSteer3D::StateHistoryElement::validate() const
@@ -254,11 +250,9 @@ void SkidSteer3D::onStart()
   state_history_.clear();
 }
 
-void SkidSteer3D::generateMotionModel(
-  const ros::Time& beginning_stamp,
-  const ros::Time& ending_stamp,
-  std::vector<fuse_core::Constraint::SharedPtr>& constraints,
-  std::vector<fuse_core::Variable::SharedPtr>& variables)
+void SkidSteer3D::generateMotionModel(const ros::Time& beginning_stamp, const ros::Time& ending_stamp,
+                                      std::vector<fuse_core::Constraint::SharedPtr>& constraints,
+                                      std::vector<fuse_core::Variable::SharedPtr>& variables)
 {
   assert(beginning_stamp < ending_stamp || (beginning_stamp == ending_stamp && state_history_.empty()));
 
@@ -270,8 +264,10 @@ void SkidSteer3D::generateMotionModel(
   auto base_state_pair_it = state_history_.upper_bound(beginning_stamp);
   if (base_state_pair_it == state_history_.begin())
   {
-    ROS_WARN_STREAM_COND_NAMED(!state_history_.empty(), "SkidSteerModel", "Unable to locate a state in this history "
-                               "with stamp <= " << beginning_stamp << ". Variables will all be initialized to 0.");
+    ROS_WARN_STREAM_COND_NAMED(!state_history_.empty(), "SkidSteerModel",
+                               "Unable to locate a state in this history "
+                               "with stamp <= "
+                                   << beginning_stamp << ". Variables will all be initialized to 0.");
     base_time = beginning_stamp;
   }
   else
@@ -286,18 +282,9 @@ void SkidSteer3D::generateMotionModel(
   // If the nearest state we had was before the beginning stamp, we need to project that state to the beginning stamp
   if (base_time != beginning_stamp)
   {
-    predict(
-      base_state.pose,
-      base_state.velocity_linear,
-      base_state.velocity_angular,
-      base_state.acceleration_linear,
-      base_state.acceleration_angular,
-      (beginning_stamp - base_time).toSec(),
-      state1.pose,
-      state1.velocity_linear,
-      state1.velocity_angular,
-      state1.acceleration_linear,
-      state1.acceleration_angular);
+    predict(base_state.pose, base_state.velocity_linear, base_state.velocity_angular, base_state.acceleration_linear,
+            base_state.acceleration_angular, (beginning_stamp - base_time).toSec(), state1.pose, state1.velocity_linear,
+            state1.velocity_angular, state1.acceleration_linear, state1.acceleration_angular);
   }
   else
   {
@@ -323,18 +310,9 @@ void SkidSteer3D::generateMotionModel(
 
   // Now predict to get an initial guess for the state at the ending stamp
   StateHistoryElement state2;
-  predict(
-    state1.pose,
-    state1.velocity_linear,
-    state1.velocity_angular,
-    state1.acceleration_linear,
-    state1.acceleration_angular,
-    dt,
-    state2.pose,
-    state2.velocity_linear,
-    state2.velocity_angular,
-    state2.acceleration_linear,
-    state2.acceleration_angular);
+  predict(state1.pose, state1.velocity_linear, state1.velocity_angular, state1.acceleration_linear,
+          state1.acceleration_angular, dt, state2.pose, state2.velocity_linear, state2.velocity_angular,
+          state2.acceleration_linear, state2.acceleration_angular);
 
   // Define the fuse variables required for this constraint
   auto position1 = fuse_variables::Position3DStamped::make_shared(beginning_stamp, device_id_);
@@ -366,9 +344,12 @@ void SkidSteer3D::generateMotionModel(
   acceleration_linear1->data()[fuse_variables::AccelerationLinear3DStamped::X] = state1.acceleration_linear.linear.x;
   acceleration_linear1->data()[fuse_variables::AccelerationLinear3DStamped::Y] = state1.acceleration_linear.linear.y;
   acceleration_linear1->data()[fuse_variables::AccelerationLinear3DStamped::Z] = state1.acceleration_linear.linear.z;
-  acceleration_angular1->data()[fuse_variables::AccelerationAngular3DStamped::ROLL] = state1.acceleration_linear.angular.x;
-  acceleration_angular1->data()[fuse_variables::AccelerationAngular3DStamped::PITCH] = state1.acceleration_linear.angular.y;
-  acceleration_angular1->data()[fuse_variables::AccelerationAngular3DStamped::YAW] = state1.acceleration_linear.angular.z;
+  acceleration_angular1->data()[fuse_variables::AccelerationAngular3DStamped::ROLL] =
+      state1.acceleration_linear.angular.x;
+  acceleration_angular1->data()[fuse_variables::AccelerationAngular3DStamped::PITCH] =
+      state1.acceleration_linear.angular.y;
+  acceleration_angular1->data()[fuse_variables::AccelerationAngular3DStamped::YAW] =
+      state1.acceleration_linear.angular.z;
   position2->data()[fuse_variables::Position3DStamped::X] = state2.pose.position.x;
   position2->data()[fuse_variables::Position3DStamped::Y] = state2.pose.position.y;
   position2->data()[fuse_variables::Position3DStamped::Z] = state2.pose.position.z;
@@ -385,9 +366,12 @@ void SkidSteer3D::generateMotionModel(
   acceleration_linear2->data()[fuse_variables::AccelerationLinear3DStamped::X] = state2.acceleration_linear.linear.x;
   acceleration_linear2->data()[fuse_variables::AccelerationLinear3DStamped::Y] = state2.acceleration_linear.linear.y;
   acceleration_linear2->data()[fuse_variables::AccelerationLinear3DStamped::Z] = state2.acceleration_linear.linear.z;
-  acceleration_angular2->data()[fuse_variables::AccelerationAngular3DStamped::ROLL] = state2.acceleration_linear.angular.x;
-  acceleration_angular2->data()[fuse_variables::AccelerationAngular3DStamped::PITCH] = state2.acceleration_linear.angular.y;
-  acceleration_angular2->data()[fuse_variables::AccelerationAngular3DStamped::YAW] = state2.acceleration_linear.angular.z;
+  acceleration_angular2->data()[fuse_variables::AccelerationAngular3DStamped::ROLL] =
+      state2.acceleration_linear.angular.x;
+  acceleration_angular2->data()[fuse_variables::AccelerationAngular3DStamped::PITCH] =
+      state2.acceleration_linear.angular.y;
+  acceleration_angular2->data()[fuse_variables::AccelerationAngular3DStamped::YAW] =
+      state2.acceleration_linear.angular.z;
 
   state1.position_uuid = position1->uuid();
   state1.orientation_uuid = orientation1->uuid();
@@ -431,20 +415,9 @@ void SkidSteer3D::generateMotionModel(
 
   // Create the constraints for this motion model segment
   auto constraint = fuse_models::SkidSteer3DStateKinematicConstraint::make_shared(
-    name(),
-    *position1,
-    *orientation1,
-    *velocity_linear1,
-    *velocity_angular1,
-    *acceleration_linear1,
-    *acceleration_angular1,
-    *position2,
-    *orientation2,
-    *velocity_linear2,
-    *velocity_angular2,
-    *acceleration_linear2,
-    *acceleration_angular2,
-    process_noise_covariance);
+      name(), *position1, *orientation1, *velocity_linear1, *velocity_angular1, *acceleration_linear1,
+      *acceleration_angular1, *position2, *orientation2, *velocity_linear2, *velocity_angular2, *acceleration_linear2,
+      *acceleration_angular2, process_noise_covariance);
 
   // Update the output variables
   constraints.push_back(constraint);
@@ -463,10 +436,8 @@ void SkidSteer3D::generateMotionModel(
   variables.push_back(acceleration_angular2);
 }
 
-void SkidSteer3D::updateStateHistoryEstimates(
-  const fuse_core::Graph& graph,
-  StateHistory& state_history,
-  const ros::Duration& buffer_length)
+void SkidSteer3D::updateStateHistoryEstimates(const fuse_core::Graph& graph, StateHistory& state_history,
+                                              const ros::Duration& buffer_length)
 {
   if (state_history.empty())
   {
@@ -475,8 +446,7 @@ void SkidSteer3D::updateStateHistoryEstimates(
 
   // Compute the expiration time carefully, as ROS can't handle negative times
   const auto& ending_stamp = state_history.rbegin()->first;
-  auto expiration_time =
-      ending_stamp.toSec() > buffer_length.toSec() ? ending_stamp - buffer_length : ros::Time(0, 0);
+  auto expiration_time = ending_stamp.toSec() > buffer_length.toSec() ? ending_stamp - buffer_length : ros::Time(0, 0);
 
   // Remove state history elements before the expiration time.
   // Be careful to ensure that:
@@ -496,12 +466,9 @@ void SkidSteer3D::updateStateHistoryEstimates(
   {
     const auto& current_stamp = current_iter->first;
     auto& current_state = current_iter->second;
-    if (graph.variableExists(current_state.position_uuid) &&
-        graph.variableExists(current_state.orientation_uuid) &&
-        graph.variableExists(current_state.vel_linear_uuid) &&
-        graph.variableExists(current_state.vel_angular_uuid) &&
-        graph.variableExists(current_state.acc_linear_uuid) &&
-        graph.variableExists(current_state.acc_angular_uuid))
+    if (graph.variableExists(current_state.position_uuid) && graph.variableExists(current_state.orientation_uuid) &&
+        graph.variableExists(current_state.vel_linear_uuid) && graph.variableExists(current_state.vel_angular_uuid) &&
+        graph.variableExists(current_state.acc_linear_uuid) && graph.variableExists(current_state.acc_angular_uuid))
     {
       // This pose does exist in the graph. Update it directly.
       const auto& position = graph.getVariable(current_state.position_uuid);
@@ -524,12 +491,15 @@ void SkidSteer3D::updateStateHistoryEstimates(
       current_state.velocity_angular.angular.x = vel_angular.data()[fuse_variables::VelocityAngular3DStamped::ROLL];
       current_state.velocity_angular.angular.y = vel_angular.data()[fuse_variables::VelocityAngular3DStamped::PITCH];
       current_state.velocity_angular.angular.z = vel_angular.data()[fuse_variables::VelocityAngular3DStamped::YAW];
-      current_state.acceleration_linear.linear.x=(acc_linear.data()[fuse_variables::AccelerationLinear3DStamped::X]);
-      current_state.acceleration_linear.linear.y=(acc_linear.data()[fuse_variables::AccelerationLinear3DStamped::Y]);
-      current_state.acceleration_linear.linear.z=(acc_linear.data()[fuse_variables::AccelerationLinear3DStamped::Z]);
-      current_state.acceleration_angular.angular.x=(acc_angular.data()[fuse_variables::AccelerationAngular3DStamped::ROLL]);
-      current_state.acceleration_angular.angular.y=(acc_angular.data()[fuse_variables::AccelerationAngular3DStamped::PITCH]);
-      current_state.acceleration_angular.angular.z=(acc_angular.data()[fuse_variables::AccelerationAngular3DStamped::YAW]);
+      current_state.acceleration_linear.linear.x = (acc_linear.data()[fuse_variables::AccelerationLinear3DStamped::X]);
+      current_state.acceleration_linear.linear.y = (acc_linear.data()[fuse_variables::AccelerationLinear3DStamped::Y]);
+      current_state.acceleration_linear.linear.z = (acc_linear.data()[fuse_variables::AccelerationLinear3DStamped::Z]);
+      current_state.acceleration_angular.angular.x =
+          (acc_angular.data()[fuse_variables::AccelerationAngular3DStamped::ROLL]);
+      current_state.acceleration_angular.angular.y =
+          (acc_angular.data()[fuse_variables::AccelerationAngular3DStamped::PITCH]);
+      current_state.acceleration_angular.angular.z =
+          (acc_angular.data()[fuse_variables::AccelerationAngular3DStamped::YAW]);
     }
     else if (current_iter != state_history.begin())
     {
@@ -540,24 +510,16 @@ void SkidSteer3D::updateStateHistoryEstimates(
       // This state is not in the graph yet, so we can't update/correct the value in our state history. However, the
       // state *before* this one may have been corrected (or one of its predecessors may have been), so we can use
       // that corrected value, along with our prediction logic, to provide a more accurate update to this state.
-      predict(
-        previous_state.pose,
-        previous_state.velocity_linear,
-        previous_state.velocity_angular,
-        previous_state.acceleration_linear,
-        previous_state.acceleration_angular,
-        (current_stamp - previous_stamp).toSec(),
-        current_state.pose,
-        current_state.velocity_linear,
-        current_state.velocity_angular,
-        current_state.acceleration_linear,
-        current_state.acceleration_angular);
+      predict(previous_state.pose, previous_state.velocity_linear, previous_state.velocity_angular,
+              previous_state.acceleration_linear, previous_state.acceleration_angular,
+              (current_stamp - previous_stamp).toSec(), current_state.pose, current_state.velocity_linear,
+              current_state.velocity_angular, current_state.acceleration_linear, current_state.acceleration_angular);
     }
   }
 }
 
 void SkidSteer3D::validateMotionModel(const StateHistoryElement& state1, const StateHistoryElement& state2,
-                                     const fuse_core::Matrix18d& process_noise_covariance)
+                                      const fuse_core::Matrix18d& process_noise_covariance)
 {
   try
   {

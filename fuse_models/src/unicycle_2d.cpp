@@ -61,13 +61,11 @@
 #include <geometry_msgs/Twist.h>
 #include <geometry_msgs/Accel.h>
 
-
 // Register this motion model with ROS as a plugin.
 PLUGINLIB_EXPORT_CLASS(fuse_models::Unicycle2D, fuse_core::MotionModel)
 
 namespace std
 {
-
 inline bool isfinite(const geometry_msgs::Twist& twist)
 {
   return std::isfinite(twist.linear.x) && std::isfinite(twist.linear.y) && std::isfinite(twist.linear.z) &&
@@ -76,7 +74,7 @@ inline bool isfinite(const geometry_msgs::Twist& twist)
 
 inline bool isfinite(const geometry_msgs::Accel& accel)
 {
-  return std::isfinite(accel.linear.x) && std::isfinite(accel.linear.y) && std::isfinite(accel.linear.z) && 
+  return std::isfinite(accel.linear.x) && std::isfinite(accel.linear.y) && std::isfinite(accel.linear.z) &&
          std::isfinite(accel.angular.x) && std::isfinite(accel.angular.y) && std::isfinite(accel.angular.z);
 }
 
@@ -110,7 +108,6 @@ std::string to_string(const geometry_msgs::Pose2D& transform)
 
 namespace fuse_core
 {
-
 template <typename Derived>
 inline void validateCovariance(const Eigen::DenseBase<Derived>& covariance,
                                const double precision = Eigen::NumTraits<double>::dummy_precision())
@@ -132,12 +129,11 @@ inline void validateCovariance(const Eigen::DenseBase<Derived>& covariance,
 
 namespace fuse_models
 {
-
-Unicycle2D::Unicycle2D() :
-  fuse_core::AsyncMotionModel(1),
-  buffer_length_(ros::DURATION_MAX),
-  device_id_(fuse_core::uuid::NIL),
-  timestamp_manager_(&Unicycle2D::generateMotionModel, this, ros::DURATION_MAX)
+Unicycle2D::Unicycle2D()
+  : fuse_core::AsyncMotionModel(1)
+  , buffer_length_(ros::DURATION_MAX)
+  , device_id_(fuse_core::uuid::NIL)
+  , timestamp_manager_(&Unicycle2D::generateMotionModel, this, ros::DURATION_MAX)
 {
 }
 
@@ -246,11 +242,9 @@ void Unicycle2D::onStart()
   state_history_.clear();
 }
 
-void Unicycle2D::generateMotionModel(
-  const ros::Time& beginning_stamp,
-  const ros::Time& ending_stamp,
-  std::vector<fuse_core::Constraint::SharedPtr>& constraints,
-  std::vector<fuse_core::Variable::SharedPtr>& variables)
+void Unicycle2D::generateMotionModel(const ros::Time& beginning_stamp, const ros::Time& ending_stamp,
+                                     std::vector<fuse_core::Constraint::SharedPtr>& constraints,
+                                     std::vector<fuse_core::Variable::SharedPtr>& variables)
 {
   assert(beginning_stamp < ending_stamp || (beginning_stamp == ending_stamp && state_history_.empty()));
 
@@ -262,8 +256,10 @@ void Unicycle2D::generateMotionModel(
   auto base_state_pair_it = state_history_.upper_bound(beginning_stamp);
   if (base_state_pair_it == state_history_.begin())
   {
-    ROS_WARN_STREAM_COND_NAMED(!state_history_.empty(), "UnicycleModel", "Unable to locate a state in this history "
-                               "with stamp <= " << beginning_stamp << ". Variables will all be initialized to 0.");
+    ROS_WARN_STREAM_COND_NAMED(!state_history_.empty(), "UnicycleModel",
+                               "Unable to locate a state in this history "
+                               "with stamp <= "
+                                   << beginning_stamp << ". Variables will all be initialized to 0.");
     base_time = beginning_stamp;
   }
   else
@@ -278,16 +274,9 @@ void Unicycle2D::generateMotionModel(
   // If the nearest state we had was before the beginning stamp, we need to project that state to the beginning stamp
   if (base_time != beginning_stamp)
   {
-    predict(
-      base_state.pose,
-      base_state.velocity_linear,
-      base_state.velocity_yaw,
-      base_state.acceleration_linear,
-      (beginning_stamp - base_time).toSec(),
-      state1.pose,
-      state1.velocity_linear,
-      state1.velocity_yaw,
-      state1.acceleration_linear);
+    predict(base_state.pose, base_state.velocity_linear, base_state.velocity_yaw, base_state.acceleration_linear,
+            (beginning_stamp - base_time).toSec(), state1.pose, state1.velocity_linear, state1.velocity_yaw,
+            state1.acceleration_linear);
   }
   else
   {
@@ -312,16 +301,8 @@ void Unicycle2D::generateMotionModel(
 
   // Now predict to get an initial guess for the state at the ending stamp
   StateHistoryElement state2;
-  predict(
-    state1.pose,
-    state1.velocity_linear,
-    state1.velocity_yaw,
-    state1.acceleration_linear,
-    dt,
-    state2.pose,
-    state2.velocity_linear,
-    state2.velocity_yaw,
-    state2.acceleration_linear);
+  predict(state1.pose, state1.velocity_linear, state1.velocity_yaw, state1.acceleration_linear, dt, state2.pose,
+          state2.velocity_linear, state2.velocity_yaw, state2.acceleration_linear);
 
   // Define the fuse variables required for this constraint
   auto position1 = fuse_variables::Position2DStamped::make_shared(beginning_stamp, device_id_);
@@ -392,18 +373,8 @@ void Unicycle2D::generateMotionModel(
 
   // Create the constraints for this motion model segment
   auto constraint = fuse_models::Unicycle2DStateKinematicConstraint::make_shared(
-    name(),
-    *position1,
-    *yaw1,
-    *velocity_linear1,
-    *velocity_yaw1,
-    *acceleration_linear1,
-    *position2,
-    *yaw2,
-    *velocity_linear2,
-    *velocity_yaw2,
-    *acceleration_linear2,
-    process_noise_covariance);
+      name(), *position1, *yaw1, *velocity_linear1, *velocity_yaw1, *acceleration_linear1, *position2, *yaw2,
+      *velocity_linear2, *velocity_yaw2, *acceleration_linear2, process_noise_covariance);
 
   // Update the output variables
   constraints.push_back(constraint);
@@ -419,10 +390,8 @@ void Unicycle2D::generateMotionModel(
   variables.push_back(acceleration_linear2);
 }
 
-void Unicycle2D::updateStateHistoryEstimates(
-  const fuse_core::Graph& graph,
-  StateHistory& state_history,
-  const ros::Duration& buffer_length)
+void Unicycle2D::updateStateHistoryEstimates(const fuse_core::Graph& graph, StateHistory& state_history,
+                                             const ros::Duration& buffer_length)
 {
   if (state_history.empty())
   {
@@ -431,8 +400,7 @@ void Unicycle2D::updateStateHistoryEstimates(
 
   // Compute the expiration time carefully, as ROS can't handle negative times
   const auto& ending_stamp = state_history.rbegin()->first;
-  auto expiration_time =
-      ending_stamp.toSec() > buffer_length.toSec() ? ending_stamp - buffer_length : ros::Time(0, 0);
+  auto expiration_time = ending_stamp.toSec() > buffer_length.toSec() ? ending_stamp - buffer_length : ros::Time(0, 0);
 
   // Remove state history elements before the expiration time.
   // Be careful to ensure that:
@@ -452,10 +420,8 @@ void Unicycle2D::updateStateHistoryEstimates(
   {
     const auto& current_stamp = current_iter->first;
     auto& current_state = current_iter->second;
-    if (graph.variableExists(current_state.position_uuid) &&
-        graph.variableExists(current_state.yaw_uuid) &&
-        graph.variableExists(current_state.vel_linear_uuid) &&
-        graph.variableExists(current_state.vel_yaw_uuid) &&
+    if (graph.variableExists(current_state.position_uuid) && graph.variableExists(current_state.yaw_uuid) &&
+        graph.variableExists(current_state.vel_linear_uuid) && graph.variableExists(current_state.vel_yaw_uuid) &&
         graph.variableExists(current_state.acc_linear_uuid))
     {
       // This pose does exist in the graph. Update it directly.
@@ -472,7 +438,7 @@ void Unicycle2D::updateStateHistoryEstimates(
       current_state.velocity_linear.linear.y = (vel_linear.data()[fuse_variables::VelocityLinear2DStamped::Y]);
       current_state.velocity_yaw = vel_yaw.data()[fuse_variables::VelocityAngular2DStamped::YAW];
       current_state.acceleration_linear.linear.x = (acc_linear.data()[fuse_variables::AccelerationLinear2DStamped::X]);
-      current_state.acceleration_linear.linear.y =(acc_linear.data()[fuse_variables::AccelerationLinear2DStamped::Y]);
+      current_state.acceleration_linear.linear.y = (acc_linear.data()[fuse_variables::AccelerationLinear2DStamped::Y]);
     }
     else if (current_iter != state_history.begin())
     {
@@ -483,16 +449,9 @@ void Unicycle2D::updateStateHistoryEstimates(
       // This state is not in the graph yet, so we can't update/correct the value in our state history. However, the
       // state *before* this one may have been corrected (or one of its predecessors may have been), so we can use
       // that corrected value, along with our prediction logic, to provide a more accurate update to this state.
-      predict(
-        previous_state.pose,
-        previous_state.velocity_linear,
-        previous_state.velocity_yaw,
-        previous_state.acceleration_linear,
-        (current_stamp - previous_stamp).toSec(),
-        current_state.pose,
-        current_state.velocity_linear,
-        current_state.velocity_yaw,
-        current_state.acceleration_linear);
+      predict(previous_state.pose, previous_state.velocity_linear, previous_state.velocity_yaw,
+              previous_state.acceleration_linear, (current_stamp - previous_stamp).toSec(), current_state.pose,
+              current_state.velocity_linear, current_state.velocity_yaw, current_state.acceleration_linear);
     }
   }
 }

@@ -43,20 +43,16 @@
 #include <string>
 #include <vector>
 
-
 namespace fuse_constraints
 {
-
-template<class Variable>
-RelativeConstraint<Variable>::RelativeConstraint(
-  const std::string& source,
-  const Variable& variable1,
-  const Variable& variable2,
-  const fuse_core::VectorXd& delta,
-  const fuse_core::MatrixXd& covariance) :
-    fuse_core::Constraint(source, {variable1.uuid(), variable2.uuid()}),  // NOLINT(whitespace/braces)
-    delta_(delta),
-    sqrt_information_(covariance.inverse().llt().matrixU())
+template <class Variable>
+RelativeConstraint<Variable>::RelativeConstraint(const std::string& source, const Variable& variable1,
+                                                 const Variable& variable2, const fuse_core::VectorXd& delta,
+                                                 const fuse_core::MatrixXd& covariance)
+  : fuse_core::Constraint(source, { variable1.uuid(), variable2.uuid() })
+  ,  // NOLINT(whitespace/braces)
+  delta_(delta)
+  , sqrt_information_(covariance.inverse().llt().matrixU())
 {
   assert(variable1.size() == variable2.size());
   assert(delta.rows() == static_cast<int>(variable1.size()));
@@ -64,15 +60,12 @@ RelativeConstraint<Variable>::RelativeConstraint(
   assert(covariance.cols() == static_cast<int>(variable1.size()));
 }
 
-template<class Variable>
-RelativeConstraint<Variable>::RelativeConstraint(
-  const std::string& source,
-  const Variable& variable1,
-  const Variable& variable2,
-  const fuse_core::VectorXd& partial_delta,
-  const fuse_core::MatrixXd& partial_covariance,
-  const std::vector<size_t>& indices) :
-    fuse_core::Constraint(source, {variable1.uuid(), variable2.uuid()})  // NOLINT(whitespace/braces)
+template <class Variable>
+RelativeConstraint<Variable>::RelativeConstraint(const std::string& source, const Variable& variable1,
+                                                 const Variable& variable2, const fuse_core::VectorXd& partial_delta,
+                                                 const fuse_core::MatrixXd& partial_covariance,
+                                                 const std::vector<size_t>& indices)
+  : fuse_core::Constraint(source, { variable1.uuid(), variable2.uuid() })  // NOLINT(whitespace/braces)
 {
   assert(variable1.size() == variable2.size());
   assert(partial_delta.rows() == static_cast<int>(indices.size()));
@@ -96,7 +89,7 @@ RelativeConstraint<Variable>::RelativeConstraint(
   }
 }
 
-template<class Variable>
+template <class Variable>
 fuse_core::MatrixXd RelativeConstraint<Variable>::covariance() const
 {
   // We want to compute:
@@ -111,7 +104,7 @@ fuse_core::MatrixXd RelativeConstraint<Variable>::covariance() const
   return pinv * pinv.transpose();
 }
 
-template<class Variable>
+template <class Variable>
 void RelativeConstraint<Variable>::print(std::ostream& stream) const
 {
   stream << type() << "\n"
@@ -129,7 +122,7 @@ void RelativeConstraint<Variable>::print(std::ostream& stream) const
   }
 }
 
-template<class Variable>
+template <class Variable>
 ceres::CostFunction* RelativeConstraint<Variable>::costFunction() const
 {
   // Create a Gaussian/Normal Delta constraint
@@ -137,7 +130,7 @@ ceres::CostFunction* RelativeConstraint<Variable>::costFunction() const
 }
 
 // Specialization for Orientation2D
-template<>
+template <>
 inline ceres::CostFunction* RelativeConstraint<fuse_variables::Orientation2DStamped>::costFunction() const
 {
   // Create a Gaussian/Normal Delta constraint
@@ -145,83 +138,82 @@ inline ceres::CostFunction* RelativeConstraint<fuse_variables::Orientation2DStam
 }
 
 // Specialization for Orientation3D //TODO:: Figure out what is going on here
-template<>
+template <>
 inline ceres::CostFunction* RelativeConstraint<fuse_variables::Orientation3DStamped>::costFunction() const
 {
   // Create a Gaussian/Normal Delta constraint
   return new NormalDeltaOrientation3D(sqrt_information_(0, 0), delta_(0));
 }
 
-
 // Specialize the type() method to return the name that is registered with the plugins
-template<>
+template <>
 inline std::string RelativeConstraint<fuse_variables::AccelerationAngular2DStamped>::type() const
 {
   return "fuse_constraints::RelativeAccelerationAngular2DStampedConstraint";
 }
 
 // Specialize the type() method to return the name that is registered with the plugins
-template<>
+template <>
 inline std::string RelativeConstraint<fuse_variables::AccelerationAngular3DStamped>::type() const
 {
   return "fuse_constraints::RelativeAccelerationAngular3DStampedConstraint";
 }
 
-template<>
+template <>
 inline std::string RelativeConstraint<fuse_variables::AccelerationLinear2DStamped>::type() const
 {
   return "fuse_constraints::RelativeAccelerationLinear2DStampedConstraint";
 }
 
-template<>
+template <>
 inline std::string RelativeConstraint<fuse_variables::AccelerationLinear3DStamped>::type() const
 {
   return "fuse_constraints::RelativeAccelerationLinear3DStampedConstraint";
 }
 
-template<>
+template <>
 inline std::string RelativeConstraint<fuse_variables::Orientation2DStamped>::type() const
 {
   return "fuse_constraints::RelativeOrientation2DStampedConstraint";
 }
 
-template<>
+template <>
 inline std::string RelativeConstraint<fuse_variables::Orientation3DStamped>::type() const
 {
   return "fuse_constraints::RelativeOrientation3DStampedConstraint";
 }
 
-template<>
+template <>
 inline std::string RelativeConstraint<fuse_variables::Position2DStamped>::type() const
 {
   return "fuse_constraints::RelativePosition2DStampedConstraint";
 }
 
-template<>
+template <>
 inline std::string RelativeConstraint<fuse_variables::Position3DStamped>::type() const
 {
   return "fuse_constraints::RelativePosition3DStampedConstraint";
 }
 
-template<>
+template <>
 inline std::string RelativeConstraint<fuse_variables::VelocityAngular2DStamped>::type() const
 {
   return "fuse_constraints::RelativeVelocityAngular2DStampedConstraint";
 }
 
-template<>
+template <>
 inline std::string RelativeConstraint<fuse_variables::VelocityAngular3DStamped>::type() const
 {
   return "fuse_constraints::RelativeVelocityAngular3DStampedConstraint";
 }
 
-template<>
+template <>
 inline std::string RelativeConstraint<fuse_variables::VelocityLinear2DStamped>::type() const
 {
   return "fuse_constraints::RelativeVelocityLinear2DStampedConstraint";
 }
 
-template<>
+template <>
 inline std::string RelativeConstraint<fuse_variables::VelocityLinear3DStamped>::type() const
 {
   return "fuse_constraints::RelativeVelocityLinear3DStampedConstraint";

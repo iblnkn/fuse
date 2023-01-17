@@ -42,10 +42,8 @@
 
 #include <cmath>
 
-
 namespace fuse_core
 {
-
 /**
  * @brief Returns the Euler pitch angle from a quaternion
  *
@@ -160,7 +158,7 @@ Eigen::Matrix<T, 2, 2, Eigen::RowMajor> rotationMatrix2D(const T angle)
  * @return          The equivalent 3x3 rotation matrix
  */
 template <typename T>
-Eigen::Matrix<T, 3, 3, Eigen::RowMajor> rotationMatrix3D(const T roll, const T pitch, const T yaw) 
+Eigen::Matrix<T, 3, 3, Eigen::RowMajor> rotationMatrix3D(const T roll, const T pitch, const T yaw)
 {
   const T cos_roll = ceres::cos(roll);
   const T sin_roll = ceres::sin(roll);
@@ -172,9 +170,10 @@ Eigen::Matrix<T, 3, 3, Eigen::RowMajor> rotationMatrix3D(const T roll, const T p
   const T sin_yaw = ceres::sin(yaw);
 
   Eigen::Matrix<T, 3, 3, Eigen::RowMajor> rotation;
-  rotation << cos_pitch * cos_roll, sin_yaw * sin_pitch * cos_roll - cos_yaw * sin_roll, cos_yaw * sin_pitch * cos_roll + sin_yaw * sin_roll,
-              cos_pitch * sin_roll, sin_yaw * sin_pitch * sin_roll + cos_yaw * cos_roll, cos_yaw * sin_pitch * sin_roll - sin_yaw * sin_roll,
-                        -sin_pitch,                                   sin_yaw*cos_pitch,                                   cos_yaw*cos_pitch;
+  rotation << cos_pitch * cos_roll, sin_yaw * sin_pitch * cos_roll - cos_yaw * sin_roll,
+      cos_yaw * sin_pitch * cos_roll + sin_yaw * sin_roll, cos_pitch * sin_roll,
+      sin_yaw * sin_pitch * sin_roll + cos_yaw * cos_roll, cos_yaw * sin_pitch * sin_roll - sin_yaw * sin_roll,
+      -sin_pitch, sin_yaw * cos_pitch, cos_yaw * cos_pitch;
   return rotation;
 }
 

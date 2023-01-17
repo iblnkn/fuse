@@ -33,33 +33,43 @@
  */
 #include <fuse_constraints/normal_prior_orientation_3d.h>
 
-#include <fuse_core/util.h>
-
+#include <ceres/rotation.h>
+#include <fuse_core/manifold.h>
 
 namespace fuse_constraints
 {
-
-NormalPriorOrientation3D::NormalPriorOrientation3D
-(const double A, const double b) :
-  A_(A),
-  b_(b)
+NormalPriorOrientation3D::NormalPriorOrientation3D(const fuse_core::MatrixXd& A, const fuse_core::Vector4d& b)
+  : A_(A), b_(b)
 {
+  CHECK_GT(A_.rows(), 0);
+  CHECK_EQ(A_.cols(), 3);
+  set_num_residuals(A_.rows());
 }
 
-bool NormalPriorOrientation3D::Evaluate(
-  double const* const* parameters,
-  double* residuals,
-  double** jacobians) const
+bool NormalPriorOrientation3D::Evaluate(double const* const* parameters, double* residuals, double** jacobians) const
 {
-  // The following lines should read as
-  // r = A_ * (x - b_);
-  // The wrap function handles the 2_pi wrap around issue with rotations
-  double angle_diff = fuse_core::wrapAngle2D(parameters[0][0] - b_);
-  residuals[0] = A_ * angle_diff;
-  if ((jacobians != nullptr) && (jacobians[0] != nullptr))
-  {
-    jacobians[0][0] = A_;
-  }
+  // Compute the delta quaternion
+  double variable[4] = { parameters[0][0], parameters[0][1], parameters[0][2], parameters[0][3] };
+
+  double observation_inverse[4] = { b_(0), -b_(1), -b_(2), -b_(3) };
+
+  double difference[4];
+  ceres::QuaternionProduct(observation_inverse, variable, difference);
+  ceres::QuaternionToAngleAxis(difference, residuals);
+
+  // Scale the residuals by the square root information matrix to account for the measurement uncertainty.
+  Eigen::Map<Eigen::Matrix<double, 3, 1>> residuals_map(residuals);
+  residuals_map.applyOnTheLeft(A_.template cast<double>());
+  jacobians[0][0] = 1;
+  jacobians[0][1] = 0;
+  jacobians[0][2] = 0;
+  jacobians[1][0] = 0;
+  jacobians[1][1] = 1;
+  jacobians[1][2] = 0;
+  jacobians[2][0] = 0;
+  jacobians[2][1] = 0;
+  jacobians[2][2] = 1;
+
   return true;
 }
 

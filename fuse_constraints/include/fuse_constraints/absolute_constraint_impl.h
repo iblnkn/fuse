@@ -137,15 +137,15 @@ inline ceres::CostFunction* AbsoluteConstraint<fuse_variables::Orientation2DStam
   return new NormalPriorOrientation2D(sqrt_information_(0, 0), mean_(0));
 }
 
-// Specialization for Orientation3D
-// We need to handle the 2*pi rollover for 3D orientations, so simple subtraction does not produce the correct cost
-template <>
-inline ceres::CostFunction* AbsoluteConstraint<fuse_variables::Orientation3DStamped>::costFunction() const
-{
-  // return new ceres::AutoDiffCostFunction<NormalPriorOrientation3DCostFunctor, 3, 4>(
-  //   new NormalPriorOrientation3DCostFunctor(sqrt_information_, mean_));
-  return new NormalPriorOrientation3D(sqrt_information_.block<4, 4>(3, 3), mean_.tail(4));
-}
+// // Specialization for Orientation3D
+// // We need to handle the 2*pi rollover for 3D orientations, so simple subtraction does not produce the correct cost
+// template <>
+// inline ceres::CostFunction* AbsoluteConstraint<fuse_variables::Orientation3DStamped>::costFunction() const
+// {
+//   // return new ceres::AutoDiffCostFunction<NormalPriorOrientation3DCostFunctor, 3, 4>(
+//   //   new NormalPriorOrientation3DCostFunctor(sqrt_information_, mean_));
+//   return new NormalPriorOrientation3D(sqrt_information_, mean_);
+// }
 
 // Specialize the type() method to return the name that is registered with the plugins
 template <>

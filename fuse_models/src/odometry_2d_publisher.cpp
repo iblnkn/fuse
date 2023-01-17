@@ -62,13 +62,12 @@ PLUGINLIB_EXPORT_CLASS(fuse_models::Odometry2DPublisher, fuse_core::Publisher)
 
 namespace fuse_models
 {
-
-Odometry2DPublisher::Odometry2DPublisher() :
-  fuse_core::AsyncPublisher(1),
-  device_id_(fuse_core::uuid::NIL),
-  latest_stamp_(Synchronizer::TIME_ZERO),
-  latest_covariance_stamp_(Synchronizer::TIME_ZERO),
-  publish_timer_spinner_(1, &publish_timer_callback_queue_)
+Odometry2DPublisher::Odometry2DPublisher()
+  : fuse_core::AsyncPublisher(1)
+  , device_id_(fuse_core::uuid::NIL)
+  , latest_stamp_(Synchronizer::TIME_ZERO)
+  , latest_covariance_stamp_(Synchronizer::TIME_ZERO)
+  , publish_timer_spinner_(1, &publish_timer_callback_queue_)
 {
 }
 
@@ -92,18 +91,13 @@ void Odometry2DPublisher::onInit()
   publish_timer_node_handle_.setCallbackQueue(&publish_timer_callback_queue_);
 
   publish_timer_ = publish_timer_node_handle_.createTimer(
-    ros::Duration(1.0 / params_.publish_frequency),
-    &Odometry2DPublisher::publishTimerCallback,
-    this,
-    false,
-    false);
+      ros::Duration(1.0 / params_.publish_frequency), &Odometry2DPublisher::publishTimerCallback, this, false, false);
 
   publish_timer_spinner_.start();
 }
 
-void Odometry2DPublisher::notifyCallback(
-  fuse_core::Transaction::ConstSharedPtr transaction,
-  fuse_core::Graph::ConstSharedPtr graph)
+void Odometry2DPublisher::notifyCallback(fuse_core::Transaction::ConstSharedPtr transaction,
+                                         fuse_core::Graph::ConstSharedPtr graph)
 {
   // Find the most recent common timestamp
   const auto latest_stamp = synchronizer_.findLatestCommonStamp(*transaction, *graph);
@@ -114,8 +108,8 @@ void Odometry2DPublisher::notifyCallback(
       latest_stamp_ = latest_stamp;
     }
 
-    ROS_WARN_STREAM_THROTTLE(
-        10.0, "Failed to find a matching set of state variables with device id '" << device_id_ << "'.");
+    ROS_WARN_STREAM_THROTTLE(10.0,
+                             "Failed to find a matching set of state variables with device id '" << device_id_ << "'.");
     return;
   }
 
@@ -128,17 +122,8 @@ void Odometry2DPublisher::notifyCallback(
 
   nav_msgs::Odometry odom_output;
   geometry_msgs::AccelWithCovarianceStamped acceleration_output;
-  if (!getState(
-         *graph,
-         latest_stamp,
-         device_id_,
-         position_uuid,
-         orientation_uuid,
-         velocity_linear_uuid,
-         velocity_angular_uuid,
-         acceleration_linear_uuid,
-         odom_output,
-         acceleration_output))
+  if (!getState(*graph, latest_stamp, device_id_, position_uuid, orientation_uuid, velocity_linear_uuid,
+                velocity_angular_uuid, acceleration_linear_uuid, odom_output, acceleration_output))
   {
     std::lock_guard<std::mutex> lock(mutex_);
     latest_stamp_ = latest_stamp;
@@ -159,7 +144,7 @@ void Odometry2DPublisher::notifyCallback(
   {
     // Throttle covariance computation
     if (params_.covariance_throttle_period.isZero() ||
-       latest_stamp - latest_covariance_stamp > params_.covariance_throttle_period)
+        latest_stamp - latest_covariance_stamp > params_.covariance_throttle_period)
     {
       latest_covariance_stamp = latest_stamp;
 
@@ -206,8 +191,11 @@ void Odometry2DPublisher::notifyCallback(
       }
       catch (const std::exception& e)
       {
-        ROS_WARN_STREAM("An error occurred computing the covariance information for " << latest_stamp << ". "
-                        "The covariance will be set to zero.\n" << e.what());
+        ROS_WARN_STREAM("An error occurred computing the covariance information for " << latest_stamp
+                                                                                      << ". "
+                                                                                         "The covariance will be set "
+                                                                                         "to zero.\n"
+                                                                                      << e.what());
         std::fill(odom_output.pose.covariance.begin(), odom_output.pose.covariance.end(), 0.0);
         std::fill(odom_output.twist.covariance.begin(), odom_output.twist.covariance.end(), 0.0);
         std::fill(acceleration_output.accel.covariance.begin(), acceleration_output.accel.covariance.end(), 0.0);
@@ -254,39 +242,33 @@ void Odometry2DPublisher::onStop()
   publish_timer_.stop();
 }
 
-bool Odometry2DPublisher::getState(
-  const fuse_core::Graph& graph,
-  const ros::Time& stamp,
-  const fuse_core::UUID& device_id,
-  fuse_core::UUID& position_uuid,
-  fuse_core::UUID& orientation_uuid,
-  fuse_core::UUID& velocity_linear_uuid,
-  fuse_core::UUID& velocity_angular_uuid,
-  fuse_core::UUID& acceleration_linear_uuid,
-  nav_msgs::Odometry& odometry,
-  geometry_msgs::AccelWithCovarianceStamped& acceleration)
+bool Odometry2DPublisher::getState(const fuse_core::Graph& graph, const ros::Time& stamp,
+                                   const fuse_core::UUID& device_id, fuse_core::UUID& position_uuid,
+                                   fuse_core::UUID& orientation_uuid, fuse_core::UUID& velocity_linear_uuid,
+                                   fuse_core::UUID& velocity_angular_uuid, fuse_core::UUID& acceleration_linear_uuid,
+                                   nav_msgs::Odometry& odometry,
+                                   geometry_msgs::AccelWithCovarianceStamped& acceleration)
 {
   try
   {
     position_uuid = fuse_variables::Position2DStamped(stamp, device_id).uuid();
-    auto position_variable = dynamic_cast<const fuse_variables::Position2DStamped&>(
-      graph.getVariable(position_uuid));
+    auto position_variable = dynamic_cast<const fuse_variables::Position2DStamped&>(graph.getVariable(position_uuid));
 
     orientation_uuid = fuse_variables::Orientation2DStamped(stamp, device_id).uuid();
-    auto orientation_variable = dynamic_cast<const fuse_variables::Orientation2DStamped&>(
-      graph.getVariable(orientation_uuid));
+    auto orientation_variable =
+        dynamic_cast<const fuse_variables::Orientation2DStamped&>(graph.getVariable(orientation_uuid));
 
     velocity_linear_uuid = fuse_variables::VelocityLinear2DStamped(stamp, device_id).uuid();
-    auto velocity_linear_variable = dynamic_cast<const fuse_variables::VelocityLinear2DStamped&>(
-      graph.getVariable(velocity_linear_uuid));
+    auto velocity_linear_variable =
+        dynamic_cast<const fuse_variables::VelocityLinear2DStamped&>(graph.getVariable(velocity_linear_uuid));
 
     velocity_angular_uuid = fuse_variables::VelocityAngular2DStamped(stamp, device_id).uuid();
-    auto velocity_angular_variable = dynamic_cast<const fuse_variables::VelocityAngular2DStamped&>(
-      graph.getVariable(velocity_angular_uuid));
+    auto velocity_angular_variable =
+        dynamic_cast<const fuse_variables::VelocityAngular2DStamped&>(graph.getVariable(velocity_angular_uuid));
 
     acceleration_linear_uuid = fuse_variables::AccelerationLinear2DStamped(stamp, device_id).uuid();
-    auto acceleration_linear_variable = dynamic_cast<const fuse_variables::AccelerationLinear2DStamped&>(
-      graph.getVariable(acceleration_linear_uuid));
+    auto acceleration_linear_variable =
+        dynamic_cast<const fuse_variables::AccelerationLinear2DStamped&>(graph.getVariable(acceleration_linear_uuid));
     tf2::Quaternion orientation_quat;
     orientation_quat.setRPY(0, 0, orientation_variable.yaw());
     odometry.pose.pose.position.x = position_variable.x();
@@ -365,24 +347,22 @@ void Odometry2DPublisher::publishTimerCallback(const ros::TimerEvent& event)
   m.getRPY(roll, pitch, yaw);
   pose.theta = yaw;
 
-
-
   // If requested, we need to project our state forward in time using the 2D kinematic model
   if (params_.predict_to_current_time)
   {
     geometry_msgs::Twist velocity_linear;
 
-      velocity_linear.linear.x = odom_output.twist.twist.linear.x;
-      velocity_linear.linear.y = odom_output.twist.twist.linear.y;
-      velocity_linear.linear.z = odom_output.twist.twist.linear.z;
-      tf2::Quaternion abs_pose_quat;
+    velocity_linear.linear.x = odom_output.twist.twist.linear.x;
+    velocity_linear.linear.y = odom_output.twist.twist.linear.y;
+    velocity_linear.linear.z = odom_output.twist.twist.linear.z;
+    tf2::Quaternion abs_pose_quat;
 
-      tf2::Matrix3x3 m;
-      m.setRotation(abs_pose_quat);
-      m.getRPY(roll, pitch, yaw);
-      velocity_linear.angular.x = odom_output.twist.twist.angular.x;
-      velocity_linear.angular.y = odom_output.twist.twist.angular.y;
-      velocity_linear.angular.z = odom_output.twist.twist.angular.z;
+    tf2::Matrix3x3 m;
+    m.setRotation(abs_pose_quat);
+    m.getRPY(roll, pitch, yaw);
+    velocity_linear.angular.x = odom_output.twist.twist.angular.x;
+    velocity_linear.angular.y = odom_output.twist.twist.angular.y;
+    velocity_linear.angular.z = odom_output.twist.twist.angular.z;
 
     const double dt = event.current_real.toSec() - odom_output.header.stamp.toSec();
 
@@ -398,22 +378,13 @@ void Odometry2DPublisher::publishTimerCallback(const ros::TimerEvent& event)
 
     double yaw_vel;
 
-    predict(
-      pose,
-      velocity_linear,
-      odom_output.twist.twist.angular.z,
-      acceleration_linear,
-      dt,
-      pose,
-      velocity_linear,
-      yaw_vel,
-      acceleration_linear,
-      jacobian);
+    predict(pose, velocity_linear, odom_output.twist.twist.angular.z, acceleration_linear, dt, pose, velocity_linear,
+            yaw_vel, acceleration_linear, jacobian);
 
     odom_output.pose.pose.position.x = pose.x;
     odom_output.pose.pose.position.y = pose.y;
     tf2::Quaternion orientation_quat;
-    orientation_quat.setRPY(0,0,pose.theta);
+    orientation_quat.setRPY(0, 0, pose.theta);
     odom_output.pose.pose.orientation.x = orientation_quat.getX();
     odom_output.pose.pose.orientation.y = orientation_quat.getY();
     odom_output.pose.pose.orientation.z = orientation_quat.getZ();
@@ -516,7 +487,8 @@ void Odometry2DPublisher::publishTimerCallback(const ros::TimerEvent& event)
     auto frame_id = odom_output.header.frame_id;
     auto child_frame_id = odom_output.child_frame_id;
 
-    if (params_.invert_tf) //TODO: This is ovecomplicated and not sure it does what it is supposed to. It definetly needs a second look. 
+    if (params_.invert_tf)  // TODO: This is ovecomplicated and not sure it does what it is supposed to. It definetly
+                            // needs a second look.
     {
       tf2::Transform pose_inv;
       tf2::Vector3 positoin_inv;
@@ -525,7 +497,7 @@ void Odometry2DPublisher::publishTimerCallback(const ros::TimerEvent& event)
       double roll;
       double pitch;
       double yaw;
-      orientation_inv_quat.setRPY(0,0,pose.theta);
+      orientation_inv_quat.setRPY(0, 0, pose.theta);
       positoin_inv.setX(pose.x);
       positoin_inv.setY(pose.y);
       positoin_inv.setZ(0);
@@ -570,11 +542,8 @@ void Odometry2DPublisher::publishTimerCallback(const ros::TimerEvent& event)
     {
       try
       {
-        auto base_to_odom = tf_buffer_->lookupTransform(
-          params_.base_link_frame_id,
-          params_.odom_frame_id,
-          trans.header.stamp,
-          params_.tf_timeout);
+        auto base_to_odom = tf_buffer_->lookupTransform(params_.base_link_frame_id, params_.odom_frame_id,
+                                                        trans.header.stamp, params_.tf_timeout);
 
         geometry_msgs::TransformStamped map_to_odom;
         tf2::doTransform(base_to_odom, map_to_odom, trans);
@@ -583,8 +552,9 @@ void Odometry2DPublisher::publishTimerCallback(const ros::TimerEvent& event)
       }
       catch (const std::exception& e)
       {
-        ROS_WARN_STREAM_THROTTLE(5.0, "Could not lookup the " << params_.base_link_frame_id << "->" <<
-          params_.odom_frame_id << " transform. Error: " << e.what());
+        ROS_WARN_STREAM_THROTTLE(5.0, "Could not lookup the " << params_.base_link_frame_id << "->"
+                                                              << params_.odom_frame_id
+                                                              << " transform. Error: " << e.what());
 
         return;
       }

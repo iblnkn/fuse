@@ -62,18 +62,13 @@
 #include <exception>
 #include <stdexcept>
 
-
 // Register this motion model with ROS as a plugin.
 PLUGINLIB_EXPORT_CLASS(fuse_models::SkidSteer3DIgnition, fuse_core::SensorModel);
 
 namespace fuse_models
 {
-
-SkidSteer3DIgnition::SkidSteer3DIgnition() :
-  fuse_core::AsyncSensorModel(1),
-  started_(false),
-  initial_transaction_sent_(false),
-  device_id_(fuse_core::uuid::NIL)
+SkidSteer3DIgnition::SkidSteer3DIgnition()
+  : fuse_core::AsyncSensorModel(1), started_(false), initial_transaction_sent_(false), device_id_(fuse_core::uuid::NIL)
 {
 }
 
@@ -91,19 +86,13 @@ void SkidSteer3DIgnition::onInit()
   }
 
   // Advertise
-  subscriber_ = node_handle_.subscribe(
-    ros::names::resolve(params_.topic),
-    params_.queue_size,
-    &SkidSteer3DIgnition::subscriberCallback,
-    this);
-  set_pose_service_ = node_handle_.advertiseService(
-    ros::names::resolve(params_.set_pose_service),
-    &SkidSteer3DIgnition::setPoseServiceCallback,
-    this);
-  set_pose_deprecated_service_ = node_handle_.advertiseService(
-    ros::names::resolve(params_.set_pose_deprecated_service),
-    &SkidSteer3DIgnition::setPoseDeprecatedServiceCallback,
-    this);
+  subscriber_ = node_handle_.subscribe(ros::names::resolve(params_.topic), params_.queue_size,
+                                       &SkidSteer3DIgnition::subscriberCallback, this);
+  set_pose_service_ = node_handle_.advertiseService(ros::names::resolve(params_.set_pose_service),
+                                                    &SkidSteer3DIgnition::setPoseServiceCallback, this);
+  set_pose_deprecated_service_ =
+      node_handle_.advertiseService(ros::names::resolve(params_.set_pose_deprecated_service),
+                                    &SkidSteer3DIgnition::setPoseDeprecatedServiceCallback, this);
 }
 
 void SkidSteer3DIgnition::start()
@@ -119,20 +108,20 @@ void SkidSteer3DIgnition::start()
     tempQ.setRPY(params_.initial_state[3], params_.initial_state[4], params_.initial_state[5]);
     auto pose = geometry_msgs::PoseWithCovarianceStamped();
     pose.header.stamp = ros::Time::now();
-    if(isnan(params_.initial_state[0]) || isnan(params_.initial_state[0]) || isnan(params_.initial_state[0]))
+    if (isnan(params_.initial_state[0]) || isnan(params_.initial_state[0]) || isnan(params_.initial_state[0]))
     {
       ROS_WARN("Invalid initial position. Setting to 0.");
       pose.pose.pose.position.x = 0;
       pose.pose.pose.position.y = 0;
-      pose.pose.pose.position.z  = 0;
+      pose.pose.pose.position.z = 0;
     }
     else
     {
       pose.pose.pose.position.x = params_.initial_state[0];
       pose.pose.pose.position.y = params_.initial_state[1];
-      pose.pose.pose.position.z  = params_.initial_state[2];
+      pose.pose.pose.position.z = params_.initial_state[2];
     }
-    if(isnan(tempQ.getX()) || isnan(tempQ.getY()) || isnan(tempQ.getZ()))
+    if (isnan(tempQ.getX()) || isnan(tempQ.getY()) || isnan(tempQ.getZ()))
     {
       ROS_WARN("Invalid initial Orientation. Setting to 0.");
       pose.pose.pose.orientation.x = 0;
@@ -147,8 +136,10 @@ void SkidSteer3DIgnition::start()
       pose.pose.pose.orientation.z = tempQ.getZ();
       pose.pose.pose.orientation.w = tempQ.getW();
     }
-    
-    if(std::pow(params_.initial_sigma[0],2) || std::pow(params_.initial_sigma[1],2) || std::pow(params_.initial_sigma[2],2) || std::pow(params_.initial_sigma[3],2) || std::pow(params_.initial_sigma[4],2) ||std::pow(params_.initial_sigma[5],2))
+
+    if (std::pow(params_.initial_sigma[0], 2) || std::pow(params_.initial_sigma[1], 2) ||
+        std::pow(params_.initial_sigma[2], 2) || std::pow(params_.initial_sigma[3], 2) ||
+        std::pow(params_.initial_sigma[4], 2) || std::pow(params_.initial_sigma[5], 2))
     {
       ROS_WARN("Invalid initial Covariance. Setting to 1.");
       pose.pose.covariance[0] = 1;
@@ -160,12 +151,12 @@ void SkidSteer3DIgnition::start()
     }
     else
     {
-      pose.pose.covariance[0] = std::pow(params_.initial_sigma[1],2);
-      pose.pose.covariance[7] = std::pow(params_.initial_sigma[2],2);
-      pose.pose.covariance[14] = std::pow(params_.initial_sigma[3],2);
-      pose.pose.covariance[21] = std::pow(params_.initial_sigma[4],2);
-      pose.pose.covariance[28] = std::pow(params_.initial_sigma[5],2);
-      pose.pose.covariance[35] = std::pow(params_.initial_sigma[6],2);
+      pose.pose.covariance[0] = std::pow(params_.initial_sigma[1], 2);
+      pose.pose.covariance[7] = std::pow(params_.initial_sigma[2], 2);
+      pose.pose.covariance[14] = std::pow(params_.initial_sigma[3], 2);
+      pose.pose.covariance[21] = std::pow(params_.initial_sigma[4], 2);
+      pose.pose.covariance[28] = std::pow(params_.initial_sigma[5], 2);
+      pose.pose.covariance[35] = std::pow(params_.initial_sigma[6], 2);
     }
 
     pose.pose.covariance[1] = 0;
@@ -220,7 +211,8 @@ void SkidSteer3DIgnition::subscriberCallback(const geometry_msgs::PoseWithCovari
   }
 }
 
-bool SkidSteer3DIgnition::setPoseServiceCallback(fuse_models::SetPose::Request& req, fuse_models::SetPose::Response& res)
+bool SkidSteer3DIgnition::setPoseServiceCallback(fuse_models::SetPose::Request& req,
+                                                 fuse_models::SetPose::Response& res)
 {
   try
   {
@@ -236,9 +228,8 @@ bool SkidSteer3DIgnition::setPoseServiceCallback(fuse_models::SetPose::Request& 
   return true;
 }
 
-bool SkidSteer3DIgnition::setPoseDeprecatedServiceCallback(
-  fuse_models::SetPoseDeprecated::Request& req,
-  fuse_models::SetPoseDeprecated::Response&)
+bool SkidSteer3DIgnition::setPoseDeprecatedServiceCallback(fuse_models::SetPoseDeprecated::Request& req,
+                                                           fuse_models::SetPoseDeprecated::Response&)
 {
   try
   {
@@ -260,12 +251,12 @@ void SkidSteer3DIgnition::process(const geometry_msgs::PoseWithCovarianceStamped
     throw std::runtime_error("Attempting to set the pose while the sensor is stopped.");
   }
   // Validate the requested pose and covariance before we do anything
-  if (!std::isfinite(pose.pose.pose.position.x) || !std::isfinite(pose.pose.pose.position.y) || !std::isfinite(pose.pose.pose.position.z))
+  if (!std::isfinite(pose.pose.pose.position.x) || !std::isfinite(pose.pose.pose.position.y) ||
+      !std::isfinite(pose.pose.pose.position.z))
   {
-    throw std::invalid_argument("Attempting to set the pose to an invalid position (" +
-                                std::to_string(pose.pose.pose.position.x) + ", " +
-                                std::to_string(pose.pose.pose.position.y) + ", " +
-                                std::to_string(pose.pose.pose.position.z) + ").");
+    throw std::invalid_argument(
+        "Attempting to set the pose to an invalid position (" + std::to_string(pose.pose.pose.position.x) + ", " +
+        std::to_string(pose.pose.pose.position.y) + ", " + std::to_string(pose.pose.pose.position.z) + ").");
   }
   auto orientation_norm = std::sqrt(pose.pose.pose.orientation.x * pose.pose.pose.orientation.x +
                                     pose.pose.pose.orientation.y * pose.pose.pose.orientation.y +
@@ -273,48 +264,50 @@ void SkidSteer3DIgnition::process(const geometry_msgs::PoseWithCovarianceStamped
                                     pose.pose.pose.orientation.w * pose.pose.pose.orientation.w);
   if (std::abs(orientation_norm - 1.0) > 1.0e-4)
   {
-    throw std::invalid_argument("Attempting to set the pose to an invalid orientation (" +
-                                std::to_string(pose.pose.pose.orientation.x) + ", " +
-                                std::to_string(pose.pose.pose.orientation.y) + ", " +
-                                std::to_string(pose.pose.pose.orientation.z) + ", " +
-                                std::to_string(pose.pose.pose.orientation.w) + ").");
+    throw std::invalid_argument(
+        "Attempting to set the pose to an invalid orientation (" + std::to_string(pose.pose.pose.orientation.x) + ", " +
+        std::to_string(pose.pose.pose.orientation.y) + ", " + std::to_string(pose.pose.pose.orientation.z) + ", " +
+        std::to_string(pose.pose.pose.orientation.w) + ").");
   }
   auto position_cov = fuse_core::Matrix3d();
-  position_cov << pose.pose.covariance[0], pose.pose.covariance[1], pose.pose.covariance[2],
-                  pose.pose.covariance[6], pose.pose.covariance[7], pose.pose.covariance[8],
-                  pose.pose.covariance[12], pose.pose.covariance[13], pose.pose.covariance[14];
+  position_cov << pose.pose.covariance[0], pose.pose.covariance[1], pose.pose.covariance[2], pose.pose.covariance[6],
+      pose.pose.covariance[7], pose.pose.covariance[8], pose.pose.covariance[12], pose.pose.covariance[13],
+      pose.pose.covariance[14];
   if (!fuse_core::isSymmetric(position_cov))
   {
     // throw std::invalid_argument("Attempting to set the pose with a non-symmetric position covariance matri\n " +
     //                             fuse_core::to_string(position_cov, Eigen::FullPrecision) + ".");
 
-    throw std::invalid_argument("Attempting to set the pose with a non-symmetric position covariance matri\n " );
+    throw std::invalid_argument("Attempting to set the pose with a non-symmetric position covariance matri\n ");
   }
   if (!fuse_core::isPositiveDefinite(position_cov))
   {
     throw std::invalid_argument("Attempting to set the pose with a non-positive-definite position covariance matrix\n");
 
-                                //     throw std::invalid_argument("Attempting to set the pose with a non-positive-definite position covariance matrix\n" +
-                                // fuse_core::to_string(position_cov, Eigen::FullPrecision) + ".");
+    //     throw std::invalid_argument("Attempting to set the pose with a non-positive-definite position covariance
+    //     matrix\n" +
+    // fuse_core::to_string(position_cov, Eigen::FullPrecision) + ".");
   }
   auto orientation_cov = fuse_core::Matrix3d();
   orientation_cov << pose.pose.covariance[21], pose.pose.covariance[22], pose.pose.covariance[23],
-                     pose.pose.covariance[27], pose.pose.covariance[28], pose.pose.covariance[29],
-                     pose.pose.covariance[33], pose.pose.covariance[34], pose.pose.covariance[35];
+      pose.pose.covariance[27], pose.pose.covariance[28], pose.pose.covariance[29], pose.pose.covariance[33],
+      pose.pose.covariance[34], pose.pose.covariance[35];
 
   if (!fuse_core::isSymmetric(orientation_cov))
   {
     // throw std::invalid_argument("Attempting to set the pose with a non-symmetric orientation covariance matri\n " +
     //                             fuse_core::to_string(orientation_cov, Eigen::FullPrecision) + ".");
 
-    throw std::invalid_argument("Attempting to set the pose with a non-symmetric orientation covariance matri\n " );
+    throw std::invalid_argument("Attempting to set the pose with a non-symmetric orientation covariance matri\n ");
   }
   if (!fuse_core::isPositiveDefinite(orientation_cov))
   {
-    throw std::invalid_argument("Attempting to set the pose with a non-positive-definite orientation covariance matrix\n");
+    throw std::invalid_argument(
+        "Attempting to set the pose with a non-positive-definite orientation covariance matrix\n");
 
-                                //     throw std::invalid_argument("Attempting to set the pose with a non-positive-definite orientation covariance matrix\n" +
-                                // fuse_core::to_string(orientation_cov, Eigen::FullPrecision) + ".");
+    //     throw std::invalid_argument("Attempting to set the pose with a non-positive-definite orientation covariance
+    //     matrix\n" +
+    // fuse_core::to_string(orientation_cov, Eigen::FullPrecision) + ".");
   }
 
   // Tell the optimizer to reset before providing the initial state
@@ -380,63 +373,56 @@ void SkidSteer3DIgnition::sendPrior(const geometry_msgs::PoseWithCovarianceStamp
   // The pose covariances are extracted from the provided PoseWithCovarianceStamped message.
   // The remaining covariances are provided as parameters to the parameter server.
   auto position_cov = fuse_core::Matrix3d();
-  position_cov << pose.pose.covariance[0], pose.pose.covariance[1], pose.pose.covariance[2],
-                pose.pose.covariance[6], pose.pose.covariance[7], pose.pose.covariance[8],
-                pose.pose.covariance[12], pose.pose.covariance[13], pose.pose.covariance[14];
+  position_cov << pose.pose.covariance[0], pose.pose.covariance[1], pose.pose.covariance[2], pose.pose.covariance[6],
+      pose.pose.covariance[7], pose.pose.covariance[8], pose.pose.covariance[12], pose.pose.covariance[13],
+      pose.pose.covariance[14];
 
   auto orientation_cov = fuse_core::Matrix3d();
   orientation_cov << pose.pose.covariance[21], pose.pose.covariance[22], pose.pose.covariance[23],
-                    pose.pose.covariance[27], pose.pose.covariance[28], pose.pose.covariance[29],
-                    pose.pose.covariance[33], pose.pose.covariance[34], pose.pose.covariance[35];
+      pose.pose.covariance[27], pose.pose.covariance[28], pose.pose.covariance[29], pose.pose.covariance[33],
+      pose.pose.covariance[34], pose.pose.covariance[35];
 
   auto linear_velocity_cov = fuse_core::Matrix3d();
-  linear_velocity_cov << params_.initial_sigma[6] * params_.initial_sigma[6], 0.0, 0.0,
-                         0.0, params_.initial_sigma[7] * params_.initial_sigma[7], 0.0,
-                         0.0, 0.0, params_.initial_sigma[8] * params_.initial_sigma[8];
+  linear_velocity_cov << params_.initial_sigma[6] * params_.initial_sigma[6], 0.0, 0.0, 0.0,
+      params_.initial_sigma[7] * params_.initial_sigma[7], 0.0, 0.0, 0.0,
+      params_.initial_sigma[8] * params_.initial_sigma[8];
   auto angular_velocity_cov = fuse_core::Matrix3d();
-  angular_velocity_cov << params_.initial_sigma[9] * params_.initial_sigma[9], 0.0, 0.0,
-                          0.0, params_.initial_sigma[10] * params_.initial_sigma[10], 0.0,
-                          0.0, 0.0, params_.initial_sigma[11] * params_.initial_sigma[11];
+  angular_velocity_cov << params_.initial_sigma[9] * params_.initial_sigma[9], 0.0, 0.0, 0.0,
+      params_.initial_sigma[10] * params_.initial_sigma[10], 0.0, 0.0, 0.0,
+      params_.initial_sigma[11] * params_.initial_sigma[11];
   auto linear_acceleration_cov = fuse_core::Matrix3d();
-  linear_acceleration_cov << params_.initial_sigma[12] * params_.initial_sigma[12], 0.0, 0.0,
-                             0.0, params_.initial_sigma[13] * params_.initial_sigma[13], 0.0,
-                             0.0, 0.0, params_.initial_sigma[14] * params_.initial_sigma[14];
+  linear_acceleration_cov << params_.initial_sigma[12] * params_.initial_sigma[12], 0.0, 0.0, 0.0,
+      params_.initial_sigma[13] * params_.initial_sigma[13], 0.0, 0.0, 0.0,
+      params_.initial_sigma[14] * params_.initial_sigma[14];
   auto angular_acceleration_cov = fuse_core::Matrix3d();
-  angular_acceleration_cov << params_.initial_sigma[15] * params_.initial_sigma[15], 0.0, 0.0,
-                              0.0, params_.initial_sigma[16] * params_.initial_sigma[16], 0.0,
-                              0.0, 0.0, params_.initial_sigma[17] * params_.initial_sigma[17];
+  angular_acceleration_cov << params_.initial_sigma[15] * params_.initial_sigma[15], 0.0, 0.0, 0.0,
+      params_.initial_sigma[16] * params_.initial_sigma[16], 0.0, 0.0, 0.0,
+      params_.initial_sigma[17] * params_.initial_sigma[17];
   // Create absolute constraints for each variable
   auto position_constraint = fuse_constraints::AbsolutePosition3DStampedConstraint::make_shared(
-    name(),
-    *position,
-    fuse_core::Vector3d(position->x(), position->y(), position->z()),
-    position_cov);
+      name(), *position, fuse_core::Vector3d(position->x(), position->y(), position->z()), position_cov);
   auto orientation_constraint = fuse_constraints::AbsoluteOrientation3DStampedConstraint::make_shared(
-    name(),
-    *orientation,
-    fuse_core::Vector3d(orientation->x(), orientation->y(), orientation->z()), // TODO(iblankenau) Not exactly correct but shouldn't make too much difference. Probably best to fix when there is time. 
-    orientation_cov);
+      name(), *orientation,
+      fuse_core::Vector4d(orientation->w(), orientation->x(), orientation->y(),
+                          orientation->z()),  // TODO(iblankenau) Not exactly correct but shouldn't make too much
+                                              // difference. Probably best to fix when there is time.
+      orientation_cov);
   auto linear_velocity_constraint = fuse_constraints::AbsoluteVelocityLinear3DStampedConstraint::make_shared(
-    name(),
-    *linear_velocity,
-    fuse_core::Vector3d(linear_velocity->x(), linear_velocity->y(), linear_velocity->z()),
-    linear_velocity_cov);
+      name(), *linear_velocity, fuse_core::Vector3d(linear_velocity->x(), linear_velocity->y(), linear_velocity->z()),
+      linear_velocity_cov);
   auto angular_velocity_constraint = fuse_constraints::AbsoluteVelocityAngular3DStampedConstraint::make_shared(
-    name(),
-    *angular_velocity,
-    fuse_core::Vector3d(angular_velocity->roll(), angular_velocity->pitch(), angular_velocity->yaw()),
-    angular_velocity_cov);
+      name(), *angular_velocity,
+      fuse_core::Vector3d(angular_velocity->roll(), angular_velocity->pitch(), angular_velocity->yaw()),
+      angular_velocity_cov);
   auto linear_acceleration_constraint = fuse_constraints::AbsoluteAccelerationLinear3DStampedConstraint::make_shared(
-    name(),
-    *linear_acceleration,
-    fuse_core::Vector3d(linear_acceleration->x(), linear_acceleration->y(), linear_acceleration->z()),
-    linear_acceleration_cov);
+      name(), *linear_acceleration,
+      fuse_core::Vector3d(linear_acceleration->x(), linear_acceleration->y(), linear_acceleration->z()),
+      linear_acceleration_cov);
 
   auto angular_acceleration_constraint = fuse_constraints::AbsoluteAccelerationAngular3DStampedConstraint::make_shared(
-    name(),
-    *angular_acceleration,
-    fuse_core::Vector3d(angular_acceleration->roll(), angular_acceleration->pitch(), angular_acceleration->yaw()),
-    angular_acceleration_cov);
+      name(), *angular_acceleration,
+      fuse_core::Vector3d(angular_acceleration->roll(), angular_acceleration->pitch(), angular_acceleration->yaw()),
+      angular_acceleration_cov);
 
   // Create the transaction
   auto transaction = fuse_core::Transaction::make_shared();
@@ -460,9 +446,10 @@ void SkidSteer3DIgnition::sendPrior(const geometry_msgs::PoseWithCovarianceStamp
   transaction->print();
   sendTransaction(transaction);
 
-  ROS_INFO_STREAM("Received a set_pose request (stamp: " << 
-  stamp << ", x: " << position->x() << ", y: "<< position->y() << ", z: " << position->z() << 
-  ", roll: " << orientation->roll() << ", pitch: " << orientation->pitch() << ", yaw: " << orientation->yaw() << ")");
+  ROS_INFO_STREAM("Received a set_pose request (stamp: "
+                  << stamp << ", x: " << position->x() << ", y: " << position->y() << ", z: " << position->z()
+                  << ", roll: " << orientation->roll() << ", pitch: " << orientation->pitch()
+                  << ", yaw: " << orientation->yaw() << ")");
 }
 
 }  // namespace fuse_models

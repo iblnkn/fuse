@@ -20,16 +20,15 @@
 #include <geometry_msgs/Twist.h>
 #include <geometry_msgs/Accel.h>
 
-
 /**
  * @brief Derived class used in unit tests to expose protected functions
  */
 class Unicycle2DModelTest : public fuse_models::Unicycle2D
 {
 public:
-  using fuse_models::Unicycle2D::updateStateHistoryEstimates;
-  using fuse_models::Unicycle2D::StateHistoryElement;
   using fuse_models::Unicycle2D::StateHistory;
+  using fuse_models::Unicycle2D::StateHistoryElement;
+  using fuse_models::Unicycle2D::updateStateHistoryEstimates;
 };
 
 TEST(Unicycle2D, UpdateStateHistoryEstimates)
@@ -147,7 +146,7 @@ TEST(Unicycle2D, UpdateStateHistoryEstimates)
   testTwist3 = testTwist1;
   testTwist4 = testTwist1;
   testTwist5 = testTwist1;
-  
+
   geometry_msgs::Accel testAccel1;
   geometry_msgs::Accel testAccel2;
   geometry_msgs::Accel testAccel3;
@@ -166,68 +165,38 @@ TEST(Unicycle2D, UpdateStateHistoryEstimates)
   testAccel4 = testAccel1;
   testAccel5 = testAccel1;
   // Add all of the variables to the state history
-  
+
   Unicycle2DModelTest::StateHistory state_history;
-  state_history.emplace(
-    position1->stamp(),
-    Unicycle2DModelTest::StateHistoryElement{  // NOLINT(whitespace/braces)
-      position1->uuid(),
-      yaw1->uuid(),
-      linear_velocity1->uuid(),
-      yaw_velocity1->uuid(),
-      linear_acceleration1->uuid(),
-      testPose1,
-      testTwist1,
-      0.0,
-      testAccel1});  // NOLINT(whitespace/braces)
-  state_history.emplace(
-    position2->stamp(),
-    Unicycle2DModelTest::StateHistoryElement{  // NOLINT(whitespace/braces)
-      position2->uuid(),
-      yaw2->uuid(),
-      linear_velocity2->uuid(),
-      yaw_velocity2->uuid(),
-      linear_acceleration2->uuid(),
-      testPose2,
-      testTwist2,
-      0.0,
-      testAccel2});  // NOLINT(whitespace/braces)
-  state_history.emplace(
-    position3->stamp(),
-    Unicycle2DModelTest::StateHistoryElement{  // NOLINT(whitespace/braces)
-      position3->uuid(),
-      yaw3->uuid(),
-      linear_velocity3->uuid(),
-      yaw_velocity3->uuid(),
-      linear_acceleration3->uuid(),
-      testPose3,
-      testTwist3,
-      0.0,
-      testAccel3});  // NOLINT(whitespace/braces)
-  state_history.emplace(
-    position4->stamp(),
-    Unicycle2DModelTest::StateHistoryElement{  // NOLINT(whitespace/braces)
-      position4->uuid(),
-      yaw4->uuid(),
-      linear_velocity4->uuid(),
-      yaw_velocity4->uuid(),
-      linear_acceleration4->uuid(),
-      testPose4,
-      testTwist4,
-      0.0,
-      testAccel4});  // NOLINT(whitespace/braces)
-  state_history.emplace(
-    position5->stamp(),
-    Unicycle2DModelTest::StateHistoryElement{  // NOLINT(whitespace/braces)
-      position5->uuid(),
-      yaw5->uuid(),
-      linear_velocity5->uuid(),
-      yaw_velocity5->uuid(),
-      linear_acceleration5->uuid(),
-      testPose5,
-      testTwist5,
-      0.0,
-      testAccel5});  // NOLINT(whitespace/braces)
+  state_history.emplace(position1->stamp(),
+                        Unicycle2DModelTest::StateHistoryElement{ // NOLINT(whitespace/braces)
+                                                                  position1->uuid(), yaw1->uuid(),
+                                                                  linear_velocity1->uuid(), yaw_velocity1->uuid(),
+                                                                  linear_acceleration1->uuid(), testPose1, testTwist1,
+                                                                  0.0, testAccel1 });  // NOLINT(whitespace/braces)
+  state_history.emplace(position2->stamp(),
+                        Unicycle2DModelTest::StateHistoryElement{ // NOLINT(whitespace/braces)
+                                                                  position2->uuid(), yaw2->uuid(),
+                                                                  linear_velocity2->uuid(), yaw_velocity2->uuid(),
+                                                                  linear_acceleration2->uuid(), testPose2, testTwist2,
+                                                                  0.0, testAccel2 });  // NOLINT(whitespace/braces)
+  state_history.emplace(position3->stamp(),
+                        Unicycle2DModelTest::StateHistoryElement{ // NOLINT(whitespace/braces)
+                                                                  position3->uuid(), yaw3->uuid(),
+                                                                  linear_velocity3->uuid(), yaw_velocity3->uuid(),
+                                                                  linear_acceleration3->uuid(), testPose3, testTwist3,
+                                                                  0.0, testAccel3 });  // NOLINT(whitespace/braces)
+  state_history.emplace(position4->stamp(),
+                        Unicycle2DModelTest::StateHistoryElement{ // NOLINT(whitespace/braces)
+                                                                  position4->uuid(), yaw4->uuid(),
+                                                                  linear_velocity4->uuid(), yaw_velocity4->uuid(),
+                                                                  linear_acceleration4->uuid(), testPose4, testTwist4,
+                                                                  0.0, testAccel4 });  // NOLINT(whitespace/braces)
+  state_history.emplace(position5->stamp(),
+                        Unicycle2DModelTest::StateHistoryElement{ // NOLINT(whitespace/braces)
+                                                                  position5->uuid(), yaw5->uuid(),
+                                                                  linear_velocity5->uuid(), yaw_velocity5->uuid(),
+                                                                  linear_acceleration5->uuid(), testPose5, testTwist5,
+                                                                  0.0, testAccel5 });  // NOLINT(whitespace/braces)
 
   // Update the state history
   Unicycle2DModelTest::updateStateHistoryEstimates(graph, state_history, ros::Duration(10.0));
@@ -258,18 +227,18 @@ TEST(Unicycle2D, UpdateStateHistoryEstimates)
   {
     // The second entry is included in the graph. It will get updated directly.
     geometry_msgs::Pose2D expected_pose;
-    expected_pose.x=1.2;
-    expected_pose.y=2.2;
-    expected_pose.theta=M_PI / 2.0;
+    expected_pose.x = 1.2;
+    expected_pose.y = 2.2;
+    expected_pose.theta = M_PI / 2.0;
     auto actual_pose = state_history[ros::Time(2, 0)].pose;
     EXPECT_NEAR(expected_pose.x, actual_pose.x, 1.0e-9);
     EXPECT_NEAR(expected_pose.y, actual_pose.y, 1.0e-9);
     EXPECT_NEAR(expected_pose.theta, actual_pose.theta, 1.0e-9);
 
     geometry_msgs::Twist expected_linear_velocity;
-    expected_linear_velocity.linear.x=1.2;
-    expected_linear_velocity.linear.y=2.2;
-    expected_linear_velocity.angular.z=M_PI / 2.0;
+    expected_linear_velocity.linear.x = 1.2;
+    expected_linear_velocity.linear.y = 2.2;
+    expected_linear_velocity.angular.z = M_PI / 2.0;
 
     auto actual_linear_velocity = state_history[ros::Time(2, 0)].velocity_linear;
     EXPECT_NEAR(expected_linear_velocity.linear.x, actual_linear_velocity.linear.x, 1.0e-9);
@@ -280,8 +249,8 @@ TEST(Unicycle2D, UpdateStateHistoryEstimates)
     EXPECT_NEAR(expected_yaw_velocity, actual_yaw_velocity, 1.0e-9);
 
     geometry_msgs::Accel expected_linear_acceleration;
-    expected_linear_acceleration.linear.x=0.0;
-    expected_linear_acceleration.linear.y=1.0;
+    expected_linear_acceleration.linear.x = 0.0;
+    expected_linear_acceleration.linear.y = 1.0;
 
     auto actual_linear_acceleration = state_history[ros::Time(2, 0)].acceleration_linear;
     EXPECT_NEAR(expected_linear_acceleration.linear.x, actual_linear_acceleration.linear.x, 1.0e-9);
@@ -290,17 +259,17 @@ TEST(Unicycle2D, UpdateStateHistoryEstimates)
   {
     // The third entry is missing from the graph. It will get predicted from previous state.
     geometry_msgs::Pose2D expected_pose;
-    expected_pose.x=-0.3;
-    expected_pose.y=2.2;
-    expected_pose.theta=M_PI / 2.0;
+    expected_pose.x = -0.3;
+    expected_pose.y = 2.2;
+    expected_pose.theta = M_PI / 2.0;
     auto actual_pose = state_history[ros::Time(3, 0)].pose;
     EXPECT_NEAR(expected_pose.x, actual_pose.x, 1.0e-9);
     EXPECT_NEAR(expected_pose.y, actual_pose.y, 1.0e-9);
     EXPECT_NEAR(expected_pose.theta, actual_pose.theta, 1.0e-9);
 
     geometry_msgs::Twist expected_linear_velocity;
-    expected_linear_velocity.linear.x=0.0;
-    expected_linear_velocity.linear.y=2.0;
+    expected_linear_velocity.linear.x = 0.0;
+    expected_linear_velocity.linear.y = 2.0;
 
     auto actual_linear_velocity = state_history[ros::Time(3, 0)].velocity_linear;
     EXPECT_NEAR(expected_linear_velocity.linear.x, actual_linear_velocity.linear.x, 1.0e-9);
@@ -311,8 +280,8 @@ TEST(Unicycle2D, UpdateStateHistoryEstimates)
     EXPECT_NEAR(expected_yaw_velocity, actual_yaw_velocity, 1.0e-9);
 
     geometry_msgs::Accel expected_linear_acceleration;
-    expected_linear_acceleration.linear.x=0.0;
-    expected_linear_acceleration.linear.y=1.0;
+    expected_linear_acceleration.linear.x = 0.0;
+    expected_linear_acceleration.linear.y = 1.0;
 
     auto actual_linear_acceleration = state_history[ros::Time(3, 0)].acceleration_linear;
     EXPECT_NEAR(expected_linear_acceleration.linear.x, actual_linear_acceleration.linear.x, 1.0e-9);
@@ -321,17 +290,17 @@ TEST(Unicycle2D, UpdateStateHistoryEstimates)
   {
     // The forth entry is included in the graph. It will get updated directly.
     geometry_msgs::Pose2D expected_pose;
-    expected_pose.x=1.4;
-    expected_pose.y=2.2;
-    expected_pose.theta=3.4;
+    expected_pose.x = 1.4;
+    expected_pose.y = 2.2;
+    expected_pose.theta = 3.4;
     auto actual_pose = state_history[ros::Time(4, 0)].pose;
     EXPECT_NEAR(expected_pose.x, actual_pose.x, 1.0e-9);
     EXPECT_NEAR(expected_pose.y, actual_pose.y, 1.0e-9);
     EXPECT_NEAR(expected_pose.theta, actual_pose.theta, 1.0e-9);
 
     geometry_msgs::Twist expected_linear_velocity;
-    expected_linear_velocity.linear.x=4.4;
-    expected_linear_velocity.linear.y=5.4;
+    expected_linear_velocity.linear.x = 4.4;
+    expected_linear_velocity.linear.y = 5.4;
 
     auto actual_linear_velocity = state_history[ros::Time(4, 0)].velocity_linear;
     EXPECT_NEAR(expected_linear_velocity.linear.x, actual_linear_velocity.linear.x, 1.0e-9);
@@ -342,8 +311,8 @@ TEST(Unicycle2D, UpdateStateHistoryEstimates)
     EXPECT_NEAR(expected_yaw_velocity, actual_yaw_velocity, 1.0e-9);
 
     geometry_msgs::Accel expected_linear_acceleration;
-    expected_linear_acceleration.linear.x=7.4;
-    expected_linear_acceleration.linear.y=8.4;
+    expected_linear_acceleration.linear.x = 7.4;
+    expected_linear_acceleration.linear.y = 8.4;
 
     auto actual_linear_acceleration = state_history[ros::Time(4, 0)].acceleration_linear;
     EXPECT_NEAR(expected_linear_acceleration.linear.x, actual_linear_acceleration.linear.x, 1.0e-9);
@@ -353,17 +322,17 @@ TEST(Unicycle2D, UpdateStateHistoryEstimates)
     // The fifth entry is missing from the graph. It will get predicted from previous state.
     // These values were verified with Octave
     geometry_msgs::Pose2D expected_pose;
-    expected_pose.x=-3.9778707804360529;
-    expected_pose.y=-8.9511455751801616;
-    expected_pose.theta=-2.7663706143591722;
+    expected_pose.x = -3.9778707804360529;
+    expected_pose.y = -8.9511455751801616;
+    expected_pose.theta = -2.7663706143591722;
     auto actual_pose = state_history[ros::Time(5, 0)].pose;
     EXPECT_NEAR(expected_pose.x, actual_pose.x, 1.0e-9);
     EXPECT_NEAR(expected_pose.y, actual_pose.y, 1.0e-9);
     EXPECT_NEAR(expected_pose.theta, actual_pose.theta, 1.0e-9);
 
     geometry_msgs::Twist expected_linear_velocity;
-    expected_linear_velocity.linear.x=11.8;
-    expected_linear_velocity.linear.y=13.8;
+    expected_linear_velocity.linear.x = 11.8;
+    expected_linear_velocity.linear.y = 13.8;
 
     auto actual_linear_velocity = state_history[ros::Time(5, 0)].velocity_linear;
     EXPECT_NEAR(expected_linear_velocity.linear.x, actual_linear_velocity.linear.x, 1.0e-9);
@@ -374,8 +343,8 @@ TEST(Unicycle2D, UpdateStateHistoryEstimates)
     EXPECT_NEAR(expected_yaw_velocity, actual_yaw_velocity, 1.0e-9);
 
     geometry_msgs::Accel expected_linear_acceleration;
-    expected_linear_acceleration.linear.x=7.4;
-    expected_linear_acceleration.linear.y=8.4;
+    expected_linear_acceleration.linear.x = 7.4;
+    expected_linear_acceleration.linear.y = 8.4;
 
     auto actual_linear_acceleration = state_history[ros::Time(5, 0)].acceleration_linear;
     EXPECT_NEAR(expected_linear_acceleration.linear.x, actual_linear_acceleration.linear.x, 1.0e-9);
@@ -383,7 +352,7 @@ TEST(Unicycle2D, UpdateStateHistoryEstimates)
   }
 }
 
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
   testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();

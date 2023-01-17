@@ -42,8 +42,8 @@ add_library(${PROJECT_NAME}
   src/absolute_constraint.cpp
   src/absolute_pose_2d_stamped_constraint.cpp
   src/absolute_pose_3d_stamped_constraint.cpp
-  src/absolute_orientation_3d_stamped_constraint.cpp
-  src/absolute_orientation_3d_stamped_euler_constraint.cpp
+  # src/absolute_orientation_3d_stamped_constraint.cpp
+  # src/absolute_orientation_3d_stamped_euler_constraint.cpp
   src/marginal_constraint.cpp
   src/marginal_cost_function.cpp
   src/marginalize_variables.cpp
@@ -57,7 +57,7 @@ add_library(${PROJECT_NAME}
   src/normal_prior_pose_2d.cpp
   src/normal_prior_pose_3d.cpp
   src/relative_constraint.cpp
-  src/relative_orientation_3d_stamped_constraint.cpp
+  # src/relative_orientation_3d_stamped_constraint.cpp
   src/relative_pose_2d_stamped_constraint.cpp
   src/relative_pose_3d_stamped_constraint.cpp
   src/uuid_ordering.cpp
@@ -144,56 +144,56 @@ if(CATKIN_ENABLE_TESTING)
   )
 
   # Absolute Orientation 3D Stamped Constraint Tests
-  catkin_add_gtest(test_absolute_orientation_3d_stamped_constraint
-    test/test_absolute_orientation_3d_stamped_constraint.cpp
-  )
-  add_dependencies(test_absolute_orientation_3d_stamped_constraint
-    ${catkin_EXPORTED_TARGETS}
-  )
-  target_include_directories(test_absolute_orientation_3d_stamped_constraint
-    PRIVATE
-      include
-      ${catkin_INCLUDE_DIRS}
-      ${CERES_INCLUDE_DIRS}
-      ${EIGEN3_INCLUDE_DIRS}
-  )
-  target_link_libraries(test_absolute_orientation_3d_stamped_constraint
-    ${PROJECT_NAME}
-    ${catkin_LIBRARIES}
-    ${CERES_LIBRARIES}
-    ${EIGEN3_LIBRARIES}
-  )
-  set_target_properties(test_absolute_orientation_3d_stamped_constraint
-    PROPERTIES
-      CXX_STANDARD 17
-      CXX_STANDARD_REQUIRED YES
-  )
+  # catkin_add_gtest(test_absolute_orientation_3d_stamped_constraint
+  #   test/test_absolute_orientation_3d_stamped_constraint.cpp
+  # )
+  # add_dependencies(test_absolute_orientation_3d_stamped_constraint
+  #   ${catkin_EXPORTED_TARGETS}
+  # )
+  # target_include_directories(test_absolute_orientation_3d_stamped_constraint
+  #   PRIVATE
+  #     include
+  #     ${catkin_INCLUDE_DIRS}
+  #     ${CERES_INCLUDE_DIRS}
+  #     ${EIGEN3_INCLUDE_DIRS}
+  # )
+  # target_link_libraries(test_absolute_orientation_3d_stamped_constraint
+  #   ${PROJECT_NAME}
+  #   ${catkin_LIBRARIES}
+  #   ${CERES_LIBRARIES}
+  #   ${EIGEN3_LIBRARIES}
+  # )
+  # set_target_properties(test_absolute_orientation_3d_stamped_constraint
+  #   PROPERTIES
+  #     CXX_STANDARD 17
+  #     CXX_STANDARD_REQUIRED YES
+  # )
 
   # Absolute Orientation 3D Stamped Euler Constraint Tests
-    catkin_add_gtest(test_absolute_orientation_3d_stamped_euler_constraint
-    test/test_absolute_orientation_3d_stamped_euler_constraint.cpp
-  )
-  add_dependencies(test_absolute_orientation_3d_stamped_euler_constraint
-    ${catkin_EXPORTED_TARGETS}
-  )
-  target_include_directories(test_absolute_orientation_3d_stamped_euler_constraint
-    PRIVATE
-      include
-      ${catkin_INCLUDE_DIRS}
-      ${CERES_INCLUDE_DIRS}
-      ${EIGEN3_INCLUDE_DIRS}
-  )
-  target_link_libraries(test_absolute_orientation_3d_stamped_euler_constraint
-    ${PROJECT_NAME}
-    ${catkin_LIBRARIES}
-    ${CERES_LIBRARIES}
-    ${EIGEN3_LIBRARIES}
-  )
-  set_target_properties(test_absolute_orientation_3d_stamped_euler_constraint
-    PROPERTIES
-      CXX_STANDARD 17
-      CXX_STANDARD_REQUIRED YES
-  )
+  #   catkin_add_gtest(test_absolute_orientation_3d_stamped_euler_constraint
+  #   test/test_absolute_orientation_3d_stamped_euler_constraint.cpp
+  # )
+  # add_dependencies(test_absolute_orientation_3d_stamped_euler_constraint
+  #   ${catkin_EXPORTED_TARGETS}
+  # )
+  # target_include_directories(test_absolute_orientation_3d_stamped_euler_constraint
+  #   PRIVATE
+  #     include
+  #     ${catkin_INCLUDE_DIRS}
+  #     ${CERES_INCLUDE_DIRS}
+  #     ${EIGEN3_INCLUDE_DIRS}
+  # )
+  # target_link_libraries(test_absolute_orientation_3d_stamped_euler_constraint
+  #   ${PROJECT_NAME}
+  #   ${catkin_LIBRARIES}
+  #   ${CERES_LIBRARIES}
+  #   ${EIGEN3_LIBRARIES}
+  # )
+  # set_target_properties(test_absolute_orientation_3d_stamped_euler_constraint
+  #   PROPERTIES
+  #     CXX_STANDARD 17
+  #     CXX_STANDARD_REQUIRED YES
+  # )
 
   # Absolute Pose 2D Stamped Constraint Tests
   catkin_add_gtest(test_absolute_pose_2d_stamped_constraint

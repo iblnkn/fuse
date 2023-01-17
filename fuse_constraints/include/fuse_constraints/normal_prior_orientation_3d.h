@@ -36,10 +36,11 @@
 
 #include <ceres/sized_cost_function.h>
 
+#include <fuse_core/util.h>
+#include <fuse_core/eigen.h>
 
 namespace fuse_constraints
 {
-
 /**
  * @brief Implements a cost function that models a direct measurement or prior on a 3D orientation variable
  *
@@ -56,7 +57,8 @@ namespace fuse_constraints
  * information matrix (the inverse of the covariance). This is a specialization of the generic "normal prior" provided
  * by the Ceres library that handles the 2*pi roll-over that occurs with rotations.
  */
-class NormalPriorOrientation3D : public ceres::SizedCostFunction<3, 4> //TODO:: HAVE NOT VERIFIED THAT THIS WAS A GOOD IDEA. PERHAPS SHOULD BE <3,3>
+class NormalPriorOrientation3D : public ceres::SizedCostFunction<3, 4>  // TODO:: HAVE NOT VERIFIED THAT THIS WAS A GOOD
+                                                                        // IDEA. PERHAPS SHOULD BE <3,3>
 {
 public:
   /**
@@ -69,7 +71,7 @@ public:
    *              type of variable. At a minimum, they must have the same dimensions and the per-element subtraction
    *              operator must be valid.
    */
-  NormalPriorOrientation3D(const double A, const double b);
+  NormalPriorOrientation3D(const fuse_core::MatrixXd& A, const fuse_core::Vector4d& b);
 
   /**
    * @brief Destructor
@@ -80,14 +82,11 @@ public:
    * @brief Compute the cost values/residuals, and optionally the Jacobians, using the provided variable/parameter
    *        values
    */
-  virtual bool Evaluate(
-    double const* const* parameters,
-    double* residuals,
-    double** jacobians) const;
+  virtual bool Evaluate(double const* const* parameters, double* residuals, double** jacobians) const;
 
 private:
-  double A_;  //!< The residual weighting matrix, most likely the square root information matrix
-  double b_;  //!< The measured value of the 3D orientation
+  fuse_core::MatrixXd A_;  //!< The residual weighting matrix, most likely the square root information matrix
+  fuse_core::Vector4d b_;  //!< The measured value of the 3D orientation
 };
 
 }  // namespace fuse_constraints
