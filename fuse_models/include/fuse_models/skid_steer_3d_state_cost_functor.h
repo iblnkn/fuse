@@ -37,16 +37,13 @@
 #include <fuse_models/skid_steer_3d_predict.h>
 
 #include <fuse_core/eigen.h>
-#include <fuse_core/fuse_macros.h>
+#include <fuse_core/macros.h>
 #include <fuse_core/util.h>
-
-
 namespace fuse_models
 {
-
 /**
  * @brief Create a cost function for a 3D state vector
- * 
+ *
  * The state vector includes the following quantities, given in this order:
  *   x position
  *   y position
@@ -70,7 +67,7 @@ namespace fuse_models
  *             ||    [  yaw_vel_t2 - proj(yaw_vel_t1) ] ||
  *             ||    [    x_acc_t2 - proj(x_acc_t1)   ] ||
  *             ||    [    y_acc_t2 - proj(y_acc_t1)   ] ||
- * 
+ *
  * where, the matrix A is fixed, the state variables are provided at two discrete time steps, and proj is a function
  * that projects the state variables from time t1 to time t2. In case the user is interested in implementing a cost
  * function of the form
@@ -111,80 +108,67 @@ public:
    * @param[out] residual - The computed residual (error)
    */
   template <typename T>
-  bool operator()(
-    const T* const position1,
-    const T* const orientation1,
-    const T* const vel_linear1,
-    const T* const vel_angular1,
-    const T* const acc_linear1,
-    const T* const acc_angular1,
-    const T* const position2,
-    const T* const orientation2,
-    const T* const vel_linear2,
-    const T* const vel_angular2,
-    const T* const acc_linear2,
-    const T* const acc_angular2,
-    T* residual) const;
+  bool operator()(const T* const position1, const T* const orientation1, const T* const vel_linear1,
+                  const T* const vel_angular1, const T* const acc_linear1, const T* const acc_angular1,
+                  const T* const position2, const T* const orientation2, const T* const vel_linear2,
+                  const T* const vel_angular2, const T* const acc_linear2, const T* const acc_angular2,
+                  T* residual) const;
 
 private:
   double dt_;
   fuse_core::Matrix18d A_;  //!< The residual weighting matrix, most likely the square root information matrix
 };
 
-SkidSteer3DStateCostFunctor::SkidSteer3DStateCostFunctor(const double dt, const fuse_core::Matrix18d& A) :
-  dt_(dt),
-  A_(A)
+SkidSteer3DStateCostFunctor::SkidSteer3DStateCostFunctor(const double dt, const fuse_core::Matrix18d& A)
+  : dt_(dt), A_(A)
 {
 }
 
 template <typename T>
-bool SkidSteer3DStateCostFunctor::operator()(
-  const T* const position1,
-  const T* const orientation1,
-  const T* const vel_linear1,
-  const T* const vel_angular1,
-  const T* const acc_linear1,
-  const T* const acc_angular1,
-  const T* const position2,
-  const T* const orientation2,
-  const T* const vel_linear2,
-  const T* const vel_angular2,
-  const T* const acc_linear2,
-  const T* const acc_angular2,
-  T* residual) const
+bool SkidSteer3DStateCostFunctor::operator()(const T* const position1, const T* const orientation1,
+                                             const T* const vel_linear1, const T* const vel_angular1,
+                                             const T* const acc_linear1, const T* const acc_angular1,
+                                             const T* const position2, const T* const orientation2,
+                                             const T* const vel_linear2, const T* const vel_angular2,
+                                             const T* const acc_linear2, const T* const acc_angular2, T* residual) const
 {
   T position_pred[3];
-  T orientation_pred[3];
+  T orientation_pred[4];
   T vel_linear_pred[3];
   T vel_angular_pred[3];
   T acc_linear_pred[3];
   T acc_angular_pred[3];
-  predict(
-    position1,
-    orientation1,
-    vel_linear1,
-    vel_angular1,
-    acc_linear1,
-    acc_angular1,
-    T(dt_),
-    position_pred,
-    orientation_pred,
-    vel_linear_pred,
-    vel_angular_pred,
-    acc_linear_pred,
-    acc_angular_pred);
 
+  T orientation2_euler[3];
+  T orientation_euler_pred[3];
+  predict(position1, orientation1, vel_linear1, vel_angular1, acc_linear1, acc_angular1, T(dt_), position_pred,
+          orientation_pred, vel_linear_pred, vel_angular_pred, acc_linear_pred, acc_angular_pred);
+
+  T orientation2_quat[4];
+  orientation2_quat[0] = orientation2[0];
+  orientation2_quat[1] = orientation2[1];
+  orientation2_quat[2] = orientation2[2];
+  orientation2_quat[1] = orientation2[3];
+
+  T orientation_pred_quat[4];
+  orientation_pred_quat[0] = orientation_pred[0];
+  orientation_pred_quat[1] = orientation_pred[1];
+  orientation_pred_quat[2] = orientation_pred[2];
+  orientation_pred_quat[3] = orientation_pred[3];
+
+  ceres::QuaternionToAngleAxis(orientation2_quat, orientation2_euler);
+  ceres::QuaternionToAngleAxis(orientation_pred_quat, orientation_euler_pred);
   Eigen::Map<Eigen::Matrix<T, 18, 1>> residuals_map(residual);
-  residuals_map(0)  = position2[0] - position_pred[0];
-  residuals_map(1)  = position2[1] - position_pred[1];
-  residuals_map(2)  = position2[3] - position_pred[3];
-  residuals_map(3)  = orientation2[0] - orientation_pred[0];
-  residuals_map(4)  = orientation2[1] - orientation_pred[1];
-  residuals_map(5)  = orientation2[2] - orientation_pred[2];
-  residuals_map(6)  = vel_linear2[0] - vel_linear_pred[0];
-  residuals_map(7)  = vel_linear2[1] - vel_linear_pred[1];
-  residuals_map(8)  = vel_linear2[2] - vel_linear_pred[2];
-  residuals_map(9)  = vel_angular2[0] - vel_angular_pred[0];
+  residuals_map(0) = position2[0] - position_pred[0];
+  residuals_map(1) = position2[1] - position_pred[1];
+  residuals_map(2) = position2[2] - position_pred[2];
+  residuals_map(3) = orientation2_euler[0] - orientation_euler_pred[0];
+  residuals_map(4) = orientation2_euler[1] - orientation_euler_pred[1];
+  residuals_map(5) = orientation2_euler[2] - orientation_euler_pred[2];
+  residuals_map(6) = vel_linear2[0] - vel_linear_pred[0];
+  residuals_map(7) = vel_linear2[1] - vel_linear_pred[1];
+  residuals_map(8) = vel_linear2[2] - vel_linear_pred[2];
+  residuals_map(9) = vel_angular2[0] - vel_angular_pred[0];
   residuals_map(10) = vel_angular2[1] - vel_angular_pred[1];
   residuals_map(11) = vel_angular2[2] - vel_angular_pred[2];
   residuals_map(12) = acc_linear2[0] - acc_linear_pred[0];
@@ -193,7 +177,6 @@ bool SkidSteer3DStateCostFunctor::operator()(
   residuals_map(15) = acc_angular2[0] - acc_angular_pred[0];
   residuals_map(16) = acc_angular2[1] - acc_angular_pred[1];
   residuals_map(17) = acc_angular2[2] - acc_angular_pred[2];
-
 
   fuse_core::wrapAngle2D(residuals_map(3));
   fuse_core::wrapAngle2D(residuals_map(4));

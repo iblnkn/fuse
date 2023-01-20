@@ -40,10 +40,8 @@
 #include <sstream>
 #include <string>
 
-
 namespace fuse_core
 {
-
 // Define some Eigen Typedefs that use Row-Major order
 using VectorXd = Eigen::Matrix<double, Eigen::Dynamic, 1>;
 using Vector1d = Eigen::Matrix<double, 1, 1>;
@@ -86,7 +84,6 @@ using Matrix16d = Eigen::Matrix<double, 16, 16, Eigen::RowMajor>;
 using Matrix17d = Eigen::Matrix<double, 17, 17, Eigen::RowMajor>;
 using Matrix18d = Eigen::Matrix<double, 18, 18, Eigen::RowMajor>;
 using Matrix19d = Eigen::Matrix<double, 19, 19, Eigen::RowMajor>;
-
 
 template <typename Scalar, int RowsAtCompileTime, int ColsAtCompileTime>
 using Matrix = Eigen::Matrix<Scalar, RowsAtCompileTime, ColsAtCompileTime, Eigen::RowMajor>;

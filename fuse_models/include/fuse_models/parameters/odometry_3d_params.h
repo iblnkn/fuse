@@ -47,89 +47,85 @@
 #include <string>
 #include <vector>
 
-
 namespace fuse_models
 {
-
 namespace parameters
 {
-
 /**
  * @brief Defines the set of parameters required by the Odometry3D class
  */
 struct Odometry3DParams : public ParameterBase
 {
-  public:
-    /**
-     * @brief Method for loading parameter values from ROS.
-     *
-     * @param[in] nh - The ROS node handle with which to load parameters
-     */
-    void loadFromROS(const ros::NodeHandle& nh) final
-    {
-      position_indices = loadSensorConfig<fuse_variables::Position3DStamped>(nh, "position_dimensions");
-      orientation_indices = loadSensorConfig<fuse_variables::Orientation3DStamped>(nh, "orientation_dimensions");
-      linear_velocity_indices =
+public:
+  /**
+   * @brief Method for loading parameter values from ROS.
+   *
+   * @param[in] nh - The ROS node handle with which to load parameters
+   */
+  void loadFromROS(const ros::NodeHandle& nh) final
+  {
+    position_indices = loadSensorConfig<fuse_variables::Position3DStamped>(nh, "position_dimensions");
+    orientation_indices = loadSensorConfig<fuse_variables::Orientation3DStamped>(nh, "orientation_dimensions");
+    linear_velocity_indices =
         loadSensorConfig<fuse_variables::VelocityLinear3DStamped>(nh, "linear_velocity_dimensions");
-      angular_velocity_indices =
+    angular_velocity_indices =
         loadSensorConfig<fuse_variables::VelocityAngular3DStamped>(nh, "angular_velocity_dimensions");
 
-      nh.getParam("differential", differential);
-      nh.getParam("disable_checks", disable_checks);
-      nh.getParam("queue_size", queue_size);
-      nh.getParam("tcp_no_delay", tcp_no_delay);
-      fuse_core::getPositiveParam(nh, "tf_timeout", tf_timeout, false);
+    nh.getParam("differential", differential);
+    nh.getParam("disable_checks", disable_checks);
+    nh.getParam("queue_size", queue_size);
+    nh.getParam("tcp_no_delay", tcp_no_delay);
+    fuse_core::getPositiveParam(nh, "tf_timeout", tf_timeout, false);
 
-      fuse_core::getPositiveParam(nh, "throttle_period", throttle_period, false);
-      nh.getParam("throttle_use_wall_time", throttle_use_wall_time);
+    fuse_core::getPositiveParam(nh, "throttle_period", throttle_period, false);
+    nh.getParam("throttle_use_wall_time", throttle_use_wall_time);
 
-      fuse_core::getParamRequired(nh, "topic", topic);
+    fuse_core::getParamRequired(nh, "topic", topic);
 
-      nh.getParam("twist_target_frame", twist_target_frame);
-      nh.getParam("pose_target_frame", pose_target_frame);
+    nh.getParam("twist_target_frame", twist_target_frame);
+    nh.getParam("pose_target_frame", pose_target_frame);
 
-      if (differential)
-      {
-        nh.getParam("independent", independent);
-        nh.getParam("use_twist_covariance", use_twist_covariance);
+    if (differential)
+    {
+      nh.getParam("independent", independent);
+      nh.getParam("use_twist_covariance", use_twist_covariance);
 
-        minimum_pose_relative_covariance =
-            fuse_core::getCovarianceDiagonalParam<6>(nh, "minimum_pose_relative_covariance_diagonal", 0.0);
-        twist_covariance_offset =
-            fuse_core::getCovarianceDiagonalParam<6>(nh, "twist_covariance_offset_diagonal", 0.0);
-      }
-
-      pose_loss = fuse_core::loadLossConfig(nh, "pose_loss");
-      linear_velocity_loss = fuse_core::loadLossConfig(nh, "linear_velocity_loss");
-      angular_velocity_loss = fuse_core::loadLossConfig(nh, "angular_velocity_loss");
+      minimum_pose_relative_covariance =
+          fuse_core::getCovarianceDiagonalParam<6>(nh, "minimum_pose_relative_covariance_diagonal", 0.0);
+      twist_covariance_offset = fuse_core::getCovarianceDiagonalParam<6>(nh, "twist_covariance_offset_diagonal", 0.0);
     }
 
-    bool differential { false };
-    bool disable_checks { false };
-    bool independent { true };
-    bool use_twist_covariance { true };
-    fuse_core::Matrix6d minimum_pose_relative_covariance;  //!< Minimum pose relative covariance matrix
-    fuse_core::Matrix6d twist_covariance_offset;  //!< Offset already added to the twist covariance matrix, that will be
-                                                  //!< substracted in order to recover the raw values
-    int queue_size { 10 };
-    bool tcp_no_delay { false };  //!< Whether to use TCP_NODELAY, i.e. disable Nagle's algorithm, in the subscriber
-                                  //!< socket or not. TCP_NODELAY forces a socket to send the data in its buffer,
-                                  //!< whatever the packet size. This reduces delay at the cost of network congestion,
-                                  //!< specially if the payload of a packet is smaller than the TCP header data. This is
-                                  //!< true for small ROS messages like geometry_msgs::AccelWithCovarianceStamped
-    ros::Duration tf_timeout { 0.0 };  //!< The maximum time to wait for a transform to become available
-    ros::Duration throttle_period { 0.0 };  //!< The throttle period duration in seconds
-    bool throttle_use_wall_time { false };  //!< Whether to throttle using ros::WallTime or not
-    std::string topic {};
-    std::string pose_target_frame {};
-    std::string twist_target_frame {};
-    std::vector<size_t> position_indices;
-    std::vector<size_t> orientation_indices;
-    std::vector<size_t> linear_velocity_indices;
-    std::vector<size_t> angular_velocity_indices;
-    fuse_core::Loss::SharedPtr pose_loss;
-    fuse_core::Loss::SharedPtr linear_velocity_loss;
-    fuse_core::Loss::SharedPtr angular_velocity_loss;
+    pose_loss = fuse_core::loadLossConfig(nh, "pose_loss");
+    linear_velocity_loss = fuse_core::loadLossConfig(nh, "linear_velocity_loss");
+    angular_velocity_loss = fuse_core::loadLossConfig(nh, "angular_velocity_loss");
+  }
+
+  bool differential{ false };
+  bool disable_checks{ false };
+  bool independent{ true };
+  bool use_twist_covariance{ true };
+  fuse_core::Matrix6d minimum_pose_relative_covariance;  //!< Minimum pose relative covariance matrix
+  fuse_core::Matrix6d twist_covariance_offset;  //!< Offset already added to the twist covariance matrix, that will be
+                                                //!< substracted in order to recover the raw values
+  int queue_size{ 10 };
+  bool tcp_no_delay{ false };  //!< Whether to use TCP_NODELAY, i.e. disable Nagle's algorithm, in the subscriber
+                               //!< socket or not. TCP_NODELAY forces a socket to send the data in its buffer,
+                               //!< whatever the packet size. This reduces delay at the cost of network congestion,
+                               //!< specially if the payload of a packet is smaller than the TCP header data. This is
+                               //!< true for small ROS messages like geometry_msgs::AccelWithCovarianceStamped
+  ros::Duration tf_timeout{ 0.0 };       //!< The maximum time to wait for a transform to become available
+  ros::Duration throttle_period{ 0.0 };  //!< The throttle period duration in seconds
+  bool throttle_use_wall_time{ false };  //!< Whether to throttle using ros::WallTime or not
+  std::string topic{};
+  std::string pose_target_frame{};
+  std::string twist_target_frame{};
+  std::vector<size_t> position_indices;
+  std::vector<size_t> orientation_indices;
+  std::vector<size_t> linear_velocity_indices;
+  std::vector<size_t> angular_velocity_indices;
+  fuse_core::Loss::SharedPtr pose_loss;
+  fuse_core::Loss::SharedPtr linear_velocity_loss;
+  fuse_core::Loss::SharedPtr angular_velocity_loss;
 };
 
 }  // namespace parameters

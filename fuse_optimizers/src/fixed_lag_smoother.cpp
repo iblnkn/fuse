@@ -88,14 +88,12 @@ FixedLagSmoother::FixedLagSmoother(
     started_(false),
     optimization_request_(false)
 {
-  ROS_WARN("Loading Parameters from ROS into FixedLagSmoother");
   params_.loadFromROS(private_node_handle);
 
   // Test for auto-start
   autostart();
 
   // Start the optimization thread
-  ROS_WARN("Starting Fix_lag_smoother optimization");
   optimization_thread_ = std::thread(&FixedLagSmoother::optimizationLoop, this);
 
   // Configure a timer to trigger optimizations
@@ -163,7 +161,6 @@ void FixedLagSmoother::postprocessMarginalization(const fuse_core::Transaction& 
 
 void FixedLagSmoother::optimizationLoop()
 {
-  ROS_WARN("Entered Optimization Loop");
   auto exit_wait_condition = [this]()
   {
     return this->optimization_request_ || !this->optimization_running_ || !ros::ok();
@@ -189,32 +186,24 @@ void FixedLagSmoother::optimizationLoop()
       std::lock_guard<std::mutex> lock(optimization_mutex_);
       // Apply motion models
       auto new_transaction = fuse_core::Transaction::make_shared();
-      ROS_WARN("Printing new transaction");
-      new_transaction->print();
       // DANGER: processQueue obtains a lock from the pending_transactions_mutex_
       //         We do this to ensure state of the graph does not change between unlocking the pending_transactions
       //         queue and obtaining the lock for the graph. But we have now obtained two different locks. If we are
       //         not extremely careful, we could get a deadlock.
-      ROS_WARN("Entering Process Queue");
       processQueue(*new_transaction, lag_expiration_);
-      ROS_WARN("Exiting Process Queue");
       // Skip this optimization cycle if the transaction is empty because something failed while processing the pending
       // transactions queue.
       if (new_transaction->empty())
       {
-        ROS_WARN("Recieved Empty Transaction");
         continue;
       }
       // Prepare for selecting the marginal variables
-      ROS_WARN("Preprocessing Marginalization");
       preprocessMarginalization(*new_transaction);
       // Combine the new transactions with any marginal transaction from the end of the last cycle
-      ROS_WARN("Merging Transaction");
       new_transaction->merge(marginal_transaction_);
       // Update the graph
       try
       {
-        ROS_WARN("Trying to update graph");
         graph_->update(*new_transaction);
       }
       catch (const std::exception& ex)
@@ -232,9 +221,6 @@ void FixedLagSmoother::optimizationLoop()
         break;
       }
       // Optimize the entire graph
-      ROS_WARN("About to print graph.");
-      graph_->print();
-      ROS_WARN("Printed Graph!");
       summary_ = graph_->optimize(params_.solver_options);
 
       // Optimization is complete. Notify all the things about the graph changes.

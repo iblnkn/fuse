@@ -42,16 +42,12 @@
 
 #include <boost/serialization/export.hpp>
 
-
 #include <ostream>
-
 
 namespace fuse_variables
 {
-
-Orientation3DStamped::Orientation3DStamped(const ros::Time& stamp, const fuse_core::UUID& device_id) :
-  FixedSizeVariable<4>(fuse_core::uuid::generate(detail::type(), stamp, device_id)),
-  Stamped(stamp, device_id)
+Orientation3DStamped::Orientation3DStamped(const ros::Time& stamp, const fuse_core::UUID& device_id)
+  : FixedSizeVariable<4>(fuse_core::uuid::generate(detail::type(), stamp, device_id)), Stamped(stamp, device_id)
 {
 }
 
@@ -63,7 +59,7 @@ void Orientation3DStamped::print(std::ostream& stream) const
          << "  stamp: " << stamp() << "\n"
          << "  size: " << size() << "\n"
          << "  data:\n"
-        << "  - w: " << w() << "\n"
+         << "  - w: " << w() << "\n"
          << "  - x: " << x() << "\n"
          << "  - y: " << y() << "\n"
          << "  - z: " << z() << "\n";

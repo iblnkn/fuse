@@ -129,6 +129,7 @@ struct Imu3DParams : public ParameterBase
     std::string twist_target_frame {};
     std::vector<size_t> angular_velocity_indices;
     std::vector<size_t> linear_acceleration_indices;
+    
     std::vector<size_t> orientation_indices;
     fuse_core::Loss::SharedPtr pose_loss;
     fuse_core::Loss::SharedPtr angular_velocity_loss;

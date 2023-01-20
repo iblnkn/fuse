@@ -294,13 +294,11 @@ void HashGraph::getCovariance(const std::vector<std::pair<fuse_core::UUID, fuse_
   // Avoid doing a bunch of work if the request is empty
   if (covariance_requests.empty())
   {
-    ROS_INFO("The Covariance Request was empty.");
     return;
   }
   // Construct the ceres::Problem object from scratch
   ceres::Problem problem(problem_options_);
   createProblem(problem);
-  ROS_INFO("Created Problem in getCovariance");
   // The Ceres interface requires that the variable pairs not contain duplicates. Since the covariance matrix is
   // symmetric, requesting Cov(A,B) and Cov(B,A) counts as a duplicate. Create an expression to test a pair of data
   // pointers such that (A,B) == (A,B) OR (B,A)
@@ -350,7 +348,6 @@ void HashGraph::getCovariance(const std::vector<std::pair<fuse_core::UUID, fuse_
                      std::bind<bool>(symmetric_equal, block, std::placeholders::_1)))
     {
       unique_covariance_blocks.push_back(block);
-      ROS_INFO("Unique Covariance Block Added.");
     }
   }
   // Call the Ceres function to compute the unique set of requested covariance blocks
@@ -397,11 +394,10 @@ ceres::Solver::Summary HashGraph::optimize(const ceres::Solver::Options& options
   // Construct the ceres::Problem object from scratch
   ceres::Problem problem(problem_options_);
   createProblem(problem);
-  ROS_INFO("Created Problem in optimize");
   // Run the solver. This will update the variables in place.
   ceres::Solver::Summary summary;
   ceres::Solve(options, &problem, &summary);
-  ROS_INFO_STREAM(summary.FullReport());
+  ROS_DEBUG_STREAM(summary.FullReport());
   // Return the optimization summary
   return summary;
 }
@@ -413,7 +409,6 @@ ceres::Solver::Summary HashGraph::optimizeFor(const ros::Duration& max_optimizat
   // Construct the ceres::Problem object from scratch
   ceres::Problem problem(problem_options_);
   createProblem(problem);
-  ROS_INFO("Created Problem in optimizeFor");
   auto created_problem = ros::Time::now();
   // Modify the options to enforce the maximum time
   auto remaining = max_optimization_time - (created_problem - start);
@@ -431,7 +426,6 @@ bool HashGraph::evaluate(double* cost, std::vector<double>* residuals, std::vect
 {
   ceres::Problem problem(problem_options_);
   createProblem(problem);
-  ROS_INFO("Created Problem in evaluate");
 
   return problem.Evaluate(options, cost, residuals, gradient, nullptr);
 }
@@ -457,11 +451,9 @@ void HashGraph::print(std::ostream& stream) const
 void HashGraph::createProblem(ceres::Problem& problem) const
 {
   // Add all the variables to the problem
-  ROS_INFO("Creating Problem");
   for (auto& uuid__variable : variables_)
   {
     fuse_core::Variable& variable = *(uuid__variable.second);
-    variable.print();
     problem.AddParameterBlock(variable.data(), variable.size(), variable.manifold());
     // Handle optimization bounds
     for (size_t index = 0; index < variable.size(); ++index)
@@ -470,22 +462,14 @@ void HashGraph::createProblem(ceres::Problem& problem) const
       if (lower_bound > std::numeric_limits<double>::lowest())
       {
         problem.SetParameterLowerBound(variable.data(), index, lower_bound);
-        ROS_INFO("Lower bound is larger than numeric limit.");
       }
-      else
-      {
-        ROS_INFO("Lower bound is smaller than numeric limit.");
-      }
+
       auto upper_bound = variable.upperBound(index);
       if (upper_bound < std::numeric_limits<double>::max())
       {
         problem.SetParameterUpperBound(variable.data(), index, upper_bound);
-        ROS_INFO("Upper bound is smaller than numeric limit.");
       }
-      else
-      {
-        ROS_INFO("Upper bound is larger than numeric limit.");
-      }
+
     }
     // Handle variables that are held constant
     if (variables_on_hold_.find(variable.uuid()) != variables_on_hold_.end())
@@ -493,13 +477,11 @@ void HashGraph::createProblem(ceres::Problem& problem) const
       problem.SetParameterBlockConstant(variable.data());
     }
   }
-  ROS_INFO("Added Variables");
   // Add the constraints
   std::vector<double*> parameter_blocks;
   for (auto& uuid__constraint : constraints_)
   {
     fuse_core::Constraint& constraint = *(uuid__constraint.second);
-    constraint.print();
     // We need the memory address of each variable value referenced by this constraint
     parameter_blocks.clear();
     parameter_blocks.reserve(constraint.variables().size());
@@ -509,7 +491,6 @@ void HashGraph::createProblem(ceres::Problem& problem) const
     }
     problem.AddResidualBlock(constraint.costFunction(), constraint.lossFunction(), parameter_blocks);
   }
-  ROS_INFO("Added Constraints");
 }
 
 }  // namespace fuse_graphs

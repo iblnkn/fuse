@@ -433,6 +433,11 @@ inline bool processAbsolutePose3DWithCovariance(const std::string& source, const
                                                 fuse_core::Transaction& transaction,
                                                 const ros::Duration& tf_timeout = ros::Duration(0, 0))
 {
+  if (position_indices.empty() && orientation_indices.empty())
+  {
+    return false;
+  }
+
   geometry_msgs::PoseWithCovarianceStamped transformed_message;
   if (target_frame.empty())
   {
@@ -936,6 +941,10 @@ inline bool processDifferentialPose3DWithCovariance(
     const std::vector<size_t>& position_indices, const std::vector<size_t>& orientation_indices, const bool validate,
     fuse_core::Transaction& transaction)
 {
+  if (position_indices.empty() && orientation_indices.empty())
+  {
+    return false;
+  }
   // Create the pose variables
   auto position1 = fuse_variables::Position3DStamped::make_shared(pose1.header.stamp, device_id);
   auto orientation1 = fuse_variables::Orientation3DStamped::make_shared(pose1.header.stamp, device_id);
@@ -1047,21 +1056,33 @@ inline bool processDifferentialPose3DWithCovariance(
     //
     //
     //
-    // In SE(2) the poses are represented by:
+    // In SE(3) the poses are represented by:
     //
     //     (R | t)
     // p = (-----)
     //     (0 | 1)
     //
-    // where R is the rotation matrix for the yaw angle:
+    // where R is the rotation matrix:
     //
-    //     (cos(yaw) -sin(yaw))
-    // R = (sin(yaw)  cos(yaw))
+    // R = R_z * R_y * R_x
+    //
+    //      (cos(roll)  -sin(roll) 0         )
+    // Rx = (sin(roll)   cos(roll) 0         )
+    //      (0           0         1         )
+    //
+    //      (cos(pitch)  0         sin(pitch))
+    // Ry = (0           1         0         )
+    //      (-sin(pitch) 0         cos(pitch))
+    //
+    //      (1           0         0         )
+    // Rz = (0           cos(yaw) -sin(yaw)  )
+    //      (0           sin(yaw)  cos(yaw)  )
     //
     // and t is the translation:
     //
     //     (x)
     // t = (y)
+    //     (z)
     //
     // The pose composition/multiplication in SE(2) is defined as follows:
     //
@@ -1073,6 +1094,9 @@ inline bool processDifferentialPose3DWithCovariance(
     //
     // x = x2 * cos(yaw1) - y2 * sin(yaw1) + x1
     // y = x2 * sin(yaw1) + y2 * cos(yaw1) + y1
+    // z
+    // roll
+    // pitch
     // yaw = yaw1 + yaw2
     //
     // Since the covariance matrices are defined following that same order for
@@ -1853,6 +1877,11 @@ inline bool processTwist3DWithCovariance(const std::string& source, const fuse_c
                                          const bool validate, fuse_core::Transaction& transaction,
                                          const ros::Duration& tf_timeout = ros::Duration(0, 0))
 {
+  // Make sure we actually have work to do
+  if (linear_indices.empty() && angular_indices.empty())
+  {
+    return false;
+  }
   geometry_msgs::TwistWithCovarianceStamped transformed_message;
   if (target_frame.empty())
   {
@@ -2136,7 +2165,6 @@ inline bool processAccel3DWithCovariance(const std::string& source, const fuse_c
   else
   {
     transformed_message.header.frame_id = target_frame;
-
     if (!transformMessage(tf_buffer, acceleration, transformed_message, tf_timeout))
     {
       ROS_WARN_STREAM_DELAYED_THROTTLE(10.0, "Failed to transform acceleration message with stamp "
@@ -2173,7 +2201,6 @@ inline bool processAccel3DWithCovariance(const std::string& source, const fuse_c
     fuse_core::VectorXd linear_accel_mean_partial(linear_indices.size());
     fuse_core::MatrixXd linear_accel_covariance_partial(linear_accel_mean_partial.rows(),
                                                         linear_accel_mean_partial.rows());
-
     populatePartialMeasurement(linear_accel_mean, linear_accel_covariance, linear_indices, linear_accel_mean_partial,
                                linear_accel_covariance_partial);
 
@@ -2197,9 +2224,7 @@ inline bool processAccel3DWithCovariance(const std::string& source, const fuse_c
     {
       auto linear_accel_constraint = fuse_constraints::AbsoluteAccelerationLinear3DStampedConstraint::make_shared(
           source, *acceleration_linear, linear_accel_mean_partial, linear_accel_covariance_partial, linear_indices);
-
       linear_accel_constraint->loss(linear_acceleration_loss);
-
       transaction.addVariable(acceleration_linear);
       transaction.addConstraint(linear_accel_constraint);
       constraints_added = true;

@@ -34,36 +34,48 @@
 #include <fuse_constraints/normal_prior_pose_3d.h>
 #include <fuse_core/util.h>
 
+#include <ceres/rotation.h>
+
 #include <Eigen/Core>
 #include <glog/logging.h>
 
-
 namespace fuse_constraints
 {
-
-NormalPriorPose3D::NormalPriorPose3D(const fuse_core::MatrixXd& A, const fuse_core::Vector7d& b) :
-  A_(A),
-  b_(b)
+NormalPriorPose3D::NormalPriorPose3D(const fuse_core::MatrixXd& A, const fuse_core::Vector7d& b) : A_(A), b_(b)
 {
   CHECK_GT(A_.rows(), 0);
   CHECK_EQ(A_.cols(), 7);
   set_num_residuals(A_.rows());
 }
 
-bool NormalPriorPose3D::Evaluate(
-  double const* const* parameters,
-  double* residuals,
-  double** jacobians) const
+bool NormalPriorPose3D::Evaluate(double const* const* parameters, double* residuals, double** jacobians) const
 {
   fuse_core::Vector6d full_residuals_vector;
-  full_residuals_vector[0] = parameters[0][0] - b_[0];  // position x
-  full_residuals_vector[1] = parameters[0][1] - b_[1];  // position y
-  full_residuals_vector[2] = parameters[0][2] - b_[2];  // position y
-  full_residuals_vector[3] = fuse_core::wrapAngle2D(parameters[1][0] - b_[3]);  // orientation
-  full_residuals_vector[4] = fuse_core::wrapAngle2D(parameters[1][1] - b_[4]);  // orientation
-  full_residuals_vector[5] = fuse_core::wrapAngle2D(parameters[1][2] - b_[5]);
-  full_residuals_vector[6] = fuse_core::wrapAngle2D(parameters[1][3] - b_[6]);  // orientation  // orientation
 
+  double parametersQuat[4];
+  parametersQuat[0] = parameters[1][0];
+  parametersQuat[1] = parameters[1][2];
+  parametersQuat[2] = parameters[1][2];
+  parametersQuat[3] = parameters[1][3];
+
+  double b_quat_[4];
+  b_quat_[0] = b_[3];
+  b_quat_[1] = b_[4];
+  b_quat_[2] = b_[5];
+  b_quat_[3] = b_[6];
+
+  double b_euler_[3];
+  double parameters_euler[3];
+
+  ceres::QuaternionToAngleAxis(parametersQuat, parameters_euler);
+  ceres::QuaternionToAngleAxis(b_quat_, b_euler_);
+
+  full_residuals_vector[0] = parameters[0][0] - b_[0];                                   // position x
+  full_residuals_vector[1] = parameters[0][1] - b_[1];                                   // position y
+  full_residuals_vector[2] = parameters[0][2] - b_[2];                                   // position y
+  full_residuals_vector[3] = fuse_core::wrapAngle2D(parameters_euler[0] - b_euler_[0]);  // orientation
+  full_residuals_vector[4] = fuse_core::wrapAngle2D(parameters_euler[1] - b_euler_[1]);  // orientation
+  full_residuals_vector[5] = fuse_core::wrapAngle2D(parameters_euler[2] - b_euler_[2]);
 
   // Scale the residuals by the square root information matrix to account for the measurement uncertainty.
   Eigen::Map<fuse_core::VectorXd> residuals_vector(residuals, num_residuals());
@@ -74,13 +86,13 @@ bool NormalPriorPose3D::Evaluate(
     // Jacobian wrt position
     if (jacobians[0] != nullptr)
     {
-      Eigen::Map<fuse_core::MatrixXd>(jacobians[0], num_residuals(), 2) = A_.leftCols<2>();
+      Eigen::Map<fuse_core::MatrixXd>(jacobians[0], num_residuals(), 3) = A_.leftCols<3>();
     }
 
     // Jacobian wrt orientation
     if (jacobians[1] != nullptr)
     {
-      Eigen::Map<fuse_core::VectorXd>(jacobians[1], num_residuals()) = A_.col(2);
+      Eigen::Map<fuse_core::MatrixXd>(jacobians[1], num_residuals(), 3) = A_.leftCols<3>();
     }
   }
   return true;

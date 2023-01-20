@@ -32,7 +32,9 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 #include <fuse_models/skid_steer_3d_state_kinematic_constraint.h>
-#include <fuse_models/skid_steer_3d_state_cost_function.h>
+// #include <fuse_models/skid_steer_3d_state_cost_function.h>
+#include <fuse_models/skid_steer_3d_state_cost_functor.h>
+#include <ceres/autodiff_cost_function.h>
 
 #include <fuse_variables/acceleration_angular_3d_stamped.h>
 #include <fuse_variables/acceleration_linear_3d_stamped.h>
@@ -48,41 +50,28 @@
 #include <ostream>
 #include <string>
 
-
 namespace fuse_models
 {
-
 SkidSteer3DStateKinematicConstraint::SkidSteer3DStateKinematicConstraint(
-  const std::string& source,
-  const fuse_variables::Position3DStamped& position1,
-  const fuse_variables::Orientation3DStamped& orientation1,
-  const fuse_variables::VelocityLinear3DStamped& linear_velocity1,
-  const fuse_variables::VelocityAngular3DStamped& angular_velocity1,
-  const fuse_variables::AccelerationLinear3DStamped& linear_acceleration1,
-  const fuse_variables::AccelerationAngular3DStamped& angular_acceleration1,
-  const fuse_variables::Position3DStamped& position2,
-  const fuse_variables::Orientation3DStamped& orientation2,
-  const fuse_variables::VelocityLinear3DStamped& linear_velocity2,
-  const fuse_variables::VelocityAngular3DStamped& angular_velocity2,
-  const fuse_variables::AccelerationLinear3DStamped& linear_acceleration2,
-  const fuse_variables::AccelerationAngular3DStamped& angular_acceleration2,
-  const fuse_core::Matrix18d& covariance) :
-    fuse_core::Constraint(
-      source,
-      {position1.uuid(),
-       orientation1.uuid(),
-       linear_velocity1.uuid(),
-       angular_velocity1.uuid(),
-       linear_acceleration1.uuid(),
-       angular_acceleration1.uuid(),
-       position2.uuid(),
-       orientation2.uuid(),
-       linear_velocity2.uuid(),
-       angular_velocity2.uuid(),
-       linear_acceleration2.uuid(),
-       angular_acceleration2.uuid()}),  // NOLINT
-    dt_((position2.stamp() - position1.stamp()).toSec()),
-    sqrt_information_(covariance.inverse().llt().matrixU())
+    const std::string& source, const fuse_variables::Position3DStamped& position1,
+    const fuse_variables::Orientation3DStamped& orientation1,
+    const fuse_variables::VelocityLinear3DStamped& linear_velocity1,
+    const fuse_variables::VelocityAngular3DStamped& angular_velocity1,
+    const fuse_variables::AccelerationLinear3DStamped& linear_acceleration1,
+    const fuse_variables::AccelerationAngular3DStamped& angular_acceleration1,
+    const fuse_variables::Position3DStamped& position2, const fuse_variables::Orientation3DStamped& orientation2,
+    const fuse_variables::VelocityLinear3DStamped& linear_velocity2,
+    const fuse_variables::VelocityAngular3DStamped& angular_velocity2,
+    const fuse_variables::AccelerationLinear3DStamped& linear_acceleration2,
+    const fuse_variables::AccelerationAngular3DStamped& angular_acceleration2, const fuse_core::Matrix18d& covariance)
+  : fuse_core::Constraint(source,
+                          { position1.uuid(), orientation1.uuid(), linear_velocity1.uuid(), angular_velocity1.uuid(),
+                            linear_acceleration1.uuid(), angular_acceleration1.uuid(), position2.uuid(),
+                            orientation2.uuid(), linear_velocity2.uuid(), angular_velocity2.uuid(),
+                            linear_acceleration2.uuid(), angular_acceleration2.uuid() })
+  ,  // NOLINT
+  dt_((position2.stamp() - position1.stamp()).toSec())
+  , sqrt_information_(covariance.inverse().llt().matrixU())
 {
 }
 
@@ -104,7 +93,7 @@ void SkidSteer3DStateKinematicConstraint::print(std::ostream& stream) const
          << "  linear acceleration variable 2: " << variables().at(10) << "\n"
          << "  angular acceleration variable 2: " << variables().at(10) << "\n"
          << "  dt: " << dt() << "\n"
-         << "  sqrt_info: " << sqrtInformation() << "\n";
+         << "  covariance: " << covariance() << "\n";
 }
 
 ceres::CostFunction* SkidSteer3DStateKinematicConstraint::costFunction() const
@@ -112,13 +101,13 @@ ceres::CostFunction* SkidSteer3DStateKinematicConstraint::costFunction() const
   // Here we return a cost function that computes the analytic derivatives/jacobians, but we could use automatic
   // differentiation as follows:
   //
-  // return new ceres::AutoDiffCostFunction<SkidSteer3DStateCostFunctor, 8, 2, 1, 2, 1, 2, 2, 1, 2, 1, 2>(
-  //   new SkidSteer3DStateCostFunctor(dt_, sqrt_information_));
+  return new ceres::AutoDiffCostFunction<SkidSteer3DStateCostFunctor, 18, 3, 4, 3, 3, 3, 3, 3, 4, 3, 3, 3, 3>(
+      new SkidSteer3DStateCostFunctor(dt_, sqrt_information_));
   //
   // which requires:
   //
   // #include <fuse_models/skid_steer_3d_state_cost_functor.h>
-  return new SkidSteer3DStateCostFunction(dt_, sqrt_information_);
+  // return new SkidSteer3DStateCostFunction(dt_, sqrt_information_);
 }
 
 }  // namespace fuse_models

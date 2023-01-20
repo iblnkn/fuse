@@ -55,13 +55,10 @@
 #include <string>
 #include <vector>
 
-
 namespace fuse_models
 {
-
 namespace common
 {
-
 /**
  * @brief Utility method for printing and throwing an error for invalid dimension specification
  * @param[in] dimension - The erroneous dimension name
@@ -87,8 +84,10 @@ template <typename T>
 std::enable_if_t<is_linear_2d<T>::value, size_t> toIndex(const std::string& dimension)
 {
   auto lower_dim = boost::algorithm::to_lower_copy(dimension);
-  if (lower_dim == "x") return static_cast<size_t>(T::X);
-  if (lower_dim == "y") return static_cast<size_t>(T::Y);
+  if (lower_dim == "x")
+    return static_cast<size_t>(T::X);
+  if (lower_dim == "y")
+    return static_cast<size_t>(T::Y);
 
   throwDimensionError(dimension);
 
@@ -108,9 +107,12 @@ template <typename T>
 std::enable_if_t<is_linear_3d<T>::value, size_t> toIndex(const std::string& dimension)
 {
   auto lower_dim = boost::algorithm::to_lower_copy(dimension);
-  if (lower_dim == "x") return static_cast<size_t>(T::X);
-  if (lower_dim == "y") return static_cast<size_t>(T::Y);
-  if (lower_dim == "z") return static_cast<size_t>(T::Z);
+  if (lower_dim == "x")
+    return static_cast<size_t>(T::X);
+  if (lower_dim == "y")
+    return static_cast<size_t>(T::Y);
+  if (lower_dim == "z")
+    return static_cast<size_t>(T::Z);
 
   throwDimensionError(dimension);
 
@@ -130,7 +132,8 @@ template <typename T>
 std::enable_if_t<is_angular_2d<T>::value, size_t> toIndex(const std::string& dimension)
 {
   auto lower_dim = boost::algorithm::to_lower_copy(dimension);
-  if (lower_dim == "yaw" || lower_dim == "z") return static_cast<size_t>(fuse_variables::Orientation2DStamped::YAW);
+  if (lower_dim == "yaw" || lower_dim == "z")
+    return static_cast<size_t>(fuse_variables::Orientation2DStamped::YAW);
 
   throwDimensionError(dimension);
 
@@ -146,14 +149,45 @@ std::enable_if_t<is_angular_2d<T>::value, size_t> toIndex(const std::string& dim
  * @return the index of the enumerated dimension for that type
  * @throws runtime_error if the dimension name is invalid
  */
-template <typename T>
-std::enable_if_t<is_angular_3d<T>::value, size_t> toIndex(const std::string& dimension)
+template <typename T>  // TODO(iblankena): It may be interesting to modify Orientation3DStamped handle the coversion
+                       // from euler to quaternion so you can initialize with euler angles like R_L
+std::enable_if_t<is_quat_3d<T>::value, size_t> toIndex(const std::string& dimension)
 {
   auto lower_dim = boost::algorithm::to_lower_copy(dimension);
-  if (lower_dim == "x") return static_cast<size_t>(fuse_variables::Orientation3DStamped::X);
-  if (lower_dim == "y") return static_cast<size_t>(fuse_variables::Orientation3DStamped::Y);
-  if (lower_dim == "z") return static_cast<size_t>(fuse_variables::Orientation3DStamped::Z);
-  if (lower_dim == "w") return static_cast<size_t>(fuse_variables::Orientation3DStamped::W);
+  if (lower_dim == "x")
+    return static_cast<size_t>(T::X);
+  if (lower_dim == "y")
+    return static_cast<size_t>(T::Y);
+  if (lower_dim == "z")
+    return static_cast<size_t>(T::Z);
+  if (lower_dim == "w")
+    return static_cast<size_t>(T::W);
+
+  throwDimensionError(dimension);
+
+  return 0u;
+}
+
+/**
+ * @brief Method that converts from 3D euler axis dimension names to index values
+ *
+ * This method is enabled only for variables that contain _only_ 3D angular quantities
+ *
+ * @param[in] dimension - The dimension name to convert
+ * @return the index of the enumerated dimension for that type
+ * @throws runtime_error if the dimension name is invalid
+ */
+template <typename T>  // TODO(iblankena): It may be interesting to modify Orientation3DStamped handle the coversion
+                       // from euler to quaternion so you can initialize with euler angles like R_L
+std::enable_if_t<is_euler_3d<T>::value, size_t> toIndex(const std::string& dimension)
+{
+  auto lower_dim = boost::algorithm::to_lower_copy(dimension);
+  if (lower_dim == "x" || lower_dim == "roll")
+    return static_cast<size_t>(T::ROLL);
+  if (lower_dim == "y" || lower_dim == "pitch")
+    return static_cast<size_t>(T::PITCH);
+  if (lower_dim == "z" || lower_dim == "yaw")
+    return static_cast<size_t>(T::YAW);
 
   throwDimensionError(dimension);
 
@@ -176,11 +210,7 @@ std::vector<size_t> getDimensionIndices(const std::vector<std::string>& dimensio
   std::vector<size_t> indices;
   indices.reserve(dimension_names.size());
 
-  std::transform(
-    dimension_names.begin(),
-    dimension_names.end(),
-    std::back_inserter(indices),
-    toIndex<T>);
+  std::transform(dimension_names.begin(), dimension_names.end(), std::back_inserter(indices), toIndex<T>);
 
   // Remove duplicates
   std::sort(indices.begin(), indices.end());

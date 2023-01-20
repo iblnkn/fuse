@@ -44,13 +44,10 @@
 #include <utility>
 #include <string>
 
-
 namespace fuse_core
 {
-
-AsyncMotionModel::AsyncMotionModel(size_t thread_count) :
-  name_("uninitialized"),
-  spinner_(thread_count, &callback_queue_)
+AsyncMotionModel::AsyncMotionModel(size_t thread_count)
+  : name_("uninitialized"), spinner_(thread_count, &callback_queue_)
 {
 }
 
@@ -63,7 +60,7 @@ bool AsyncMotionModel::apply(Transaction& transaction)
   // This function blocks until the queryCallback() call completes, thus enforcing that motion models are generated
   // in order.
   auto callback = boost::make_shared<CallbackWrapper<bool>>(
-    std::bind(&AsyncMotionModel::applyCallback, this, std::ref(transaction)));
+      std::bind(&AsyncMotionModel::applyCallback, this, std::ref(transaction)));
   auto result = callback->getFuture();
   callback_queue_.addCallback(callback, reinterpret_cast<uint64_t>(this));
   result.wait();
@@ -73,8 +70,8 @@ bool AsyncMotionModel::apply(Transaction& transaction)
 void AsyncMotionModel::graphCallback(Graph::ConstSharedPtr graph)
 {
   callback_queue_.addCallback(
-    boost::make_shared<CallbackWrapper<void>>(std::bind(&AsyncMotionModel::onGraphUpdate, this, std::move(graph))),
-    reinterpret_cast<uint64_t>(this));
+      boost::make_shared<CallbackWrapper<void>>(std::bind(&AsyncMotionModel::onGraphUpdate, this, std::move(graph))),
+      reinterpret_cast<uint64_t>(this));
 }
 
 void AsyncMotionModel::initialize(const std::string& name)

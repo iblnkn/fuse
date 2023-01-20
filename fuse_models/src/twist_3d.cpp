@@ -112,8 +112,6 @@ void Twist3D::process(const geometry_msgs::TwistWithCovarianceStamped::ConstPtr&
 
   // Send the transaction object to the plugin's parent
   sendTransaction(transaction);
-  ROS_WARN("Printing Twist3D Transaction");
-  transaction->print();
 }
 
 }  // namespace fuse_models

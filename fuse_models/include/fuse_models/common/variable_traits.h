@@ -49,54 +49,57 @@
 
 namespace fuse_models
 {
-
 namespace common
 {
-
 template <typename T>
 struct is_linear_3d
 {
   static const bool value = false;
 };
 
-
-template<>
+template <>
 struct is_linear_3d<fuse_variables::AccelerationLinear3DStamped>
 {
   static const bool value = true;
 };
 
-template<>
+template <>
 struct is_linear_3d<fuse_variables::VelocityLinear3DStamped>
 {
   static const bool value = true;
 };
 
-template<>
+template <>
 struct is_linear_3d<fuse_variables::Position3DStamped>
 {
   static const bool value = true;
 };
 
 template <typename T>
-struct is_angular_3d
+struct is_euler_3d
 {
   static const bool value = false;
 };
 
-template<>
-struct is_angular_3d<fuse_variables::Orientation3DStamped>
+template <typename T>
+struct is_quat_3d
+{
+  static const bool value = false;
+};
+
+template <>
+struct is_quat_3d<fuse_variables::Orientation3DStamped>
 {
   static const bool value = true;
 };
 
-template<>
-struct is_angular_3d<fuse_variables::VelocityAngular3DStamped>
+template <>
+struct is_euler_3d<fuse_variables::VelocityAngular3DStamped>
 {
   static const bool value = true;
 };
-template<>
-struct is_angular_3d<fuse_variables::AccelerationAngular3DStamped>
+template <>
+struct is_euler_3d<fuse_variables::AccelerationAngular3DStamped>
 {
   static const bool value = true;
 };
@@ -107,19 +110,19 @@ struct is_linear_2d
   static const bool value = false;
 };
 
-template<>
+template <>
 struct is_linear_2d<fuse_variables::AccelerationLinear2DStamped>
 {
   static const bool value = true;
 };
 
-template<>
+template <>
 struct is_linear_2d<fuse_variables::VelocityLinear2DStamped>
 {
   static const bool value = true;
 };
 
-template<>
+template <>
 struct is_linear_2d<fuse_variables::Position2DStamped>
 {
   static const bool value = true;
@@ -131,13 +134,13 @@ struct is_angular_2d
   static const bool value = false;
 };
 
-template<>
+template <>
 struct is_angular_2d<fuse_variables::Orientation2DStamped>
 {
   static const bool value = true;
 };
 
-template<>
+template <>
 struct is_angular_2d<fuse_variables::VelocityAngular2DStamped>
 {
   static const bool value = true;

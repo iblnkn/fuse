@@ -44,18 +44,16 @@
 #include <memory>
 #include <utility>
 
-
 //  this sensor model with ROS as a plugin.
 PLUGINLIB_EXPORT_CLASS(fuse_models::Pose3D, fuse_core::SensorModel)
 
 namespace fuse_models
 {
-
-Pose3D::Pose3D() :
-  fuse_core::AsyncSensorModel(1),
-  device_id_(fuse_core::uuid::NIL),
-  tf_listener_(tf_buffer_),
-  throttled_callback_(std::bind(&Pose3D::process, this, std::placeholders::_1))
+Pose3D::Pose3D()
+  : fuse_core::AsyncSensorModel(1)
+  , device_id_(fuse_core::uuid::NIL)
+  , tf_listener_(tf_buffer_)
+  , throttled_callback_(std::bind(&Pose3D::process, this, std::placeholders::_1))
 {
 }
 
@@ -69,18 +67,16 @@ void Pose3D::onInit()
   throttled_callback_.setThrottlePeriod(params_.throttle_period);
   throttled_callback_.setUseWallTime(params_.throttle_use_wall_time);
 
-  if (params_.position_indices.empty() &&
-      params_.orientation_indices.empty())
+  if (params_.position_indices.empty() && params_.orientation_indices.empty())
   {
-    ROS_WARN_STREAM("No dimensions were specified. Data from topic " << ros::names::resolve(params_.topic) <<
-                    " will be ignored.");
+    ROS_WARN_STREAM("No dimensions were specified. Data from topic " << ros::names::resolve(params_.topic)
+                                                                     << " will be ignored.");
   }
 }
 
 void Pose3D::onStart()
 {
-  if (!params_.position_indices.empty() ||
-      !params_.orientation_indices.empty())
+  if (!params_.position_indices.empty() || !params_.orientation_indices.empty())
   {
     subscriber_ = node_handle_.subscribe<geometry_msgs::PoseWithCovarianceStamped>(
         ros::names::resolve(params_.topic), params_.queue_size, &PoseThrottledCallback::callback, &throttled_callback_,
@@ -98,8 +94,6 @@ void Pose3D::process(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& m
   // Create a transaction object
   auto transaction = fuse_core::Transaction::make_shared();
   transaction->stamp(msg->header.stamp);
-  ROS_WARN("Printing Pose3D Transaction");
-  transaction->print();
 
   const bool validate = !params_.disable_checks;
 
@@ -142,18 +136,10 @@ void Pose3D::processDifferential(const geometry_msgs::PoseWithCovarianceStamped&
 
   if (previous_pose_msg_)
   {
-    common::processDifferentialPose3DWithCovariance(
-       name(),
-      device_id_,
-      *previous_pose_msg_,
-      *transformed_pose,
-      params_.independent,
-      params_.minimum_pose_relative_covariance,
-      params_.loss,
-      params_.position_indices,
-      params_.orientation_indices,
-      validate,
-      transaction);
+    common::processDifferentialPose3DWithCovariance(name(), device_id_, *previous_pose_msg_, *transformed_pose,
+                                                    params_.independent, params_.minimum_pose_relative_covariance,
+                                                    params_.loss, params_.position_indices, params_.orientation_indices,
+                                                    validate, transaction);
   }
 
   previous_pose_msg_ = std::move(transformed_pose);

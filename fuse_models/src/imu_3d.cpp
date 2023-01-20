@@ -48,18 +48,16 @@
 #include <memory>
 #include <utility>
 
-
 // Register this sensor model with ROS as a plugin.
 PLUGINLIB_EXPORT_CLASS(fuse_models::Imu3D, fuse_core::SensorModel)
 
 namespace fuse_models
 {
-
-Imu3D::Imu3D() :
-  fuse_core::AsyncSensorModel(1),
-  device_id_(fuse_core::uuid::NIL),
-  tf_listener_(tf_buffer_),
-  throttled_callback_(std::bind(&Imu3D::process, this, std::placeholders::_1))
+Imu3D::Imu3D()
+  : fuse_core::AsyncSensorModel(1)
+  , device_id_(fuse_core::uuid::NIL)
+  , tf_listener_(tf_buffer_)
+  , throttled_callback_(std::bind(&Imu3D::process, this, std::placeholders::_1))
 {
 }
 
@@ -73,19 +71,17 @@ void Imu3D::onInit()
   throttled_callback_.setThrottlePeriod(params_.throttle_period);
   throttled_callback_.setUseWallTime(params_.throttle_use_wall_time);
 
-  if (params_.orientation_indices.empty() &&
-      params_.linear_acceleration_indices.empty() &&
+  if (params_.orientation_indices.empty() && params_.linear_acceleration_indices.empty() &&
       params_.angular_velocity_indices.empty())
   {
-    ROS_WARN_STREAM("No dimensions were specified. Data from topic " << ros::names::resolve(params_.topic) <<
-                    " will be ignored.");
+    ROS_WARN_STREAM("No dimensions were specified. Data from topic " << ros::names::resolve(params_.topic)
+                                                                     << " will be ignored.");
   }
 }
 
 void Imu3D::onStart()
 {
-  if (!params_.orientation_indices.empty() ||
-      !params_.linear_acceleration_indices.empty() ||
+  if (!params_.orientation_indices.empty() || !params_.linear_acceleration_indices.empty() ||
       !params_.angular_velocity_indices.empty())
   {
     previous_pose_.reset();
@@ -120,66 +116,47 @@ void Imu3D::process(const sensor_msgs::Imu::ConstPtr& msg)
   pose->pose.covariance[34] = msg->orientation_covariance[7];
   pose->pose.covariance[35] = msg->orientation_covariance[8];
 
-  geometry_msgs::TwistWithCovarianceStamped twist;
-  twist.header = msg->header;
-  twist.twist.twist.angular = msg->angular_velocity;
-  twist.twist.covariance[21] = msg->angular_velocity_covariance[0];
-  twist.twist.covariance[22] = msg->angular_velocity_covariance[1];
-  twist.twist.covariance[23] = msg->angular_velocity_covariance[2];
-  twist.twist.covariance[27] = msg->angular_velocity_covariance[3];
-  twist.twist.covariance[28] = msg->angular_velocity_covariance[4];
-  twist.twist.covariance[29] = msg->angular_velocity_covariance[5];
-  twist.twist.covariance[33] = msg->angular_velocity_covariance[6];
-  twist.twist.covariance[34] = msg->angular_velocity_covariance[7];
-  twist.twist.covariance[35] = msg->angular_velocity_covariance[8];
+  auto twist = std::make_unique<geometry_msgs::TwistWithCovarianceStamped>();
+  twist->header = msg->header;
+  twist->twist.twist.angular = msg->angular_velocity;
+  twist->twist.covariance[21] = msg->angular_velocity_covariance[0];
+  twist->twist.covariance[22] = msg->angular_velocity_covariance[1];
+  twist->twist.covariance[23] = msg->angular_velocity_covariance[2];
+  twist->twist.covariance[27] = msg->angular_velocity_covariance[3];
+  twist->twist.covariance[28] = msg->angular_velocity_covariance[4];
+  twist->twist.covariance[29] = msg->angular_velocity_covariance[5];
+  twist->twist.covariance[33] = msg->angular_velocity_covariance[6];
+  twist->twist.covariance[34] = msg->angular_velocity_covariance[7];
+  twist->twist.covariance[35] = msg->angular_velocity_covariance[8];
 
   const bool validate = !params_.disable_checks;
 
   if (params_.differential)
   {
-    processDifferential(*pose, twist, validate, *transaction);
+    processDifferential(*pose, *twist, validate, *transaction);
   }
   else
   {
-    common::processAbsolutePose3DWithCovariance(
-      name(),
-      device_id_,
-      *pose,
-      params_.pose_loss,
-      params_.orientation_target_frame,
-      {},
-      params_.orientation_indices,
-      tf_buffer_,
-      validate,
-      *transaction,
-      params_.tf_timeout);
+    common::processAbsolutePose3DWithCovariance(name(), device_id_, *pose, params_.pose_loss,
+                                                params_.orientation_target_frame, {}, params_.orientation_indices,
+                                                tf_buffer_, validate, *transaction, params_.tf_timeout);
   }
 
   // Handle the twist data (only include indices for angular velocity)
-  common::processTwist3DWithCovariance(
-    name(),
-    device_id_,
-    twist,
-    nullptr,
-    params_.angular_velocity_loss,
-    params_.twist_target_frame,
-    {},
-    params_.angular_velocity_indices,
-    tf_buffer_,
-    validate,
-    *transaction,
-    params_.tf_timeout);
+  common::processTwist3DWithCovariance(name(), device_id_, *twist, nullptr, params_.angular_velocity_loss,
+                                       params_.twist_target_frame, {}, params_.angular_velocity_indices, tf_buffer_,
+                                       validate, *transaction, params_.tf_timeout);
 
   // Handle the acceleration data
   geometry_msgs::AccelWithCovarianceStamped accel;
   accel.header = msg->header;
   accel.accel.accel.linear = msg->linear_acceleration;
-  accel.accel.covariance[0]  = msg->linear_acceleration_covariance[0];
-  accel.accel.covariance[1]  = msg->linear_acceleration_covariance[1];
-  accel.accel.covariance[2]  = msg->linear_acceleration_covariance[2];
-  accel.accel.covariance[6]  = msg->linear_acceleration_covariance[3];
-  accel.accel.covariance[7]  = msg->linear_acceleration_covariance[4];
-  accel.accel.covariance[8]  = msg->linear_acceleration_covariance[5];
+  accel.accel.covariance[0] = msg->linear_acceleration_covariance[0];
+  accel.accel.covariance[1] = msg->linear_acceleration_covariance[1];
+  accel.accel.covariance[2] = msg->linear_acceleration_covariance[2];
+  accel.accel.covariance[6] = msg->linear_acceleration_covariance[3];
+  accel.accel.covariance[7] = msg->linear_acceleration_covariance[4];
+  accel.accel.covariance[8] = msg->linear_acceleration_covariance[5];
   accel.accel.covariance[12] = msg->linear_acceleration_covariance[6];
   accel.accel.covariance[13] = msg->linear_acceleration_covariance[7];
   accel.accel.covariance[14] = msg->linear_acceleration_covariance[8];
@@ -198,20 +175,9 @@ void Imu3D::process(const sensor_msgs::Imu::ConstPtr& msg)
     accel.accel.accel.linear.y -= accel_gravity.y;
     accel.accel.accel.linear.z -= accel_gravity.z;
   }
-
-  common::processAccel3DWithCovariance(
-    name(),
-    device_id_,
-    accel,
-    params_.linear_acceleration_loss,
-    nullptr,
-    params_.acceleration_target_frame,
-    params_.linear_acceleration_indices,
-    {},
-    tf_buffer_,
-    validate,
-    *transaction,
-    params_.tf_timeout);
+  common::processAccel3DWithCovariance(name(), device_id_, accel, params_.linear_acceleration_loss, nullptr,
+                                       params_.acceleration_target_frame, params_.linear_acceleration_indices, {},
+                                       tf_buffer_, validate, *transaction, params_.tf_timeout);
   // Send the transaction object to the plugin's parent
   sendTransaction(transaction);
 }
@@ -253,34 +219,16 @@ void Imu3D::processDifferential(const geometry_msgs::PoseWithCovarianceStamped& 
     else
     {
       common::processDifferentialPose3DWithTwistCovariance(
-        name(),
-        device_id_,
-        *previous_pose_,
-        *transformed_pose,
-        twist,
-        params_.minimum_pose_relative_covariance,
-        params_.twist_covariance_offset,
-        params_.pose_loss,
-        {},
-        params_.orientation_indices,
-        validate,
-        transaction);
+          name(), device_id_, *previous_pose_, *transformed_pose, twist, params_.minimum_pose_relative_covariance,
+          params_.twist_covariance_offset, params_.pose_loss, {}, params_.orientation_indices, validate, transaction);
     }
   }
   else
   {
-    common::processDifferentialPose3DWithCovariance(
-      name(),
-      device_id_,
-      *previous_pose_,
-      *transformed_pose,
-      params_.independent,
-      params_.minimum_pose_relative_covariance,
-      params_.pose_loss,
-      {},
-      params_.orientation_indices,
-      validate,
-      transaction);
+    common::processDifferentialPose3DWithCovariance(name(), device_id_, *previous_pose_, *transformed_pose,
+                                                    params_.independent, params_.minimum_pose_relative_covariance,
+                                                    params_.pose_loss, {}, params_.orientation_indices, validate,
+                                                    transaction);
   }
 
   previous_pose_ = std::move(transformed_pose);

@@ -112,8 +112,10 @@ void AbsoluteConstraint<Variable>::print(std::ostream& stream) const
          << "  source: " << source() << "\n"
          << "  uuid: " << uuid() << "\n"
          << "  variable: " << variables().at(0) << "\n"
-         << "  mean: " << mean().transpose() << "\n"
-         << "  sqrt_info: " << sqrtInformation() << "\n";
+         << "  mean: " << mean().transpose()
+         << "\n"
+          << "  sqrt_info: " << sqrtInformation() << "\n"
+         << "  covariance: " << covariance() << "\n";
 
   if (loss())
   {
@@ -143,7 +145,7 @@ template <>
 inline ceres::CostFunction* AbsoluteConstraint<fuse_variables::Orientation3DStamped>::costFunction() const
 {
   return new ceres::AutoDiffCostFunction<NormalPriorOrientation3DCostFunctor, 3, 4>(
-    new NormalPriorOrientation3DCostFunctor(sqrt_information_, mean_));
+      new NormalPriorOrientation3DCostFunctor(sqrt_information_, mean_));
   // return new NormalPriorOrientation3D(sqrt_information_, mean_);
 }
 
