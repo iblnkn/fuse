@@ -10,7 +10,7 @@ motion_models:
 skid_steer_motion_model:
   #                         x      y      yaw    vx     vy     vyaw   ax   ay
   # process_noise_diagonal: [0.100, 0.100, 0.100, 0.100, 0.100, 0.100, 0.1, 0.1]
-  process_noise_diagonal: [0.100, 0.100, 0.100, 1000, 1000, 1000, 0.100, 0.100, 0.100, 10000, 10000, 10000, 0.100, 0.100, 0.100, 0.100, 0.100, 0.100]
+  process_noise_diagonal: [0.100, 0.100, 0.100, 0.1, 0.1, 0.1, 0.100, 0.100, 0.100, 0.1, 0.1, 0.1, 0.100, 0.100, 0.100, 0.100, 0.100, 0.100]
 
 sensor_models:
   initial_localization_sensor:

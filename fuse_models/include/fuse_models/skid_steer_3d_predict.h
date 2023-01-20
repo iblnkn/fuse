@@ -55,10 +55,10 @@ namespace fuse_models
  * @param[in] position1_x - First X position
  * @param[in] position1_y - First Y position
  * @param[in] position1_z - First Y position
+ * @param[in] orientation1_w - First W orientation
  * @param[in] orientation1_x - First X orientation
  * @param[in] orientation1_y - First Y orientation
  * @param[in] orientation1_z - First Z orientation
- * @param[in] orientation1_w - First W orientation
  * @param[in] vel_linear1_x - First X velocity
  * @param[in] vel_linear1_y - First Y velocity
  * @param[in] vel_linear1_z - First Y velocity
@@ -75,10 +75,10 @@ namespace fuse_models
  * @param[out] position2_x - Second X position
  * @param[out] position2_y - Second Y position
  * @param[out] position2_z - Second Y position
+ * @param[out] orientation2_w - Second W orientation
  * @param[out] orientation2_x - Second X orientation
  * @param[out] orientation2_y - Second Y orientation
  * @param[out] orientation2_z - Second Z orientation
- * @param[out] orientation2_w - Second W orientation
  * @param[out] vel_linear2_x - Second X velocity
  * @param[out] vel_linear2_y - Second Y velocity
  * @param[out] vel_linear2_z - Second Y velocity
@@ -93,13 +93,13 @@ namespace fuse_models
  * @param[out] acc_angular2_z - Second Y acceleration
  */
 template <typename T>
-inline void predict(const T position1_x, const T position1_y, const T position1_z, const T orientation1_x,
-                    const T orientation1_y, const T orientation1_z, const T orientation1_w, const T vel_linear1_x,
+inline void predict(const T position1_x, const T position1_y, const T position1_z, const T orientation1_w,
+                    const T orientation1_x, const T orientation1_y, const T orientation1_z, const T vel_linear1_x,
                     const T vel_linear1_y, const T vel_linear1_z, const T vel_angular1_x, const T vel_angular1_y,
                     const T vel_angular1_z, const T acc_linear1_x, const T acc_linear1_y, const T acc_linear1_z,
                     const T acc_angular1_x, const T acc_angular1_y, const T acc_angular1_z, const T dt, T& position2_x,
-                    T& position2_y, T& position2_z, T& orientation2_x, T& orientation2_y, T& orientation2_z,
-                    T& orientation2_w, T& vel_linear2_x, T& vel_linear2_y, T& vel_linear2_z, T& vel_angular2_x,
+                    T& position2_y, T& position2_z, T& orientation2_w, T& orientation2_x, T& orientation2_y,
+                    T& orientation2_z, T& vel_linear2_x, T& vel_linear2_y, T& vel_linear2_z, T& vel_angular2_x,
                     T& vel_angular2_y, T& vel_angular2_z, T& acc_linear2_x, T& acc_linear2_y, T& acc_linear2_z,
                     T& acc_angular2_x, T& acc_angular2_y, T& acc_angular2_z)
 {
@@ -123,30 +123,19 @@ inline void predict(const T position1_x, const T position1_y, const T position1_
 
   T delta_roll = vel_angular1_x * dt + T(0.5) * acc_angular1_x * dt * dt;
   T delta_pitch = vel_angular1_y * dt + T(0.5) * acc_angular1_y * dt * dt;
-  T delta_yaw = vel_angular1_y * dt + T(0.5) * acc_angular1_y * dt * dt;
+  T delta_yaw = vel_angular1_z * dt + T(0.5) * acc_angular1_z * dt * dt;
 
-  T sr_approx = ceres::sin(
-      (T(2.0) * orientation1_roll + delta_roll +
-       ((orientation1_roll + T(0.5) * delta_roll) * (orientation1_pitch + T(0.5) * delta_pitch) * delta_pitch +
-        (orientation1_pitch + T(0.5) * delta_pitch) * delta_yaw)) /
-      T(2.0));
-  T tp_approx = ceres::tan((T(2.0) * orientation1_pitch + delta_pitch + (-sr_approx) * delta_yaw) / T(2.0));
+  T sr = ceres::sin(orientation1_roll);
+  T cr = ceres::cos(orientation1_roll);
 
-  T orientation2_x_approx =
-      orientation1_roll + delta_roll + (sr_approx * tp_approx) * delta_pitch + (tp_approx)*delta_yaw;
-  T orientation2_y_approx = orientation1_pitch + delta_pitch + (-sr_approx) * delta_yaw;
-  T orientation2_z_approx = orientation1_yaw + (sr_approx)*delta_pitch + delta_yaw;
+  T sp = ceres::sin(orientation1_pitch);
+  T cp = ceres::cos(orientation1_pitch);
 
-  T sr = ceres::sin((orientation1_roll + orientation2_x_approx) / T(2.0));
-  T cr = ceres::cos((orientation1_roll + orientation2_x_approx) / T(2.0));
-
-  T sp = ceres::sin((orientation1_pitch + orientation2_y_approx) / T(2.0));
-  T cp = ceres::cos((orientation1_pitch + orientation2_y_approx) / T(2.0));
-  T cpi = T(1.0) / cp;
+  T cpi = T(1) / cp;
   T tp = sp * cpi;
 
-  T sy = ceres::sin((orientation1_yaw + orientation2_z_approx) / T(2.0));
-  T cy = ceres::cos((orientation1_yaw + orientation2_z_approx) / T(2.0));
+  T sy = ceres::sin(orientation1_yaw);
+  T cy = ceres::cos(orientation1_yaw);
 
   position2_x =
       position1_x + (cy * cp) * delta_x + (cy * sp * sr - sy * cr) * delta_y + (cy * sp * cr + sy * sr) * delta_z;
@@ -205,10 +194,10 @@ inline void predict(const T position1_x, const T position1_y, const T position1_
  * @param[in] position1_x - First X position
  * @param[in] position1_y - First Y position
  * @param[in] position1_z - First Y position
+ * @param[in] orientation1_w - First orientation
  * @param[in] orientation1_x - First orientation
  * @param[in] orientation1_y - First orientation
  * @param[in] orientation1_z - First orientation
- * @param[in] orientation1_w - First orientation
  * @param[in] vel_linear1_x - First X velocity
  * @param[in] vel_linear1_y - First Y velocity
  * @param[in] vel_linear1_z - First Y velocity
@@ -225,10 +214,10 @@ inline void predict(const T position1_x, const T position1_y, const T position1_
  * @param[out] position2_x - Second X position
  * @param[out] position2_y - Second Y position
  * @param[out] position2_z - Second Y position
+ * @param[out] orientation2_w - Second orientation
  * @param[out] orientation2_x - Second orientation
  * @param[out] orientation2_y - Second orientation
  * @param[out] orientation2_z - Second orientation
- * @param[out] orientation2_w - Second orientation
  * @param[out] vel_linear2_x - Second X velocity
  * @param[out] vel_linear2_y - Second Y velocity
  * @param[out] vel_linear2_z - Second Y velocity
@@ -244,13 +233,13 @@ inline void predict(const T position1_x, const T position1_y, const T position1_
  * @param[out] jacobians - Jacobians wrt the state
  */
 template <typename T>
-inline void predict(const T position1_x, const T position1_y, const T position1_z, const T orientation1_x,
-                    const T orientation1_y, const T orientation1_z, const T orientation1_w, const T vel_linear1_x,
+inline void predict(const T position1_x, const T position1_y, const T position1_z, const T orientation1_w,
+                    const T orientation1_x, const T orientation1_y, const T orientation1_z, const T vel_linear1_x,
                     const T vel_linear1_y, const T vel_linear1_z, const T vel_angular1_x, const T vel_angular1_y,
                     const T vel_angular1_z, const T acc_linear1_x, const T acc_linear1_y, const T acc_linear1_z,
                     const T acc_angular1_x, const T acc_angular1_y, const T acc_angular1_z, const T dt, T& position2_x,
-                    T& position2_y, T& position2_z, T& orientation2_x, T& orientation2_y, T& orientation2_z,
-                    T& orientation2_w, T& vel_linear2_x, T& vel_linear2_y, T& vel_linear2_z, T& vel_angular2_x,
+                    T& position2_y, T& position2_z, T& orientation2_w, T& orientation2_x, T& orientation2_y,
+                    T& orientation2_z, T& vel_linear2_x, T& vel_linear2_y, T& vel_linear2_z, T& vel_angular2_x,
                     T& vel_angular2_y, T& vel_angular2_z, T& acc_linear2_x, T& acc_linear2_y, T& acc_linear2_z,
                     T& acc_angular2_x, T& acc_angular2_y, T& acc_angular2_z, T** jacobians)
 
@@ -268,37 +257,25 @@ inline void predict(const T position1_x, const T position1_y, const T position1_
   const T orientation1_yaw = orientation1_euler[2];
 
   // TODO::Convert Quaternions to Euler
-  // There are better models for this projection, but this matches the one used by r_l.
   T delta_x = vel_linear1_x * dt + T(0.5) * acc_linear1_x * dt * dt;
   T delta_y = vel_linear1_y * dt + T(0.5) * acc_linear1_y * dt * dt;
-  T delta_z = vel_linear1_y * dt + T(0.5) * acc_linear1_y * dt * dt;
+  T delta_z = vel_linear1_z * dt + T(0.5) * acc_linear1_z * dt * dt;
 
   T delta_roll = vel_angular1_x * dt + T(0.5) * acc_angular1_x * dt * dt;
   T delta_pitch = vel_angular1_y * dt + T(0.5) * acc_angular1_y * dt * dt;
   T delta_yaw = vel_angular1_z * dt + T(0.5) * acc_angular1_z * dt * dt;
 
-  T sr_approx = ceres::sin(
-      (T(2.0) * orientation1_roll + delta_roll +
-       ((orientation1_roll + T(0.5) * delta_roll) * (orientation1_pitch + T(0.5) * delta_pitch) * delta_pitch +
-        (orientation1_pitch + T(0.5) * delta_pitch) * delta_yaw)) /
-      T(2.0));
-  T tp_approx = ceres::tan((T(2.0) * orientation1_pitch + delta_pitch + (-sr_approx) * delta_yaw) / T(2.0));
+  T sr = ceres::sin(orientation1_roll);
+  T cr = ceres::cos(orientation1_roll);
 
-  T orientation2_x_approx =
-      orientation1_roll + delta_roll + (sr_approx * tp_approx) * delta_pitch + (tp_approx)*delta_yaw;
-  T orientation2_y_approx = orientation1_pitch + delta_pitch + (-sr_approx) * delta_yaw;
-  T orientation2_z_approx = orientation1_yaw + (sr_approx)*delta_pitch + delta_yaw;
+  T sp = ceres::sin(orientation1_pitch);
+  T cp = ceres::cos(orientation1_pitch);
 
-  T sr = ceres::sin((orientation1_roll + orientation2_x_approx) / T(2.0));
-  T cr = ceres::cos((orientation1_roll + orientation2_x_approx) / T(2.0));
-
-  T sp = ceres::sin((orientation1_pitch + orientation2_y_approx) / T(2.0));
-  T cp = ceres::cos((orientation1_pitch + orientation2_y_approx) / T(2.0));
   T cpi = 1 / cp;
   T tp = sp * cpi;
 
-  T sy = ceres::sin((orientation1_yaw + orientation2_z_approx) / T(2.0));
-  T cy = ceres::cos((orientation1_yaw + orientation2_z_approx) / T(2.0));
+  T sy = ceres::sin(orientation1_yaw);
+  T cy = ceres::cos(orientation1_yaw);
 
   position2_x =
       position1_x + (cy * cp) * delta_x + (cy * sp * sr - sy * cr) * delta_y + (cy * sp * cr + sy * sr) * delta_z;
@@ -352,7 +329,7 @@ inline void predict(const T position1_x, const T position1_y, const T position1_
   fuse_core::wrapAngle2D(acc_angular1_z);
 
   if (jacobians)
-  {  // TODO:: THESE JACOBIANS ARE INCORRECT
+  {
     // Jacobian wrt position1
     if (jacobians[0])
     {
@@ -361,43 +338,59 @@ inline void predict(const T position1_x, const T position1_y, const T position1_
           0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0;
     }
 
-    // Jacobian wrt orientation1
     if (jacobians[1])
     {
       Eigen::Map<fuse_core::Matrix<double, 18, 3>> jacobian(jacobians[1]);
-      jacobian << 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-          0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0;
+      jacobian << (sy * sr + cy * sp * cr) * delta_y + (sy * sr - cy * sp * sr) * delta_z,
+          (-cy * sp * delta_x)(cy * cp * sr) * delta_y + (cy * cp * cr) * delta_z,
+          -sy * cp * delta_x + (-cy * cr - sy * sp * sr) * delta_y + (cy * sr - sy * sp * cr) * delta_z,
+          (-cy * sr + sy * sp * cr) * delta_y + (-cy * cr - sy * sp * sr) * delta_z,
+          -sy * sp * delta_x + sy * cp * sr * delta_y + sy * cp * cr * delta_z,
+          cy * cp * delta_x + (-sy * cr + cy * sp * sr) * delta_y + (sy * sr + cy * sp * sr) * delta_z,
+          cp * cr * delta_y - cp * sr * delta_z, -cp * delta_x - sp * sr * delta_y - sp * cr * delta_z, 0,
+          tp * cr * delta_pitch - tp * sr * delta_yaw + 1,
+          (1 + tp * tp) * sr * delta_pitch + (1 + tp + tp) * cr * delta_yaw, 0, -sr * delta_pitch - cr * delta_yaw, 1,
+          0, (1 / cp) * (cr * delta_pitch - sr * delta_yaw),
+          (1 / (cp * cp)) * (sr * sp * delta_pitch + sp * cr * delta_yaw), 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+          0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0;
     }
 
     // Jacobian wrt vel_linear1
     if (jacobians[2])
     {
       Eigen::Map<fuse_core::Matrix<double, 18, 3>> jacobian(jacobians[2]);
-      jacobian << 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0,
-          0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0;
+      jacobian << cy * cp * dt, (-sy * cr + cy * sp * sr) * dt, (sy * sr + cy * sp * cr) * dt, sy * cp * dt,
+          (cy * cr + sy * sp * sr) * dt, (-cy * sr + sy * sp * sr) * dt, -sp * dt, cp * sr * dt, cp * cr * dt, 0, 0, 0,
+          0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+          0, 0, 0, 0, 0;
     }
 
     // Jacobian wrt vel_angular1
     if (jacobians[3])
     {
       Eigen::Map<fuse_core::Matrix<double, 18, 3>> jacobian(jacobians[3]);
-      jacobian << 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0,
-          0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0;
+      jacobian << 0, 0, 0, 0, 0, 0, 0, 0, 0, tp * sr * dt, tp * cr * dt, 0, 0, cr * dt, -sr * dt, 0, (sr / cp) * dt,
+          (cr / cp) * dt, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+          0, 0, 0, 0, 0;
     }
 
     // Jacobian wrt acc_linear1
     if (jacobians[4])
     {
       Eigen::Map<fuse_core::Matrix<double, 18, 3>> jacobian(jacobians[4]);
-      jacobian << 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-          0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0;
+      jacobian << 0.5 * cy * cp * dt * dt, 0.5 * (-sy * cr + cy * sp * sr) * dt * dt,
+          0.5 * (sy * sr + cy * sp * cr) * dt * dt, 0.5 * sy * cy * dt * dt, 0.5 * (cy * cr + sy * sp * sr) * dt * dt,
+          0.5 * (-cy * sr + sy * sp * sr) * dt * dt - 0.5 * sp * dt * dt, 0, 5 * cp * sr * dt * dt,
+          0.5 * cp * cr * dt * dt, 0, 0, 0, 0, 0, 0, 0, 0, 0, dt, 0, 0, 0, dt, 0, 0, 0, dt, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+          1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0;
     }
     // Jacobian wrt acc_angular1
     if (jacobians[5])
     {
       Eigen::Map<fuse_core::Matrix<double, 18, 3>> jacobian(jacobians[5]);
-      jacobian << 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-          0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1;
+      jacobian << 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.5 * tp * sr * dt * dt, 0.5 * tp * cr * dt * dt, 0, 0.5 * cr * dt * dt,
+          -0.5 * sr * dt * dt, 0, (sr * dt * dt) / (2 * cp), (cr * dt * dt) / (2 * cp), 0, 0, 0, 0, 0, 0, 0, 0, 0, dt,
+          0, 0, 0, dt, 0, 0, 0, dt, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1;
     }
   }
 }
@@ -410,10 +403,10 @@ inline void predict(const T position1_x, const T position1_y, const T position1_
  * @param[in] position1_x - First X position
  * @param[in] position1_y - First Y position
  * @param[in] position1_z - First Y position
+ * @param[in] orientation1_w - First orientation
  * @param[in] orientation1_x - First orientation
  * @param[in] orientation1_y - First orientation
  * @param[in] orientation1_z - First orientation
- * @param[in] orientation1_w - First orientation
  * @param[in] vel_linear1_x - First X velocity
  * @param[in] vel_linear1_y - First Y velocity
  * @param[in] vel_linear1_z - First Y velocity
@@ -430,10 +423,10 @@ inline void predict(const T position1_x, const T position1_y, const T position1_
  * @param[out] position2_x - Second X position
  * @param[out] position2_y - Second Y position
  * @param[out] position2_z - Second Y position
+ *  @param[out] orientation2_w - Second orientation
  * @param[out] orientation2_x - Second orientation
  * @param[out] orientation2_y - Second orientation
  * @param[out] orientation2_z - Second orientation
- * @param[out] orientation2_w - Second orientation
  * @param[out] vel_linear2_x - Second X velocity
  * @param[out] vel_linear2_y - Second Y velocity
  * @param[out] vel_linear2_z - Second Y velocity
@@ -449,14 +442,14 @@ inline void predict(const T position1_x, const T position1_y, const T position1_
  * @param[out] jacobians - Jacobians wrt the state
  */
 inline void predict(const double position1_x, const double position1_y, const double position1_z,
-                    const double orientation1_x, const double orientation1_y, const double orientation1_z,
-                    const double orientation1_w, const double vel_linear1_x, const double vel_linear1_y,
+                    const double orientation1_w, const double orientation1_x, const double orientation1_y,
+                    const double orientation1_z, const double vel_linear1_x, const double vel_linear1_y,
                     const double vel_linear1_z, const double vel_angular1_x, const double vel_angular1_y,
                     const double vel_angular1_z, const double acc_linear1_x, const double acc_linear1_y,
                     const double acc_linear1_z, const double acc_angular1_x, const double acc_angular1_y,
                     const double acc_angular1_z, const double dt, double& position2_x, double& position2_y,
-                    double& position2_z, double& orientation2_x, double& orientation2_y, double& orientation2_z,
-                    double& orientation2_w, double& vel_linear2_x, double& vel_linear2_y, double& vel_linear2_z,
+                    double& position2_z, double& orientation2_w, double& orientation2_x, double& orientation2_y,
+                    double& orientation2_z, double& vel_linear2_x, double& vel_linear2_y, double& vel_linear2_z,
                     double& vel_angular2_x, double& vel_angular2_y, double& vel_angular2_z, double& acc_linear2_x,
                     double& acc_linear2_y, double& acc_linear2_z, double& acc_angular2_x, double& acc_angular2_y,
                     double& acc_angular2_z, double** jacobians)
@@ -473,37 +466,25 @@ inline void predict(const double position1_x, const double position1_y, const do
   const double orientation1_pitch = orientation1_euler[1];
   const double orientation1_yaw = orientation1_euler[2];
 
-  const double half_dt2 = 0.5 * dt * dt;
-  const double delta_x = vel_linear1_x * dt + acc_linear1_x * half_dt2;
-  const double delta_y = vel_linear1_y * dt + acc_linear1_y * half_dt2;
-  const double delta_z = vel_linear1_z * dt + acc_linear1_z * half_dt2;
+  double delta_x = vel_linear1_x * dt + 0.5 * acc_linear1_x * dt * dt;
+  double delta_y = vel_linear1_y * dt + 0.5 * acc_linear1_y * dt * dt;
+  double delta_z = vel_linear1_z * dt + 0.5 * acc_linear1_z * dt * dt;
 
-  const double delta_roll = vel_angular1_x * dt + acc_angular1_x * half_dt2;
-  const double delta_pitch = vel_angular1_y * dt + acc_angular1_y * half_dt2;
-  const double delta_yaw = vel_angular1_z * dt + acc_angular1_z * half_dt2;
+  double delta_roll = vel_angular1_x * dt + 0.5 * acc_angular1_x * dt * dt;
+  double delta_pitch = vel_angular1_y * dt + 0.5 * acc_angular1_y * dt * dt;
+  double delta_yaw = vel_angular1_z * dt + 0.5 * acc_angular1_z * dt * dt;
 
-  const double sr_approx =
-      ceres::sin((2 * orientation1_roll + delta_roll +
-                  ((orientation1_roll + 0.5 * delta_roll) * (orientation1_pitch + 0.5 * delta_pitch) * delta_pitch +
-                   (orientation1_pitch + 0.5 * delta_pitch) * delta_yaw)) /
-                 2);
-  const double tp_approx = ceres::tan((2 * orientation1_pitch + delta_pitch + (-sr_approx) * delta_yaw) / 2);
+  double sr = ceres::sin(orientation1_roll);
+  double cr = ceres::cos(orientation1_roll);
 
-  const double orientation2_x_approx =
-      orientation1_roll + delta_roll + (sr_approx * tp_approx) * delta_pitch + (tp_approx)*delta_yaw;
-  const double orientation2_y_approx = orientation1_pitch + delta_pitch + (-sr_approx) * delta_yaw;
-  const double orientation2_z_approx = orientation1_yaw + (sr_approx)*delta_pitch + delta_yaw;
+  double sp = ceres::sin(orientation1_pitch);
+  double cp = ceres::cos(orientation1_pitch);
 
-  const double sr = ceres::sin((orientation1_roll + orientation2_x_approx) / 2);
-  const double cr = ceres::cos((orientation1_roll + orientation2_x_approx) / 2);
+  double cpi = 1 / cp;
+  double tp = sp * cpi;
 
-  const double sp = ceres::sin((orientation1_pitch + orientation2_y_approx) / 2);
-  const double cp = ceres::cos((orientation1_pitch + orientation2_y_approx) / 2);
-  const double cpi = 1 / cp;
-  const double tp = sp * cpi;
-
-  const double sy = ceres::sin((orientation1_yaw + orientation2_z_approx) / 2);
-  const double cy = ceres::cos((orientation1_yaw + orientation2_z_approx) / 2);
+  double sy = ceres::sin(orientation1_yaw);
+  double cy = ceres::cos(orientation1_yaw);
 
   position2_x =
       position1_x + (cy * cp) * delta_x + (cy * sp * sr - sy * cr) * delta_y + (cy * sp * cr + sy * sr) * delta_z;
@@ -514,6 +495,22 @@ inline void predict(const double position1_x, const double position1_y, const do
   double orientation2_roll = orientation1_roll + delta_roll + (sr * tp) * delta_pitch + (cr * tp) * delta_yaw;
   double orientation2_pitch = orientation1_pitch + (cr)*delta_pitch + (-sr) * delta_yaw;
   double orientation2_yaw = orientation1_yaw + (sr * cpi) * delta_pitch + (cr * cpi) * delta_yaw;
+
+  vel_linear2_x = vel_linear1_x + acc_linear1_x * dt;
+  vel_linear2_y = vel_linear1_y + acc_linear1_y * dt;
+  vel_linear2_z = vel_linear1_z + acc_linear1_z * dt;
+
+  vel_angular2_x = vel_angular1_x + acc_angular1_x * dt;
+  vel_angular2_y = vel_angular1_y + acc_angular1_y * dt;
+  vel_angular2_z = vel_angular1_z + acc_angular1_z * dt;
+
+  acc_linear2_x = acc_linear1_x;
+  acc_linear2_y = acc_linear1_y;
+  acc_linear2_z = acc_linear1_z;
+
+  acc_angular2_x = acc_angular1_x;
+  acc_angular2_y = acc_angular1_y;
+  acc_angular2_z = acc_angular1_z;
 
   double orientation2_euler[3];
   double orientation2_quat[4];
@@ -557,7 +554,6 @@ inline void predict(const double position1_x, const double position1_y, const do
   fuse_core::wrapAngle2D(acc_angular1_z);
 
   if (jacobians)
-  // TODO:: THESE JACOBIANS ARE INCORRECT
   {
     // Jacobian wrt position1
     if (jacobians[0])
@@ -567,43 +563,59 @@ inline void predict(const double position1_x, const double position1_y, const do
           0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0;
     }
 
-    // Jacobian wrt orientation1
     if (jacobians[1])
     {
       Eigen::Map<fuse_core::Matrix<double, 18, 3>> jacobian(jacobians[1]);
-      jacobian << 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-          0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0;
+      jacobian << (sy * sr + cy * sp * cr) * delta_y + (sy * sr - cy * sp * sr) * delta_z,
+          (-cy * sp * delta_x) * (cy * cp * sr) * delta_y + (cy * cp * cr) * delta_z,
+          -sy * cp * delta_x + (-cy * cr - sy * sp * sr) * delta_y + (cy * sr - sy * sp * cr) * delta_z,
+          (-cy * sr + sy * sp * cr) * delta_y + (-cy * cr - sy * sp * sr) * delta_z,
+          -sy * sp * delta_x + sy * cp * sr * delta_y + sy * cp * cr * delta_z,
+          cy * cp * delta_x + (-sy * cr + cy * sp * sr) * delta_y + (sy * sr + cy * sp * sr) * delta_z,
+          cp * cr * delta_y - cp * sr * delta_z, -cp * delta_x - sp * sr * delta_y - sp * cr * delta_z, 0,
+          tp * cr * delta_pitch - tp * sr * delta_yaw + 1,
+          (1 + tp * tp) * sr * delta_pitch + (1 + tp + tp) * cr * delta_yaw, 0, -1 * sr * delta_pitch - cr * delta_yaw,
+          1, 0, (1 / cp) * (cr * delta_pitch - sr * delta_yaw),
+          (1 / (cp * cp)) * (sr * sp * delta_pitch + sp * cr * delta_yaw), 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+          0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0;
     }
 
     // Jacobian wrt vel_linear1
     if (jacobians[2])
     {
       Eigen::Map<fuse_core::Matrix<double, 18, 3>> jacobian(jacobians[2]);
-      jacobian << 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0,
-          0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0;
+      jacobian << cy * cp * dt, (-sy * cr + cy * sp * sr) * dt, (sy * sr + cy * sp * cr) * dt, sy * cp * dt,
+          (cy * cr + sy * sp * sr) * dt, (-cy * sr + sy * sp * sr) * dt, -sp * dt, cp * sr * dt, cp * cr * dt, 0, 0, 0,
+          0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+          0, 0, 0, 0, 0;
     }
 
     // Jacobian wrt vel_angular1
     if (jacobians[3])
     {
       Eigen::Map<fuse_core::Matrix<double, 18, 3>> jacobian(jacobians[3]);
-      jacobian << 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0,
-          0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0;
+      jacobian << 0, 0, 0, 0, 0, 0, 0, 0, 0, tp * sr * dt, tp * cr * dt, 0, 0, cr * dt, -sr * dt, 0, (sr / cp) * dt,
+          (cr / cp) * dt, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+          0, 0, 0, 0, 0;
     }
 
     // Jacobian wrt acc_linear1
     if (jacobians[4])
     {
       Eigen::Map<fuse_core::Matrix<double, 18, 3>> jacobian(jacobians[4]);
-      jacobian << 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-          0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0;
+      jacobian << 0.5 * cy * cp * dt * dt, 0.5 * (-sy * cr + cy * sp * sr) * dt * dt,
+          0.5 * (sy * sr + cy * sp * cr) * dt * dt, 0.5 * sy * cy * dt * dt, 0.5 * (cy * cr + sy * sp * sr) * dt * dt,
+          0.5 * (-cy * sr + sy * sp * sr) * dt * dt - 0.5 * sp * dt * dt, 0, 5 * cp * sr * dt * dt,
+          0.5 * cp * cr * dt * dt, 0, 0, 0, 0, 0, 0, 0, 0, 0, dt, 0, 0, 0, dt, 0, 0, 0, dt, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+          1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0;
     }
     // Jacobian wrt acc_angular1
     if (jacobians[5])
     {
       Eigen::Map<fuse_core::Matrix<double, 18, 3>> jacobian(jacobians[5]);
-      jacobian << 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-          0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1;
+      jacobian << 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.5 * tp * sr * dt * dt, 0.5 * tp * cr * dt * dt, 0, 0.5 * cr * dt * dt,
+          -0.5 * sr * dt * dt, 0, (sr * dt * dt) / (2 * cp), (cr * dt * dt) / (2 * cp), 0, 0, 0, 0, 0, 0, 0, 0, 0, dt,
+          0, 0, 0, dt, 0, 0, 0, dt, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1;
     }
   }
 }
@@ -664,10 +676,10 @@ inline void predict(const geometry_msgs::Pose& pose1, const geometry_msgs::Twist
   double pos_x_pred{};
   double pos_y_pred{};
   double pos_z_pred{};
+  double quat_w_pred{};
   double quat_x_pred{};
   double quat_y_pred{};
   double quat_z_pred{};
-  double quat_w_pred{};
   double vel_linear_x_pred{};
   double vel_linear_y_pred{};
   double vel_linear_z_pred{};
@@ -698,12 +710,12 @@ inline void predict(const geometry_msgs::Pose& pose1, const geometry_msgs::Twist
     jacobians[i] = J[i].data();
   }
 
-  predict(pose1.position.x, pose1.position.y, pose1.position.z, pose1.orientation.x, pose1.orientation.y,
-          pose1.orientation.z, pose1.orientation.w, vel_linear1.linear.x, vel_linear1.linear.y, vel_linear1.linear.z,
+  predict(pose1.position.x, pose1.position.y, pose1.position.z, pose1.orientation.w, pose1.orientation.x,
+          pose1.orientation.y, pose1.orientation.z, vel_linear1.linear.x, vel_linear1.linear.y, vel_linear1.linear.z,
           vel_angular1.linear.x, vel_angular1.linear.y, vel_angular1.linear.z, acc_linear1.linear.x,
           acc_linear1.linear.y, acc_linear1.linear.z, acc_angular1.linear.x, acc_angular1.linear.y,
-          acc_angular1.linear.z, dt, pos_x_pred, pos_y_pred, pos_z_pred, quat_x_pred, quat_y_pred, quat_z_pred,
-          quat_w_pred, vel_linear_x_pred, vel_linear_y_pred, vel_linear_z_pred, vel_angular_x_pred, vel_angular_y_pred,
+          acc_angular1.linear.z, dt, pos_x_pred, pos_y_pred, pos_z_pred, quat_w_pred, quat_x_pred, quat_y_pred,
+          quat_z_pred, vel_linear_x_pred, vel_linear_y_pred, vel_linear_z_pred, vel_angular_x_pred, vel_angular_y_pred,
           vel_angular_z_pred, acc_linear_x_pred, acc_linear_y_pred, acc_linear_z_pred, acc_angular_x_pred,
           acc_angular_y_pred, acc_angular_z_pred, jacobians.data());
   jacobian << J[0], J[1], J[2], J[3], J[4], J[5], J[6], J[7], J[8], J[9], J[10], J[11], J[12], J[13], J[14], J[15],
@@ -711,10 +723,10 @@ inline void predict(const geometry_msgs::Pose& pose1, const geometry_msgs::Twist
   pose2.position.x = pos_x_pred;
   pose2.position.y = pos_y_pred;
   pose2.position.z = pos_z_pred;
+  pose2.orientation.w = quat_w_pred;
   pose2.orientation.x = quat_x_pred;
   pose2.orientation.y = quat_y_pred;
   pose2.orientation.z = quat_z_pred;
-  pose2.orientation.w = quat_w_pred;
   vel_linear2.linear.x = vel_linear_x_pred;
   vel_linear2.linear.y = vel_linear_y_pred;
   vel_linear2.linear.z = vel_linear_z_pred;
@@ -752,10 +764,10 @@ inline void predict(const geometry_msgs::Pose& pose1, const geometry_msgs::Twist
   double pos_x_pred{};
   double pos_y_pred{};
   double pos_z_pred{};
+  double quat_w_pred{};
   double quat_x_pred{};
   double quat_y_pred{};
   double quat_z_pred{};
-  double quat_w_pred{};
   double vel_linear_x_pred{};
   double vel_linear_y_pred{};
   double vel_linear_z_pred{};
@@ -769,22 +781,22 @@ inline void predict(const geometry_msgs::Pose& pose1, const geometry_msgs::Twist
   double acc_angular_y_pred{};
   double acc_angular_z_pred{};
 
-  predict(pose1.position.x, pose1.position.y, pose1.position.z, pose1.orientation.x, pose1.orientation.y,
-          pose1.orientation.z, pose1.orientation.w, vel_linear1.linear.x, vel_linear1.linear.y, vel_linear1.linear.z,
+  predict(pose1.position.x, pose1.position.y, pose1.position.z, pose1.orientation.w, pose1.orientation.x,
+          pose1.orientation.y, pose1.orientation.z, vel_linear1.linear.x, vel_linear1.linear.y, vel_linear1.linear.z,
           vel_angular1.angular.x, vel_angular1.angular.y, vel_angular1.angular.z, acc_linear1.linear.x,
           acc_linear1.linear.y, acc_linear1.linear.z, acc_angular1.angular.x, acc_angular1.angular.y,
-          acc_angular1.angular.z, dt, pos_x_pred, pos_y_pred, pos_z_pred, quat_x_pred, quat_y_pred, quat_z_pred,
-          quat_w_pred, vel_linear_x_pred, vel_linear_y_pred, vel_linear_z_pred, vel_angular_x_pred, vel_angular_y_pred,
+          acc_angular1.angular.z, dt, pos_x_pred, pos_y_pred, pos_z_pred, quat_w_pred, quat_x_pred, quat_y_pred,
+          quat_z_pred, vel_linear_x_pred, vel_linear_y_pred, vel_linear_z_pred, vel_angular_x_pred, vel_angular_y_pred,
           vel_angular_z_pred, acc_linear_x_pred, acc_linear_y_pred, acc_linear_z_pred, acc_angular_x_pred,
           acc_angular_y_pred, acc_angular_z_pred);
 
   pose2.position.x = pos_x_pred;
   pose2.position.y = pos_y_pred;
   pose2.position.z = pos_z_pred;
+  pose2.orientation.w = quat_w_pred;
   pose2.orientation.x = quat_x_pred;
   pose2.orientation.y = quat_y_pred;
   pose2.orientation.z = quat_z_pred;
-  pose2.orientation.w = quat_w_pred;
   vel_linear2.linear.x = vel_linear_x_pred;
   vel_linear2.linear.y = vel_linear_y_pred;
   vel_linear2.linear.z = vel_linear_z_pred;
@@ -821,10 +833,10 @@ inline void predict(const tf2::Transform& pose1, const tf2::Vector3& vel_linear1
   double pos_x_pred{};
   double pos_y_pred{};
   double pos_z_pred{};
+  double quat_w_pred{};
   double quat_x_pred{};
   double quat_y_pred{};
   double quat_z_pred{};
-  double quat_w_pred{};
   double vel_linear_x_pred{};
   double vel_linear_y_pred{};
   double vel_linear_z_pred{};
@@ -857,12 +869,12 @@ inline void predict(const tf2::Transform& pose1, const tf2::Vector3& vel_linear1
     jacobians[i] = J[i].data();
   }
 
-  predict(pose1.getOrigin().getX(), pose1.getOrigin().getY(), pose1.getOrigin().getZ(), pose1.getRotation().getX(),
-          pose1.getRotation().getY(), pose1.getRotation().getZ(), pose1.getRotation().getW(), vel_linear1.getX(),
+  predict(pose1.getOrigin().getX(), pose1.getOrigin().getY(), pose1.getOrigin().getZ(), pose1.getRotation().getW(),
+          pose1.getRotation().getX(), pose1.getRotation().getY(), pose1.getRotation().getZ(), vel_linear1.getX(),
           vel_linear1.getY(), vel_linear1.getX(), vel_angular1.getX(), vel_angular1.getY(), vel_angular1.getZ(),
           acc_linear1.getX(), acc_linear1.getY(), acc_linear1.getZ(), acc_angular1.getX(), acc_angular1.getY(),
-          acc_angular1.getZ(), dt, pos_x_pred, pos_y_pred, pos_z_pred, quat_x_pred, quat_y_pred, quat_z_pred,
-          quat_w_pred, vel_linear_x_pred, vel_linear_y_pred, vel_linear_z_pred, vel_angular_x_pred, vel_angular_y_pred,
+          acc_angular1.getZ(), dt, pos_x_pred, pos_y_pred, pos_z_pred, quat_w_pred, quat_x_pred, quat_y_pred,
+          quat_z_pred, vel_linear_x_pred, vel_linear_y_pred, vel_linear_z_pred, vel_angular_x_pred, vel_angular_y_pred,
           vel_angular_z_pred, acc_linear_x_pred, acc_linear_y_pred, acc_linear_z_pred, acc_angular_x_pred,
           acc_angular_y_pred, acc_angular_z_pred, jacobians.data());
 

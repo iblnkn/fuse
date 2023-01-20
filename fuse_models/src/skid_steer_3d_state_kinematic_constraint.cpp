@@ -32,7 +32,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 #include <fuse_models/skid_steer_3d_state_kinematic_constraint.h>
-// #include <fuse_models/skid_steer_3d_state_cost_function.h>
+#include <fuse_models/skid_steer_3d_state_cost_function.h>
 #include <fuse_models/skid_steer_3d_state_cost_functor.h>
 #include <ceres/autodiff_cost_function.h>
 
@@ -106,7 +106,7 @@ ceres::CostFunction* SkidSteer3DStateKinematicConstraint::costFunction() const
   //
   // which requires:
   //
-  // #include <fuse_models/skid_steer_3d_state_cost_functor.h>
+
   // return new SkidSteer3DStateCostFunction(dt_, sqrt_information_);
 }
 

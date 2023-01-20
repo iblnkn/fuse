@@ -148,7 +148,7 @@ bool SkidSteer3DStateCostFunctor::operator()(const T* const position1, const T* 
   orientation2_quat[0] = orientation2[0];
   orientation2_quat[1] = orientation2[1];
   orientation2_quat[2] = orientation2[2];
-  orientation2_quat[1] = orientation2[3];
+  orientation2_quat[3] = orientation2[3];
 
   T orientation_pred_quat[4];
   orientation_pred_quat[0] = orientation_pred[0];

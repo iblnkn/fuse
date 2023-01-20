@@ -54,7 +54,7 @@ bool NormalPriorPose3D::Evaluate(double const* const* parameters, double* residu
 
   double parametersQuat[4];
   parametersQuat[0] = parameters[1][0];
-  parametersQuat[1] = parameters[1][2];
+  parametersQuat[1] = parameters[1][1];
   parametersQuat[2] = parameters[1][2];
   parametersQuat[3] = parameters[1][3];
 
