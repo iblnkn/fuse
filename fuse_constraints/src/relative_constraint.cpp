@@ -37,7 +37,6 @@
 
 #include <boost/serialization/export.hpp>
 
-
 BOOST_CLASS_EXPORT_IMPLEMENT(fuse_constraints::RelativeAccelerationAngular2DStampedConstraint);
 BOOST_CLASS_EXPORT_IMPLEMENT(fuse_constraints::RelativeAccelerationAngular3DStampedConstraint);
 BOOST_CLASS_EXPORT_IMPLEMENT(fuse_constraints::RelativeAccelerationLinear2DStampedConstraint);

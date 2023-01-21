@@ -40,10 +40,8 @@
 
 #include <Eigen/Core>
 
-
 namespace fuse_constraints
 {
-
 /**
  * @brief Create a prior cost function on both the position and orientation variables at once.
  *
@@ -91,9 +89,8 @@ private:
   fuse_core::Vector3d b_;  //!< The measured 2D pose value
 };
 
-NormalPriorPose2DCostFunctor::NormalPriorPose2DCostFunctor(const fuse_core::MatrixXd& A, const fuse_core::Vector3d& b) :
-  A_(A),
-  b_(b)
+NormalPriorPose2DCostFunctor::NormalPriorPose2DCostFunctor(const fuse_core::MatrixXd& A, const fuse_core::Vector3d& b)
+  : A_(A), b_(b)
 {
 }
 

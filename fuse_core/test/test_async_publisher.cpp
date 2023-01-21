@@ -38,25 +38,20 @@
 
 #include <set>
 
-
 /**
  * @brief Derived AsyncPublisher used to verify the functions get called when expected
  */
 class MyPublisher : public fuse_core::AsyncPublisher
 {
 public:
-  MyPublisher() :
-    fuse_core::AsyncPublisher(1),
-    callback_processed(false),
-    initialized(false)
+  MyPublisher() : fuse_core::AsyncPublisher(1), callback_processed(false), initialized(false)
   {
   }
 
   virtual ~MyPublisher() = default;
 
-  void notifyCallback(
-    fuse_core::Transaction::ConstSharedPtr /*transaction*/,
-    fuse_core::Graph::ConstSharedPtr /*graph*/)
+  void notifyCallback(fuse_core::Transaction::ConstSharedPtr /*transaction*/,
+                      fuse_core::Graph::ConstSharedPtr /*graph*/)
   {
     ros::Duration(1.0).sleep();
     callback_processed = true;
@@ -88,7 +83,7 @@ TEST(AsyncPublisher, notifyCallback)
   // There is a time delay there. So, this call should return almost immediately, then we have to wait
   // a bit before the "callback_processed" flag gets flipped.
   fuse_core::Transaction::ConstSharedPtr transaction;  // nullptr...which is fine because we do not actually use it
-  fuse_core::Graph::ConstSharedPtr graph;  // nullptr...which is fine because we do not actually use it
+  fuse_core::Graph::ConstSharedPtr graph;              // nullptr...which is fine because we do not actually use it
   publisher.notify(transaction, graph);
   EXPECT_FALSE(publisher.callback_processed);
   ros::Time wait_time_elapsed = ros::Time::now() + ros::Duration(10.0);

@@ -52,7 +52,6 @@
 #include <utility>
 #include <vector>
 
-
 /**
  * @brief Implementation of the clone() member function for derived classes
  *
@@ -66,10 +65,10 @@
  * }
  * @endcode
  */
-#define FUSE_CONSTRAINT_CLONE_DEFINITION(...) \
-  fuse_core::Constraint::UniquePtr clone() const override \
-  { \
-    return __VA_ARGS__::make_unique(*this); \
+#define FUSE_CONSTRAINT_CLONE_DEFINITION(...)                                                                          \
+  fuse_core::Constraint::UniquePtr clone() const override                                                              \
+  {                                                                                                                    \
+    return __VA_ARGS__::make_unique(*this);                                                                            \
   }
 
 /**
@@ -85,22 +84,22 @@
  * }
  * @endcode
  */
-#define FUSE_CONSTRAINT_SERIALIZE_DEFINITION(...) \
-  void serialize(fuse_core::BinaryOutputArchive& archive) const override \
-  { \
-    archive << *this; \
-  }  /* NOLINT */ \
-  void serialize(fuse_core::TextOutputArchive& archive) const override \
-  { \
-    archive << *this; \
-  }  /* NOLINT */ \
-  void deserialize(fuse_core::BinaryInputArchive& archive) override \
-  { \
-    archive >> *this; \
-  }  /* NOLINT */ \
-  void deserialize(fuse_core::TextInputArchive& archive) override \
-  { \
-    archive >> *this; \
+#define FUSE_CONSTRAINT_SERIALIZE_DEFINITION(...)                                                                      \
+  void serialize(fuse_core::BinaryOutputArchive& archive) const override                                               \
+  {                                                                                                                    \
+    archive << *this;                                                                                                  \
+  } /* NOLINT */                                                                                                       \
+  void serialize(fuse_core::TextOutputArchive& archive) const override                                                 \
+  {                                                                                                                    \
+    archive << *this;                                                                                                  \
+  } /* NOLINT */                                                                                                       \
+  void deserialize(fuse_core::BinaryInputArchive& archive) override                                                    \
+  {                                                                                                                    \
+    archive >> *this;                                                                                                  \
+  } /* NOLINT */                                                                                                       \
+  void deserialize(fuse_core::TextInputArchive& archive) override                                                      \
+  {                                                                                                                    \
+    archive >> *this;                                                                                                  \
   }
 
 /**
@@ -118,17 +117,17 @@
  * }
  * @endcode
  */
-#define FUSE_CONSTRAINT_TYPE_DEFINITION(...) \
-  struct detail \
-  { \
-    static std::string type() \
-    { \
-      return boost::typeindex::stl_type_index::type_id<__VA_ARGS__>().pretty_name(); \
-    }  /* NOLINT */ \
-  };  /* NOLINT */ \
-  std::string type() const override \
-  { \
-    return detail::type(); \
+#define FUSE_CONSTRAINT_TYPE_DEFINITION(...)                                                                           \
+  struct detail                                                                                                        \
+  {                                                                                                                    \
+    static std::string type()                                                                                          \
+    {                                                                                                                  \
+      return boost::typeindex::stl_type_index::type_id<__VA_ARGS__>().pretty_name();                                   \
+    } /* NOLINT */                                                                                                     \
+  };  /* NOLINT */                                                                                                     \
+  std::string type() const override                                                                                    \
+  {                                                                                                                    \
+    return detail::type();                                                                                             \
   }
 
 /**
@@ -144,10 +143,10 @@
  * }
  * @endcode
  */
-#define FUSE_CONSTRAINT_DEFINITIONS(...) \
-  FUSE_SMART_PTR_DEFINITIONS(__VA_ARGS__) \
-  FUSE_CONSTRAINT_TYPE_DEFINITION(__VA_ARGS__) \
-  FUSE_CONSTRAINT_CLONE_DEFINITION(__VA_ARGS__) \
+#define FUSE_CONSTRAINT_DEFINITIONS(...)                                                                               \
+  SMART_PTR_DEFINITIONS(__VA_ARGS__)                                                                                   \
+  FUSE_CONSTRAINT_TYPE_DEFINITION(__VA_ARGS__)                                                                         \
+  FUSE_CONSTRAINT_CLONE_DEFINITION(__VA_ARGS__)                                                                        \
   FUSE_CONSTRAINT_SERIALIZE_DEFINITION(__VA_ARGS__)
 
 /**
@@ -164,16 +163,14 @@
  * }
  * @endcode
  */
-#define FUSE_CONSTRAINT_DEFINITIONS_WITH_EIGEN(...) \
-  FUSE_SMART_PTR_DEFINITIONS_WITH_EIGEN(__VA_ARGS__) \
-  FUSE_CONSTRAINT_TYPE_DEFINITION(__VA_ARGS__) \
-  FUSE_CONSTRAINT_CLONE_DEFINITION(__VA_ARGS__) \
+#define FUSE_CONSTRAINT_DEFINITIONS_WITH_EIGEN(...)                                                                    \
+  SMART_PTR_DEFINITIONS_WITH_EIGEN(__VA_ARGS__)                                                                        \
+  FUSE_CONSTRAINT_TYPE_DEFINITION(__VA_ARGS__)                                                                         \
+  FUSE_CONSTRAINT_CLONE_DEFINITION(__VA_ARGS__)                                                                        \
   FUSE_CONSTRAINT_SERIALIZE_DEFINITION(__VA_ARGS__)
-
 
 namespace fuse_core
 {
-
 /**
  * @brief The Constraint interface definition.
  *
@@ -217,7 +214,7 @@ public:
    *
    * Accepts an arbitrary number of variable UUIDs stored in a container using iterators.
    */
-  template<typename VariableUuidIterator>
+  template <typename VariableUuidIterator>
   Constraint(const std::string& source, VariableUuidIterator first, VariableUuidIterator last);
 
   /**
@@ -238,12 +235,18 @@ public:
    *
    * Each constraint will generate a unique, random UUID during construction.
    */
-  const UUID& uuid() const { return uuid_; }
+  const UUID& uuid() const
+  {
+    return uuid_;
+  }
 
   /**
    * @brief Returns the name of the sensor or motion model that generated this constraint
    */
-  const std::string& source() const { return source_; }
+  const std::string& source() const
+  {
+    return source_;
+  }
 
   /**
    * @brief Print a human-readable description of the constraint to the provided stream.
@@ -311,7 +314,10 @@ public:
   /**
    * @brief Read-only access to the ordered list of variable UUIDs involved in this constraint
    */
-  const std::vector<UUID>& variables() const { return variables_; }
+  const std::vector<UUID>& variables() const
+  {
+    return variables_;
+  }
 
   /**
    * @brief Serialize this Constraint into the provided binary archive
@@ -362,9 +368,9 @@ public:
   virtual void deserialize(fuse_core::TextInputArchive& /* archive */) = 0;
 
 private:
-  std::string source_;  //!< The name of the sensor or motion model that generated this constraint
-  UUID uuid_;  //!< The unique ID associated with this constraint
-  std::vector<UUID> variables_;  //!< The ordered set of variables involved with this constraint
+  std::string source_;                     //!< The name of the sensor or motion model that generated this constraint
+  UUID uuid_;                              //!< The unique ID associated with this constraint
+  std::vector<UUID> variables_;            //!< The ordered set of variables involved with this constraint
   std::shared_ptr<Loss> loss_{ nullptr };  //!< The loss function
 
   // Allow Boost Serialization access to private methods
@@ -380,27 +386,24 @@ private:
    * @param[in/out] archive - The archive object that holds the serialized class members
    * @param[in] version - The version of the archive being read/written. Generally unused.
    */
-  template<class Archive>
+  template <class Archive>
   void serialize(Archive& archive, const unsigned int /* version */)
   {
-    archive & source_;
-    archive & uuid_;
-    archive & variables_;
-    archive & loss_;
+    archive& source_;
+    archive& uuid_;
+    archive& variables_;
+    archive& loss_;
   }
 };
 
 /**
  * Stream operator implementation used for all derived Constraint classes.
  */
-std::ostream& operator <<(std::ostream& stream, const Constraint& constraint);
+std::ostream& operator<<(std::ostream& stream, const Constraint& constraint);
 
-
-template<typename VariableUuidIterator>
-Constraint::Constraint(const std::string& source, VariableUuidIterator first, VariableUuidIterator last) :
-  source_(source),
-  uuid_(uuid::generate()),
-  variables_(first, last)
+template <typename VariableUuidIterator>
+Constraint::Constraint(const std::string& source, VariableUuidIterator first, VariableUuidIterator last)
+  : source_(source), uuid_(uuid::generate()), variables_(first, last)
 {
 }
 

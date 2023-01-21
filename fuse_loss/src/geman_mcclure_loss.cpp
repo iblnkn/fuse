@@ -42,10 +42,8 @@
 #include <ostream>
 #include <string>
 
-
 namespace fuse_loss
 {
-
 GemanMcClureLoss::GemanMcClureLoss(const double a) : a_(a)
 {
 }

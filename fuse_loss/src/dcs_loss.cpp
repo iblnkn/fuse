@@ -42,10 +42,8 @@
 #include <ostream>
 #include <string>
 
-
 namespace fuse_loss
 {
-
 DCSLoss::DCSLoss(const double a) : a_(a)
 {
 }

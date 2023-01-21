@@ -36,7 +36,6 @@
 
 #include <fuse_constraints/normal_prior_orientation_2d.h>
 #include <fuse_constraints/normal_prior_orientation_3d.h>
-// #include <fuse_constraints/absolute_orientation_3d_stamped_constraint.h>
 
 #include <fuse_constraints/normal_prior_orientation_3d_cost_functor.h>
 
@@ -112,9 +111,8 @@ void AbsoluteConstraint<Variable>::print(std::ostream& stream) const
          << "  source: " << source() << "\n"
          << "  uuid: " << uuid() << "\n"
          << "  variable: " << variables().at(0) << "\n"
-         << "  mean: " << mean().transpose()
-         << "\n"
-          << "  sqrt_info: " << sqrtInformation() << "\n"
+         << "  mean: " << mean().transpose() << "\n"
+         << "  sqrt_info: " << sqrtInformation() << "\n"
          << "  covariance: " << covariance() << "\n";
 
   if (loss())
@@ -140,13 +138,19 @@ inline ceres::CostFunction* AbsoluteConstraint<fuse_variables::Orientation2DStam
 }
 
 // Specialization for Orientation3D
-// We need to handle the 2*pi rollover for 3D orientations, so simple subtraction does not produce the correct cost
+// We need to handle the quaternion manifold for 3D orientations, so simple subtraction does not produce the correct
+// cost.
 template <>
 inline ceres::CostFunction* AbsoluteConstraint<fuse_variables::Orientation3DStamped>::costFunction() const
 {
   return new ceres::AutoDiffCostFunction<NormalPriorOrientation3DCostFunctor, 3, 4>(
       new NormalPriorOrientation3DCostFunctor(sqrt_information_, mean_));
-  // return new NormalPriorOrientation3D(sqrt_information_, mean_);
+
+  // TODO(iblankenau): Cost function implementation does not
+  // currently work as we are relying on Ceres AutoDiff rather
+  // than analytically computing the jacobians. Implementing costFunction may yield performance improvements. 
+  
+  //return new NormalPriorOrientation3D(sqrt_information_, mean_);
 }
 
 // Specialize the type() method to return the name that is registered with the plugins

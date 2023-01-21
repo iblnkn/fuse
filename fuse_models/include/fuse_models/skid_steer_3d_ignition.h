@@ -46,10 +46,8 @@
 
 #include <atomic>
 
-
 namespace fuse_models
 {
-
 /**
  * @brief A fuse_models ignition sensor designed to be used in conjunction with the skid steer 3D motion model.
  *
@@ -97,9 +95,9 @@ public:
    * @brief Subscribe to the input topic to start sending transactions to the optimizer
    *
    * As a very special case, we are overriding the start() method instead of providing an onStart() implementation.
-   * This is because the SkidSteer3DIgnition sensor calls reset() on the optimizer, which in turn calls stop() and start(). If we
-   * used the AsyncSensorModel implementations of start() and stop(), the system would hang inside of one callback
-   * function while waiting for another callback to complete.
+   * This is because the SkidSteer3DIgnition sensor calls reset() on the optimizer, which in turn calls stop() and
+   * start(). If we used the AsyncSensorModel implementations of start() and stop(), the system would hang inside of one
+   * callback function while waiting for another callback to complete.
    */
   void start() override;
 
@@ -107,9 +105,9 @@ public:
    * @brief Unsubscribe from the input topic to stop sending transactions to the optimizer
    *
    * As a very special case, we are overriding the stop() method instead of providing an onStop() implementation.
-   * This is because the SkidSteer3DIgnition sensor calls reset() on the optimizer, which in turn calls stop() and start(). If we
-   * used the AsyncSensorModel implementations of start() and stop(), the system would hang inside of one callback
-   * function while waiting for another callback to complete.
+   * This is because the SkidSteer3DIgnition sensor calls reset() on the optimizer, which in turn calls stop() and
+   * start(). If we used the AsyncSensorModel implementations of start() and stop(), the system would hang inside of one
+   * callback function while waiting for another callback to complete.
    */
   void stop() override;
 
@@ -126,9 +124,8 @@ public:
   /**
    * @brief Triggers the publication of a new prior transaction at the supplied pose
    */
-  bool setPoseDeprecatedServiceCallback(
-    fuse_models::SetPoseDeprecated::Request& req,
-    fuse_models::SetPoseDeprecated::Response&);
+  bool setPoseDeprecatedServiceCallback(fuse_models::SetPoseDeprecated::Request& req,
+                                        fuse_models::SetPoseDeprecated::Response&);
 
 protected:
   /**

@@ -42,13 +42,11 @@
 
 #include <ceres/sized_cost_function.h>
 
-
 namespace fuse_models
 {
-
 /**
  * @brief Create a cost function for a 2D state vector
- * 
+ *
  * The state vector includes the following quantities, given in this order:
  *   x position
  *   y position
@@ -72,7 +70,7 @@ namespace fuse_models
  *             ||    [  yaw_vel_t2 - proj(yaw_vel_t1) ] ||
  *             ||    [    x_acc_t2 - proj(x_acc_t1)   ] ||
  *             ||    [    y_acc_t2 - proj(y_acc_t1)   ] ||
- * 
+ *
  * where, the matrix A is fixed, the state variables are provided at two discrete time steps, and proj is a function
  * that projects the state variables from time t1 to time t2. In case the user is interested in implementing a cost
  * function of the form
@@ -115,9 +113,7 @@ public:
    *                         computed for the parameters where jacobians[i] is not NULL.
    * @return The return value indicates whether the computation of the residuals and/or jacobians was successful or not.
    */
-  bool Evaluate(double const* const* parameters,
-                double* residuals,
-                double** jacobians) const override
+  bool Evaluate(double const* const* parameters, double* residuals, double** jacobians) const override
   {
     double position_pred_x;
     double position_pred_y;
@@ -127,25 +123,16 @@ public:
     double vel_yaw_pred;
     double acc_linear_pred_x;
     double acc_linear_pred_y;
-    predict(
-      parameters[0][0],  // position1_x
-      parameters[0][1],  // position1_y
-      parameters[1][0],  // yaw1
-      parameters[2][0],  // vel_linear1_x
-      parameters[2][1],  // vel_linear1_y
-      parameters[3][0],  // vel_yaw1
-      parameters[4][0],  // acc_linear1_x
-      parameters[4][1],  // acc_linear1_y
-      dt_,
-      position_pred_x,
-      position_pred_y,
-      yaw_pred,
-      vel_linear_pred_x,
-      vel_linear_pred_y,
-      vel_yaw_pred,
-      acc_linear_pred_x,
-      acc_linear_pred_y,
-      jacobians);
+    predict(parameters[0][0],  // position1_x
+            parameters[0][1],  // position1_y
+            parameters[1][0],  // yaw1
+            parameters[2][0],  // vel_linear1_x
+            parameters[2][1],  // vel_linear1_y
+            parameters[3][0],  // vel_yaw1
+            parameters[4][0],  // acc_linear1_x
+            parameters[4][1],  // acc_linear1_y
+            dt_, position_pred_x, position_pred_y, yaw_pred, vel_linear_pred_x, vel_linear_pred_y, vel_yaw_pred,
+            acc_linear_pred_x, acc_linear_pred_y, jacobians);
 
     residuals[0] = parameters[5][0] - position_pred_x;
     residuals[1] = parameters[5][1] - position_pred_y;
@@ -274,9 +261,7 @@ private:
   fuse_core::Matrix8d A_;  //!< The residual weighting matrix, most likely the square root information matrix
 };
 
-Unicycle2DStateCostFunction::Unicycle2DStateCostFunction(const double dt, const fuse_core::Matrix8d& A) :
-  dt_(dt),
-  A_(A)
+Unicycle2DStateCostFunction::Unicycle2DStateCostFunction(const double dt, const fuse_core::Matrix8d& A) : dt_(dt), A_(A)
 {
 }
 

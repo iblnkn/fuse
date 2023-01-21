@@ -36,10 +36,8 @@
 #include <cmath>
 #include <limits>
 
-
 namespace ceres
 {
-
 void DCSLoss::Evaluate(double s, double rho[3]) const
 {
   if (s > a_)

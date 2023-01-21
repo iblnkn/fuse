@@ -49,7 +49,6 @@
 
 namespace fuse_models
 {
-
 /**
  * @brief A ignition sensor designed to be used to reset the optimizer graph to an input graph. This is useful for
  * debugging purposes because it allows to play back the recorded transactions from a previous run starting from the

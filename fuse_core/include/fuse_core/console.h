@@ -37,10 +37,8 @@
 #include <ros/console.h>
 #include <ros/time.h>
 
-
 namespace fuse_core
 {
-
 /**
  * @brief ROS console filter that prints messages with ROS_*_DELAYED_THROTTLE and allows to reset the last time the
  * message was print, so the delayed and throttle conditions are computed from the initial state again.

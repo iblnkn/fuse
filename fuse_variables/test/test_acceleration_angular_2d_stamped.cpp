@@ -46,7 +46,6 @@
 
 using fuse_variables::AccelerationAngular2DStamped;
 
-
 TEST(AccelerationAngular2DStamped, Type)
 {
   AccelerationAngular2DStamped variable(ros::Time(12345678, 910111213));
@@ -86,8 +85,8 @@ TEST(AccelerationAngular2DStamped, UUID)
 
 TEST(AccelerationAngular2DStamped, Stamped)
 {
-  fuse_core::Variable::SharedPtr base = AccelerationAngular2DStamped::make_shared(ros::Time(12345678, 910111213),
-                                                                                  fuse_core::uuid::generate("mo"));
+  fuse_core::Variable::SharedPtr base =
+      AccelerationAngular2DStamped::make_shared(ros::Time(12345678, 910111213), fuse_core::uuid::generate("mo"));
   auto derived = std::dynamic_pointer_cast<AccelerationAngular2DStamped>(base);
   ASSERT_TRUE(static_cast<bool>(derived));
   EXPECT_EQ(ros::Time(12345678, 910111213), derived->stamp());
@@ -101,9 +100,12 @@ TEST(AccelerationAngular2DStamped, Stamped)
 
 struct CostFunctor
 {
-  CostFunctor() {}
+  CostFunctor()
+  {
+  }
 
-  template <typename T> bool operator()(const T* const x, T* residual) const
+  template <typename T>
+  bool operator()(const T* const x, T* residual) const
   {
     residual[0] = x[0] - T(2.7);
     return true;
@@ -121,16 +123,10 @@ TEST(AccelerationAngular2DStamped, Optimization)
 
   // Build the problem.
   ceres::Problem problem;
-  problem.AddParameterBlock(
-    acceleration.data(),
-    acceleration.size(),
-    acceleration.manifold());
+  problem.AddParameterBlock(acceleration.data(), acceleration.size(), acceleration.manifold());
   std::vector<double*> parameter_blocks;
   parameter_blocks.push_back(acceleration.data());
-  problem.AddResidualBlock(
-    cost_function,
-    nullptr,
-    parameter_blocks);
+  problem.AddResidualBlock(cost_function, nullptr, parameter_blocks);
 
   // Run the solver
   ceres::Solver::Options options;
@@ -167,7 +163,7 @@ TEST(AccelerationAngular2DStamped, Serialization)
   EXPECT_EQ(expected.yaw(), actual.yaw());
 }
 
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
   testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();

@@ -40,10 +40,8 @@
 
 #include <string>
 
-
 namespace fuse_core
 {
-
 /**
  * @brief The interface class for publisher plugins in the fuse ecosystem.
  *
@@ -110,7 +108,9 @@ public:
    * has been requested to reset itself. This allows the publisher to reset any internal state before the
    * optimizer begins processing after a reset. No calls to notify() will happen before the optimizer calls start().
    */
-  virtual void start() {}
+  virtual void start()
+  {
+  }
 
   /**
    * @brief Function to be executed whenever the optimizer is no longer ready to receive transactions
@@ -120,7 +120,9 @@ public:
    * the publisher to reset any internal state before the optimizer begins processing after a reset. No calls
    * to notify() will happen until start() has been called again.
    */
-  virtual void stop() {}
+  virtual void stop()
+  {
+  }
 };
 
 }  // namespace fuse_core

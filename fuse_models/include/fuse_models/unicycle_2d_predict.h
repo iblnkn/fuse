@@ -43,10 +43,8 @@
 
 #include <array>
 
-
 namespace fuse_models
 {
-
 /**
  * @brief Given a state and time delta, predicts a new state
  * @param[in] position1_x - First X position
@@ -67,25 +65,11 @@ namespace fuse_models
  * @param[out] acc_linear2_x - Second X acceleration
  * @param[out] acc_linear2_y - Second Y acceleration
  */
-template<typename T>
-inline void predict(
-  const T position1_x,
-  const T position1_y,
-  const T yaw1,
-  const T vel_linear1_x,
-  const T vel_linear1_y,
-  const T vel_yaw1,
-  const T acc_linear1_x,
-  const T acc_linear1_y,
-  const T dt,
-  T& position2_x,
-  T& position2_y,
-  T& yaw2,
-  T& vel_linear2_x,
-  T& vel_linear2_y,
-  T& vel_yaw2,
-  T& acc_linear2_x,
-  T& acc_linear2_y)
+template <typename T>
+inline void predict(const T position1_x, const T position1_y, const T yaw1, const T vel_linear1_x,
+                    const T vel_linear1_y, const T vel_yaw1, const T acc_linear1_x, const T acc_linear1_y, const T dt,
+                    T& position2_x, T& position2_y, T& yaw2, T& vel_linear2_x, T& vel_linear2_y, T& vel_yaw2,
+                    T& acc_linear2_x, T& acc_linear2_y)
 {
   // There are better models for this projection, but this matches the one used by r_l.
   T sy = ceres::sin(yaw1);  // Should probably be sin((yaw1 + yaw2) / 2), but r_l uses this model
@@ -126,25 +110,11 @@ inline void predict(
  * @param[out] acc_linear2_y - Second Y acceleration
  * @param[out] jacobians - Jacobians wrt the state
  */
-inline void predict(
-  const double position1_x,
-  const double position1_y,
-  const double yaw1,
-  const double vel_linear1_x,
-  const double vel_linear1_y,
-  const double vel_yaw1,
-  const double acc_linear1_x,
-  const double acc_linear1_y,
-  const double dt,
-  double& position2_x,
-  double& position2_y,
-  double& yaw2,
-  double& vel_linear2_x,
-  double& vel_linear2_y,
-  double& vel_yaw2,
-  double& acc_linear2_x,
-  double& acc_linear2_y,
-  double** jacobians)
+inline void predict(const double position1_x, const double position1_y, const double yaw1, const double vel_linear1_x,
+                    const double vel_linear1_y, const double vel_yaw1, const double acc_linear1_x,
+                    const double acc_linear1_y, const double dt, double& position2_x, double& position2_y, double& yaw2,
+                    double& vel_linear2_x, double& vel_linear2_y, double& vel_yaw2, double& acc_linear2_x,
+                    double& acc_linear2_y, double** jacobians)
 {
   // There are better models for this projection, but this matches the one used by r_l.
   const double sy = ceres::sin(yaw1);  // Should probably be sin((yaw1 + yaw2) / 2), but r_l uses this model
@@ -174,14 +144,7 @@ inline void predict(
     if (jacobians[0])
     {
       Eigen::Map<fuse_core::Matrix<double, 8, 2>> jacobian(jacobians[0]);
-      jacobian << 1, 0,
-                  0, 1,
-                  0, 0,
-                  0, 0,
-                  0, 0,
-                  0, 0,
-                  0, 0,
-                  0, 0;
+      jacobian << 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0;
     }
 
     // Jacobian wrt yaw1
@@ -198,14 +161,7 @@ inline void predict(
       const double sy_dt = sy * dt;
 
       Eigen::Map<fuse_core::Matrix<double, 8, 2>> jacobian(jacobians[2]);
-      jacobian << cy_dt, -sy_dt,
-                  sy_dt,  cy_dt,
-                      0, 0,
-                      1, 0,
-                      0, 1,
-                      0, 0,
-                      0, 0,
-                      0, 0;
+      jacobian << cy_dt, -sy_dt, sy_dt, cy_dt, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0;
     }
 
     // Jacobian wrt vel_yaw1
@@ -222,14 +178,7 @@ inline void predict(
       const double sy_half_dt2 = sy * half_dt2;
 
       Eigen::Map<fuse_core::Matrix<double, 8, 2>> jacobian(jacobians[4]);
-      jacobian << cy_half_dt2, -sy_half_dt2,
-                  sy_half_dt2,  cy_half_dt2,
-                            0, 0,
-                           dt, 0,
-                            0, dt,
-                            0, 0,
-                            1, 0,
-                            0, 1;
+      jacobian << cy_half_dt2, -sy_half_dt2, sy_half_dt2, cy_half_dt2, 0, 0, dt, 0, 0, dt, 0, 0, 1, 0, 0, 1;
     }
   }
 }
@@ -248,38 +197,14 @@ inline void predict(
  * @param[out] vel_yaw2 - Second yaw velocity
  * @param[out] acc_linear2 - Second linear acceleration (array with x at index 0, y at index 1)
  */
-template<typename T>
-inline void predict(
-  const T* const position1,
-  const T* const yaw1,
-  const T* const vel_linear1,
-  const T* const vel_yaw1,
-  const T* const acc_linear1,
-  const T dt,
-  T* const position2,
-  T* const yaw2,
-  T* const vel_linear2,
-  T* const vel_yaw2,
-  T* const acc_linear2)
+template <typename T>
+inline void predict(const T* const position1, const T* const yaw1, const T* const vel_linear1, const T* const vel_yaw1,
+                    const T* const acc_linear1, const T dt, T* const position2, T* const yaw2, T* const vel_linear2,
+                    T* const vel_yaw2, T* const acc_linear2)
 {
-  predict(
-    position1[0],
-    position1[1],
-    *yaw1,
-    vel_linear1[0],
-    vel_linear1[1],
-    *vel_yaw1,
-    acc_linear1[0],
-    acc_linear1[1],
-    dt,
-    position2[0],
-    position2[1],
-    *yaw2,
-    vel_linear2[0],
-    vel_linear2[1],
-    *vel_yaw2,
-    acc_linear2[0],
-    acc_linear2[1]);
+  predict(position1[0], position1[1], *yaw1, vel_linear1[0], vel_linear1[1], *vel_yaw1, acc_linear1[0], acc_linear1[1],
+          dt, position2[0], position2[1], *yaw2, vel_linear2[0], vel_linear2[1], *vel_yaw2, acc_linear2[0],
+          acc_linear2[1]);
 }
 
 /**
@@ -295,25 +220,18 @@ inline void predict(
  * @param[in] acc_linear2 - The second linear acceleration
  * @param[in] jacobian - The jacobian wrt the state
  */
-inline void predict(
-  const geometry_msgs::Pose2D& pose1,
-  const geometry_msgs::Twist& vel_linear1,
-  const double vel_yaw1,
-  const geometry_msgs::Accel& acc_linear1,
-  const double dt,
-  geometry_msgs::Pose2D& pose2,
-  geometry_msgs::Twist& vel_linear2,
-  double& vel_yaw2,
-  geometry_msgs::Accel& acc_linear2,
-  fuse_core::Matrix8d& jacobian)
+inline void predict(const geometry_msgs::Pose2D& pose1, const geometry_msgs::Twist& vel_linear1, const double vel_yaw1,
+                    const geometry_msgs::Accel& acc_linear1, const double dt, geometry_msgs::Pose2D& pose2,
+                    geometry_msgs::Twist& vel_linear2, double& vel_yaw2, geometry_msgs::Accel& acc_linear2,
+                    fuse_core::Matrix8d& jacobian)
 {
-  double x_pred {};
-  double y_pred {};
-  double yaw_pred {};
-  double vel_linear_x_pred {};
-  double vel_linear_y_pred {};
-  double acc_linear_x_pred {};
-  double acc_linear_y_pred {};
+  double x_pred{};
+  double y_pred{};
+  double yaw_pred{};
+  double vel_linear_x_pred{};
+  double vel_linear_y_pred{};
+  double acc_linear_x_pred{};
+  double acc_linear_y_pred{};
 
   // fuse_core::Matrix8d is Eigen::RowMajor, so we cannot use pointers to the columns where each parameter block starts.
   // Instead, we need to create a vector of Eigen::RowMajor matrices per parameter block and later reconstruct the
@@ -321,7 +239,7 @@ inline void predict(
   // The parameter blocks have the following sizes: {position1: 2, yaw1: 1, vel_linear1: 2, vel_yaw1: 1, acc_linear1: 2}
   static constexpr size_t num_residuals{ 8 };
   static constexpr size_t num_parameter_blocks{ 5 };
-  static const std::array<size_t, num_parameter_blocks> block_sizes = {2, 1, 2, 1, 2};
+  static const std::array<size_t, num_parameter_blocks> block_sizes = { 2, 1, 2, 1, 2 };
 
   std::array<fuse_core::MatrixXd, num_parameter_blocks> J;
   std::array<double*, num_parameter_blocks> jacobians;
@@ -332,25 +250,9 @@ inline void predict(
     jacobians[i] = J[i].data();
   }
 
-  predict(
-    pose1.x,
-    pose1.y,
-    pose1.theta,
-    vel_linear1.linear.x,
-    vel_linear1.linear.y,
-    vel_yaw1,
-    acc_linear1.linear.x,
-    acc_linear1.linear.y,
-    dt,
-    x_pred,
-    y_pred,
-    yaw_pred,
-    vel_linear_x_pred,
-    vel_linear_y_pred,
-    vel_yaw2,
-    acc_linear_x_pred,
-    acc_linear_y_pred,
-    jacobians.data());
+  predict(pose1.x, pose1.y, pose1.theta, vel_linear1.linear.x, vel_linear1.linear.y, vel_yaw1, acc_linear1.linear.x,
+          acc_linear1.linear.y, dt, x_pred, y_pred, yaw_pred, vel_linear_x_pred, vel_linear_y_pred, vel_yaw2,
+          acc_linear_x_pred, acc_linear_y_pred, jacobians.data());
 
   jacobian << J[0], J[1], J[2], J[3], J[4];
 
@@ -358,9 +260,9 @@ inline void predict(
   pose2.y = (y_pred);
   pose2.theta = (yaw_pred);
   vel_linear2.linear.x = (vel_linear_x_pred);
-  vel_linear2.linear. y = (vel_linear_y_pred);
+  vel_linear2.linear.y = (vel_linear_y_pred);
   acc_linear2.linear.x = (acc_linear_x_pred);
-  acc_linear2.linear.y =(acc_linear_y_pred);
+  acc_linear2.linear.y = (acc_linear_y_pred);
 }
 
 /**
@@ -375,43 +277,21 @@ inline void predict(
  * @param[in] vel_yaw2 - The second yaw velocity
  * @param[in] acc_linear2 - The second linear acceleration
  */
-inline void predict(
-  const geometry_msgs::Pose2D& pose1,
-  const geometry_msgs::Twist& vel_linear1,
-  const double vel_yaw1,
-  const geometry_msgs::Accel& acc_linear1,
-  const double dt,
-  geometry_msgs::Pose2D& pose2,
-  geometry_msgs::Twist& vel_linear2,
-  double& vel_yaw2,
-  geometry_msgs::Accel& acc_linear2)
+inline void predict(const geometry_msgs::Pose2D& pose1, const geometry_msgs::Twist& vel_linear1, const double vel_yaw1,
+                    const geometry_msgs::Accel& acc_linear1, const double dt, geometry_msgs::Pose2D& pose2,
+                    geometry_msgs::Twist& vel_linear2, double& vel_yaw2, geometry_msgs::Accel& acc_linear2)
 {
-  double x_pred {};
-  double y_pred {};
-  double yaw_pred {};
-  double vel_linear_x_pred {};
-  double vel_linear_y_pred {};
-  double acc_linear_x_pred {};
-  double acc_linear_y_pred {};
+  double x_pred{};
+  double y_pred{};
+  double yaw_pred{};
+  double vel_linear_x_pred{};
+  double vel_linear_y_pred{};
+  double acc_linear_x_pred{};
+  double acc_linear_y_pred{};
 
-  predict(
-    pose1.x,
-    pose1.y,
-    pose1.theta,
-    vel_linear1.linear.x,
-    vel_linear1.linear.y,
-    vel_yaw1,
-    acc_linear1.linear.x,
-    acc_linear1.linear.y,
-    dt,
-    x_pred,
-    y_pred,
-    yaw_pred,
-    vel_linear_x_pred,
-    vel_linear_y_pred,
-    vel_yaw2,
-    acc_linear_x_pred,
-    acc_linear_y_pred);
+  predict(pose1.x, pose1.y, pose1.theta, vel_linear1.linear.x, vel_linear1.linear.y, vel_yaw1, acc_linear1.linear.x,
+          acc_linear1.linear.y, dt, x_pred, y_pred, yaw_pred, vel_linear_x_pred, vel_linear_y_pred, vel_yaw2,
+          acc_linear_x_pred, acc_linear_y_pred);
 
   pose2.x = (x_pred);
   pose2.y = (y_pred);

@@ -46,7 +46,6 @@
 
 using fuse_variables::Point2DLandmark;
 
-
 TEST(Point2DLandmark, Type)
 {
   Point2DLandmark variable(0);
@@ -62,7 +61,7 @@ TEST(Point2DLandmark, UUID)
     EXPECT_EQ(variable1.uuid(), variable2.uuid());
   }
 
-    // Verify two positions with the different landmark ids  produce different uuids
+  // Verify two positions with the different landmark ids  produce different uuids
   {
     Point2DLandmark variable1(0);
     Point2DLandmark variable2(1);
@@ -72,9 +71,12 @@ TEST(Point2DLandmark, UUID)
 
 struct CostFunctor
 {
-  CostFunctor() {}
+  CostFunctor()
+  {
+  }
 
-  template <typename T> bool operator()(const T* const x, T* residual) const
+  template <typename T>
+  bool operator()(const T* const x, T* residual) const
   {
     residual[0] = x[0] - T(3.0);
     residual[1] = x[1] + T(8.0);
@@ -94,15 +96,10 @@ TEST(Point2DLandmark, Optimization)
 
   // Build the problem.
   ceres::Problem problem;
-  problem.AddParameterBlock(
-    position.data(),
-    position.size());
+  problem.AddParameterBlock(position.data(), position.size());
   std::vector<double*> parameter_blocks;
   parameter_blocks.push_back(position.data());
-  problem.AddResidualBlock(
-    cost_function,
-    nullptr,
-    parameter_blocks);
+  problem.AddResidualBlock(cost_function, nullptr, parameter_blocks);
 
   // Run the solver
   ceres::Solver::Options options;
@@ -142,7 +139,7 @@ TEST(Point2DLandmark, Serialization)
   EXPECT_EQ(expected.y(), actual.y());
 }
 
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
   testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();

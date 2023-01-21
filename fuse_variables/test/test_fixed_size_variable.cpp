@@ -39,18 +39,19 @@
 #include <boost/serialization/base_object.hpp>
 #include <gtest/gtest.h>
 
-
 class TestVariable : public fuse_variables::FixedSizeVariable<2>
 {
 public:
   FUSE_VARIABLE_DEFINITIONS(TestVariable);
 
-  TestVariable() :
-    fuse_variables::FixedSizeVariable<2>(fuse_core::uuid::generate())
-  {}
+  TestVariable() : fuse_variables::FixedSizeVariable<2>(fuse_core::uuid::generate())
+  {
+  }
   virtual ~TestVariable() = default;
 
-  void print(std::ostream& /*stream = std::cout*/) const override {}
+  void print(std::ostream& /*stream = std::cout*/) const override
+  {
+  }
 
 private:
   // Allow Boost Serialization access to private methods
@@ -62,19 +63,18 @@ private:
    * @param[in/out] archive - The archive object that holds the serialized class members
    * @param[in] version - The version of the archive being read/written. Generally unused.
    */
-  template<class Archive>
+  template <class Archive>
   void serialize(Archive& archive, const unsigned int /* version */)
   {
-    archive & boost::serialization::base_object<fuse_variables::FixedSizeVariable<2>>(*this);
+    archive& boost::serialization::base_object<fuse_variables::FixedSizeVariable<2>>(*this);
   }
 };
-
 
 TEST(FixedSizeVariable, Size)
 {
   // Verify the expected size is returned
   TestVariable variable;
-  EXPECT_EQ(2u, variable.size());  // base class interface
+  EXPECT_EQ(2u, variable.size());     // base class interface
   EXPECT_EQ(2u, TestVariable::SIZE);  // static member variable
 }
 
@@ -108,7 +108,7 @@ TEST(FixedSizeVariable, Array)
   EXPECT_TRUE(success);
 }
 
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
   testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();

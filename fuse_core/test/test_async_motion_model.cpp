@@ -36,16 +36,13 @@
 
 #include <gtest/gtest.h>
 
-
 /**
  * @brief Derived AsyncMotionModel used to verify the functions get called when expected
  */
 class MyMotionModel : public fuse_core::AsyncMotionModel
 {
 public:
-  MyMotionModel() :
-    fuse_core::AsyncMotionModel(1),
-    initialized(false)
+  MyMotionModel() : fuse_core::AsyncMotionModel(1), initialized(false)
   {
   }
 

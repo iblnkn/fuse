@@ -35,20 +35,13 @@
 
 #include <fuse_core/util.h>
 
-
 namespace fuse_constraints
 {
-
-NormalPriorOrientation2D::NormalPriorOrientation2D(const double A, const double b) :
-  A_(A),
-  b_(b)
+NormalPriorOrientation2D::NormalPriorOrientation2D(const double A, const double b) : A_(A), b_(b)
 {
 }
 
-bool NormalPriorOrientation2D::Evaluate(
-  double const* const* parameters,
-  double* residuals,
-  double** jacobians) const
+bool NormalPriorOrientation2D::Evaluate(double const* const* parameters, double* residuals, double** jacobians) const
 {
   // The following lines should read as
   // r = A_ * (x - b_);

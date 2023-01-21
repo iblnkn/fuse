@@ -51,10 +51,8 @@
 #include <memory>
 #include <string>
 
-
 namespace fuse_publishers
 {
-
 /**
  * @brief Publisher plugin that publishes the latest 2D pose (combination of Position2DStamped and Orientation2DStamped)
  *
@@ -135,9 +133,8 @@ public:
    * @param[in] transaction A Transaction object, describing the set of variables that have been added and/or removed
    * @param[in] graph       A read-only pointer to the graph object, allowing queries to be performed whenever needed
    */
-  void notifyCallback(
-    fuse_core::Transaction::ConstSharedPtr transaction,
-    fuse_core::Graph::ConstSharedPtr graph) override;
+  void notifyCallback(fuse_core::Transaction::ConstSharedPtr transaction,
+                      fuse_core::Graph::ConstSharedPtr graph) override;
 
   /**
    * @brief Timer-based callback that publishes the latest map->odom transform
@@ -149,13 +146,13 @@ public:
   void tfPublishTimerCallback(const ros::TimerEvent& event);
 
 protected:
-  using Synchronizer = StampedVariableSynchronizer<fuse_variables::Orientation2DStamped,
-                                                   fuse_variables::Position2DStamped>;
+  using Synchronizer =
+      StampedVariableSynchronizer<fuse_variables::Orientation2DStamped, fuse_variables::Position2DStamped>;
 
-  std::string base_frame_;  //!< The name of the robot's base_link frame
-  fuse_core::UUID device_id_;  //!< The UUID of the device to be published
-  std::string map_frame_;  //!< The name of the robot's map frame
-  std::string odom_frame_;  //!< The name of the odom frame for this pose (or empty if the odom is not used)
+  std::string base_frame_;         //!< The name of the robot's base_link frame
+  fuse_core::UUID device_id_;      //!< The UUID of the device to be published
+  std::string map_frame_;          //!< The name of the robot's map frame
+  std::string odom_frame_;         //!< The name of the odom frame for this pose (or empty if the odom is not used)
   ros::Publisher pose_publisher_;  //!< Publish the pose as a geometry_msgs::PoseStamped
   ros::Publisher pose_with_covariance_publisher_;  //!< Publish the pose as a geometry_msgs::PoseWithCovarianceStamped
   bool publish_to_tf_;  //!< Flag indicating the pose should be sent to the tf system as well as the pose topics
@@ -165,9 +162,9 @@ protected:
                                                              //!< inserts the received transforms into the tf buffer
   tf2_ros::TransformBroadcaster tf_publisher_;  //!< Publish the map->odom or map->base transform to the tf system
   ros::Timer tf_publish_timer_;  //!< Timer that publishes tf messages to ensure the tf transform doesn't get stale
-  ros::Duration tf_timeout_;  //!< The max time to wait for a tf transform to become available
+  ros::Duration tf_timeout_;     //!< The max time to wait for a tf transform to become available
   geometry_msgs::TransformStamped tf_transform_;  //!< The transform to be published to tf
-  bool use_tf_lookup_;  //!< Internal flag indicating that a tf frame lookup is required
+  bool use_tf_lookup_;                            //!< Internal flag indicating that a tf frame lookup is required
 };
 
 }  // namespace fuse_publishers

@@ -116,7 +116,9 @@ public:
    * the number of threads to use to spin the callback queue. Generally this will be 1, unless you have a good reason
    * to use a multi-threaded spinner.
    */
-  RangeSensorModel() : fuse_core::AsyncSensorModel(1) {}
+  RangeSensorModel() : fuse_core::AsyncSensorModel(1)
+  {
+  }
 
   /**
    * @brief Receives the set of known beacon positions
@@ -169,8 +171,8 @@ protected:
   };
 
   std::unordered_map<unsigned int, Beacon> beacon_db_;  //!< The estimated position of each beacon
-  ros::Subscriber beacon_subscriber_;  //!< ROS subscriber for the database of prior beacon positions
-  bool initialized_ { false };  //!< Flag indicating the initial beacon positions have been processed
+  ros::Subscriber beacon_subscriber_;                   //!< ROS subscriber for the database of prior beacon positions
+  bool initialized_{ false };   //!< Flag indicating the initial beacon positions have been processed
   ros::Subscriber subscriber_;  //!< ROS subscriber for the range sensor measurements
 };
 

@@ -466,7 +466,6 @@ inline bool processAbsolutePose3DWithCovariance(const std::string& source, const
   orientation->x() = transformed_message.pose.pose.orientation.x;
   orientation->y() = transformed_message.pose.pose.orientation.y;
   orientation->z() = transformed_message.pose.pose.orientation.z;
-  
 
   // Create the pose for the constraint
   fuse_core::Vector7d pose_mean;
@@ -952,7 +951,7 @@ inline bool processDifferentialPose3DWithCovariance(
   position1->x() = pose1.pose.pose.position.x;
   position1->y() = pose1.pose.pose.position.y;
   position1->z() = pose1.pose.pose.position.z;
- 
+
   orientation1->w() = pose1.pose.pose.orientation.w;
   orientation1->x() = pose1.pose.pose.orientation.x;
   orientation1->y() = pose1.pose.pose.orientation.y;
@@ -968,7 +967,6 @@ inline bool processDifferentialPose3DWithCovariance(
   orientation2->y() = pose2.pose.pose.orientation.y;
   orientation2->z() = pose2.pose.pose.orientation.z;
 
-
   // Create the delta for the constraint
   tf2::Vector3 position_diff((pose2.pose.pose.position.x - pose1.pose.pose.position.x),
                              (pose2.pose.pose.position.y - pose1.pose.pose.position.y),
@@ -978,7 +976,6 @@ inline bool processDifferentialPose3DWithCovariance(
   rotation_q.setX(pose1.pose.pose.orientation.x);
   rotation_q.setY(pose1.pose.pose.orientation.y);
   rotation_q.setZ(pose1.pose.pose.orientation.z);
-
 
   tf2::Matrix3x3 rotation_m(rotation_q);
   fuse_core::Matrix6d rotation_m6;
@@ -1579,7 +1576,6 @@ inline bool processDifferentialPose3DWithTwistCovariance(
   orientation1->y() = pose1.pose.pose.orientation.y;
   orientation1->z() = pose1.pose.pose.orientation.z;
 
-
   auto position2 = fuse_variables::Position3DStamped::make_shared(pose2.header.stamp, device_id);
   auto orientation2 = fuse_variables::Orientation3DStamped::make_shared(pose2.header.stamp, device_id);
   position2->x() = pose2.pose.pose.position.x;
@@ -1589,7 +1585,6 @@ inline bool processDifferentialPose3DWithTwistCovariance(
   orientation2->x() = pose2.pose.pose.orientation.x;
   orientation2->y() = pose2.pose.pose.orientation.y;
   orientation2->z() = pose2.pose.pose.orientation.z;
-
 
   // Create the delta for the constraint
   tf2::Transform pose1_3d_transform;
@@ -1608,8 +1603,8 @@ inline bool processDifferentialPose3DWithTwistCovariance(
   const auto delta = pose1_3d_transform.inverseTimes(pose2_3d_transform);
 
   fuse_core::Vector7d pose_relative_mean;
-  pose_relative_mean << delta.getOrigin().getX(), delta.getOrigin().getY(), delta.getOrigin().getZ(), delta.getRotation().getW(),
-      delta.getRotation().getX(), delta.getRotation().getY(), delta.getRotation().getZ();
+  pose_relative_mean << delta.getOrigin().getX(), delta.getOrigin().getY(), delta.getOrigin().getZ(),
+      delta.getRotation().getW(), delta.getRotation().getX(), delta.getRotation().getY(), delta.getRotation().getZ();
 
   // Create the covariance components for the constraint
   fuse_core::Matrix6d cov;

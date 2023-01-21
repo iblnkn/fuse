@@ -51,10 +51,8 @@
 #include <set>
 #include <vector>
 
-
 namespace fuse_core
 {
-
 /**
  * @brief A transaction is a group of variable and constraint additions and subtractions that should all be
  *        processed at the same time.
@@ -107,19 +105,28 @@ public:
   /**
    * @brief Read-only access to this transaction's timestamp
    */
-  const ros::Time& stamp() const { return stamp_; }
+  const ros::Time& stamp() const
+  {
+    return stamp_;
+  }
 
   /**
    * @brief Write access to this transaction's timestamp
    */
-  void stamp(const ros::Time& stamp) { stamp_ = stamp; }
+  void stamp(const ros::Time& stamp)
+  {
+    stamp_ = stamp;
+  }
 
   /**
    * @brief Read-only access to the set of timestamps involved in this transaction
    *
    * @return An iterator range containing all involved timestamps, ordered oldest to newest
    */
-  const_stamp_range involvedStamps() const { return involved_stamps_; }
+  const_stamp_range involvedStamps() const
+  {
+    return involved_stamps_;
+  }
 
   /**
    * @brief Read-only access to the minimum (oldest), timestamp among the transaction's stamp and all involved
@@ -149,7 +156,10 @@ public:
    *
    * @return  An iterator range containing all removed constraint UUIDs
    */
-  const_uuid_range removedConstraints() const { return removed_constraints_; }
+  const_uuid_range removedConstraints() const
+  {
+    return removed_constraints_;
+  }
 
   /**
    * @brief Read-only access to the added variables
@@ -163,7 +173,10 @@ public:
    *
    * @return  An iterator range containing all removed variable UUIDs
    */
-  const_uuid_range removedVariables() const { return removed_variables_; }
+  const_uuid_range removedVariables() const
+  {
+    return removed_variables_;
+  }
 
   /**
    * @brief Check if the transaction is empty, i.e. it has no added or removed constraints or variables, and no involved
@@ -282,12 +295,12 @@ public:
   void deserialize(fuse_core::TextInputArchive& /* archive */);
 
 private:
-  ros::Time stamp_;  //!< The transaction message timestamp
+  ros::Time stamp_;                                       //!< The transaction message timestamp
   std::vector<Constraint::SharedPtr> added_constraints_;  //!< The constraints to be added
-  std::vector<Variable::SharedPtr> added_variables_;  //!< The variables to be added
-  std::set<ros::Time> involved_stamps_;  //!< The set of timestamps involved in this transaction
-  std::vector<UUID> removed_constraints_;  //!< The constraint UUIDs to be removed
-  std::vector<UUID> removed_variables_;  //!< The variable UUIDs to be removed
+  std::vector<Variable::SharedPtr> added_variables_;      //!< The variables to be added
+  std::set<ros::Time> involved_stamps_;                   //!< The set of timestamps involved in this transaction
+  std::vector<UUID> removed_constraints_;                 //!< The constraint UUIDs to be removed
+  std::vector<UUID> removed_variables_;                   //!< The variable UUIDs to be removed
 
   // Allow Boost Serialization access to private methods
   friend class boost::serialization::access;
@@ -298,22 +311,22 @@ private:
    * @param[in/out] archive - The archive object that holds the serialized class members
    * @param[in] version - The version of the archive being read/written. Generally unused.
    */
-  template<class Archive>
+  template <class Archive>
   void serialize(Archive& archive, const unsigned int /* version */)
   {
-    archive & stamp_;
-    archive & added_constraints_;
-    archive & added_variables_;
-    archive & involved_stamps_;
-    archive & removed_constraints_;
-    archive & removed_variables_;
+    archive& stamp_;
+    archive& added_constraints_;
+    archive& added_variables_;
+    archive& involved_stamps_;
+    archive& removed_constraints_;
+    archive& removed_variables_;
   }
 };
 
 /**
  * Stream operator for printing Transaction objects.
  */
-std::ostream& operator <<(std::ostream& stream, const Transaction& transaction);
+std::ostream& operator<<(std::ostream& stream, const Transaction& transaction);
 
 }  // namespace fuse_core
 

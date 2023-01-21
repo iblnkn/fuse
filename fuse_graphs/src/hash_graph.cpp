@@ -469,7 +469,6 @@ void HashGraph::createProblem(ceres::Problem& problem) const
       {
         problem.SetParameterUpperBound(variable.data(), index, upper_bound);
       }
-
     }
     // Handle variables that are held constant
     if (variables_on_hold_.find(variable.uuid()) != variables_on_hold_.end())

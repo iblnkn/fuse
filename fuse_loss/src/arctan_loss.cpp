@@ -41,10 +41,8 @@
 #include <ostream>
 #include <string>
 
-
 namespace fuse_loss
 {
-
 ArctanLoss::ArctanLoss(const double a) : a_(a)
 {
 }

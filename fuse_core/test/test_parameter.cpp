@@ -107,7 +107,9 @@ TEST(Parameter, GetCovarianceDiagonalParam)
 
       EXPECT_EQ(expected_covariance.rows() * expected_covariance.cols(),
                 expected_covariance.cwiseEqual(covariance).count())
-          << "Expected\n" << expected_covariance << "\nActual\n" << covariance;
+          << "Expected\n"
+          << expected_covariance << "\nActual\n"
+          << covariance;
     }
     catch (const std::exception& ex)
     {
@@ -129,9 +131,10 @@ TEST(Parameter, GetCovarianceDiagonalParam)
       EXPECT_EQ(Size, covariance.rows());
       EXPECT_EQ(Size, covariance.cols());
 
-      EXPECT_EQ(default_covariance.rows() * default_covariance.cols(),
-                default_covariance.cwiseEqual(covariance).count())
-          << "Expected\n" << default_covariance << "\nActual\n" << covariance;
+      EXPECT_EQ(default_covariance.rows() * default_covariance.cols(), default_covariance.cwiseEqual(covariance).count())
+          << "Expected\n"
+          << default_covariance << "\nActual\n"
+          << covariance;
     }
     catch (const std::exception& ex)
     {
@@ -184,9 +187,10 @@ TEST(Parameter, GetCovarianceDiagonalParam)
       EXPECT_EQ(Size, covariance.rows());
       EXPECT_EQ(Size, covariance.cols());
 
-      EXPECT_EQ(default_covariance.rows() * default_covariance.cols(),
-                default_covariance.cwiseEqual(covariance).count())
-          << "Expected\n" << default_covariance << "\nActual\n" << covariance;
+      EXPECT_EQ(default_covariance.rows() * default_covariance.cols(), default_covariance.cwiseEqual(covariance).count())
+          << "Expected\n"
+          << default_covariance << "\nActual\n"
+          << covariance;
     }
     catch (const std::exception& ex)
     {
@@ -209,9 +213,10 @@ TEST(Parameter, GetCovarianceDiagonalParam)
       EXPECT_EQ(Size, covariance.rows());
       EXPECT_EQ(Size, covariance.cols());
 
-      EXPECT_EQ(default_covariance.rows() * default_covariance.cols(),
-                default_covariance.cwiseEqual(covariance).count())
-          << "Expected\n" << default_covariance << "\nActual\n" << covariance;
+      EXPECT_EQ(default_covariance.rows() * default_covariance.cols(), default_covariance.cwiseEqual(covariance).count())
+          << "Expected\n"
+          << default_covariance << "\nActual\n"
+          << covariance;
     }
     catch (const std::exception& ex)
     {

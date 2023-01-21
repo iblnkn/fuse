@@ -42,13 +42,10 @@
 #include <string>
 #include <vector>
 
-
 namespace fuse_models
 {
-
 namespace parameters
 {
-
 struct ParameterBase
 {
   ParameterBase() = default;

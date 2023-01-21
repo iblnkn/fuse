@@ -47,10 +47,9 @@
 #include <utility>
 #include <vector>
 
+using fuse_constraints::AbsolutePose2DStampedConstraint;
 using fuse_variables::Orientation2DStamped;
 using fuse_variables::Position2DStamped;
-using fuse_constraints::AbsolutePose2DStampedConstraint;
-
 
 TEST(AbsolutePose2DStampedConstraint, Constructor)
 {
@@ -62,7 +61,7 @@ TEST(AbsolutePose2DStampedConstraint, Constructor)
   fuse_core::Matrix3d cov;
   cov << 1.0, 0.1, 0.2, 0.1, 2.0, 0.3, 0.2, 0.3, 3.0;
   EXPECT_NO_THROW(
-    AbsolutePose2DStampedConstraint constraint("test", position_variable, orientation_variable, mean, cov));
+      AbsolutePose2DStampedConstraint constraint("test", position_variable, orientation_variable, mean, cov));
 }
 
 TEST(AbsolutePose2DStampedConstraint, Covariance)
@@ -77,9 +76,8 @@ TEST(AbsolutePose2DStampedConstraint, Covariance)
   AbsolutePose2DStampedConstraint constraint("test", position_variable, orientation_variable, mean, cov);
   // Define the expected matrices (used Octave to compute sqrt_info: 'chol(inv(A))')
   fuse_core::Matrix3d expected_sqrt_info;
-  expected_sqrt_info <<  1.008395589795798, -0.040950074712520, -0.063131365181801,
-                         0.000000000000000,  0.712470499879096, -0.071247049987910,
-                         0.000000000000000,  0.000000000000000,  0.577350269189626;
+  expected_sqrt_info << 1.008395589795798, -0.040950074712520, -0.063131365181801, 0.000000000000000, 0.712470499879096,
+      -0.071247049987910, 0.000000000000000, 0.000000000000000, 0.577350269189626;
   fuse_core::Matrix3d expected_cov = cov;
   // Compare
   EXPECT_MATRIX_NEAR(expected_cov, constraint.covariance(), 1.0e-9);
@@ -100,31 +98,19 @@ TEST(AbsolutePose2DStampedConstraint, OptimizationFull)
   mean << 1.0, 2.0, 3.0;
   fuse_core::Matrix3d cov;
   cov << 1.0, 0.1, 0.2, 0.1, 2.0, 0.3, 0.2, 0.3, 3.0;
-  auto constraint = AbsolutePose2DStampedConstraint::make_shared(
-    "test",
-    *position_variable,
-    *orientation_variable,
-    mean,
-    cov);
+  auto constraint =
+      AbsolutePose2DStampedConstraint::make_shared("test", *position_variable, *orientation_variable, mean, cov);
   // Build the problem
   ceres::Problem::Options problem_options;
   problem_options.loss_function_ownership = fuse_core::Loss::Ownership;
   ceres::Problem problem(problem_options);
-  problem.AddParameterBlock(
-    orientation_variable->data(),
-    orientation_variable->size(),
-    orientation_variable->manifold());
-  problem.AddParameterBlock(
-    position_variable->data(),
-    position_variable->size(),
-    position_variable->manifold());
+  problem.AddParameterBlock(orientation_variable->data(), orientation_variable->size(),
+                            orientation_variable->manifold());
+  problem.AddParameterBlock(position_variable->data(), position_variable->size(), position_variable->manifold());
   std::vector<double*> parameter_blocks;
   parameter_blocks.push_back(position_variable->data());
   parameter_blocks.push_back(orientation_variable->data());
-  problem.AddResidualBlock(
-    constraint->costFunction(),
-    constraint->lossFunction(),
-    parameter_blocks);
+  problem.AddResidualBlock(constraint->costFunction(), constraint->lossFunction(), parameter_blocks);
   // Run the solver
   ceres::Solver::Options options;
   ceres::Solver::Summary summary;
@@ -177,57 +163,34 @@ TEST(AbsolutePose2DStampedConstraint, OptimizationPartial)
   mean1 << 1.0, 3.0;
   fuse_core::Matrix2d cov1;
   cov1 << 1.0, 0.2, 0.2, 3.0;
-  std::vector<size_t> axes_lin1 = {fuse_variables::Position2DStamped::X};
-  std::vector<size_t> axes_ang1 = {fuse_variables::Orientation2DStamped::YAW};
-  auto constraint1 = AbsolutePose2DStampedConstraint::make_shared(
-    "test",
-    *position_variable,
-    *orientation_variable,
-    mean1,
-    cov1,
-    axes_lin1,
-    axes_ang1);
+  std::vector<size_t> axes_lin1 = { fuse_variables::Position2DStamped::X };
+  std::vector<size_t> axes_ang1 = { fuse_variables::Orientation2DStamped::YAW };
+  auto constraint1 = AbsolutePose2DStampedConstraint::make_shared("test", *position_variable, *orientation_variable,
+                                                                  mean1, cov1, axes_lin1, axes_ang1);
 
   // Create an absolute pose constraint
   fuse_core::Vector1d mean2;
   mean2 << 2.0;
   fuse_core::Matrix1d cov2;
   cov2 << 2.0;
-  std::vector<size_t> axes_lin2 = {fuse_variables::Position2DStamped::Y};
+  std::vector<size_t> axes_lin2 = { fuse_variables::Position2DStamped::Y };
   std::vector<size_t> axes_ang2;
-  auto constraint2 = AbsolutePose2DStampedConstraint::make_shared(
-    "test",
-    *position_variable,
-    *orientation_variable,
-    mean2,
-    cov2,
-    axes_lin2,
-    axes_ang2);
+  auto constraint2 = AbsolutePose2DStampedConstraint::make_shared("test", *position_variable, *orientation_variable,
+                                                                  mean2, cov2, axes_lin2, axes_ang2);
 
   // Build the problem
   ceres::Problem::Options problem_options;
   problem_options.loss_function_ownership = fuse_core::Loss::Ownership;
   ceres::Problem problem(problem_options);
-  problem.AddParameterBlock(
-    position_variable->data(),
-    position_variable->size(),
-    position_variable->manifold());
-  problem.AddParameterBlock(
-    orientation_variable->data(),
-    orientation_variable->size(),
-    orientation_variable->manifold());
+  problem.AddParameterBlock(position_variable->data(), position_variable->size(), position_variable->manifold());
+  problem.AddParameterBlock(orientation_variable->data(), orientation_variable->size(),
+                            orientation_variable->manifold());
 
   std::vector<double*> parameter_blocks;
   parameter_blocks.push_back(position_variable->data());
   parameter_blocks.push_back(orientation_variable->data());
-  problem.AddResidualBlock(
-    constraint1->costFunction(),
-    constraint1->lossFunction(),
-    parameter_blocks);
-  problem.AddResidualBlock(
-    constraint2->costFunction(),
-    constraint2->lossFunction(),
-    parameter_blocks);
+  problem.AddResidualBlock(constraint1->costFunction(), constraint1->lossFunction(), parameter_blocks);
+  problem.AddResidualBlock(constraint2->costFunction(), constraint2->lossFunction(), parameter_blocks);
 
   // Run the solver
   ceres::Solver::Options options;
@@ -310,7 +273,7 @@ TEST(AbsolutePose2DStampedConstraint, Serialization)
   EXPECT_MATRIX_EQ(expected.sqrtInformation(), actual.sqrtInformation());
 }
 
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
   testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();

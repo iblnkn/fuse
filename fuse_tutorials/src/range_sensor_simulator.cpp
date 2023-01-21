@@ -45,18 +45,18 @@
 #include <random>
 #include <vector>
 
-static constexpr double SITE_WIDTH = 100.0;  //!< The width/length of the test area in meters
+static constexpr double SITE_WIDTH = 100.0;     //!< The width/length of the test area in meters
 static constexpr double BEACON_SPACING = 20.0;  //!< The distance between each range beacon
-static constexpr double BEACON_SIGMA = 4.0;  //!< Std dev used to create the database of noisy beacon positions
+static constexpr double BEACON_SIGMA = 4.0;     //!< Std dev used to create the database of noisy beacon positions
 static constexpr double ROBOT_PATH_RADIUS = 0.35 * SITE_WIDTH;  //!< The radius of the simulated robot's path
-static constexpr double ROBOT_VELOCITY = 10.0;  //!< The forward velocity of our simulated robot
+static constexpr double ROBOT_VELOCITY = 10.0;                  //!< The forward velocity of our simulated robot
 static constexpr char BASELINK_FRAME[] = "base_link";  //!< The base_link frame id used when publishing sensor data
-static constexpr char ODOM_FRAME[] = "odom";  //!< The odom frame id used when publishing wheel odometry data
-static constexpr char MAP_FRAME[] = "map";  //!< The map frame id used when publishing ground truth data
-static constexpr double IMU_SIGMA = 0.1;  //!< Std dev of simulated Imu measurement noise
-static constexpr double ODOM_VX_SIGMA = 0.5;  //!< Std dev of simulated Odometry linear velocity measurement noise
+static constexpr char ODOM_FRAME[] = "odom";           //!< The odom frame id used when publishing wheel odometry data
+static constexpr char MAP_FRAME[] = "map";             //!< The map frame id used when publishing ground truth data
+static constexpr double IMU_SIGMA = 0.1;               //!< Std dev of simulated Imu measurement noise
+static constexpr double ODOM_VX_SIGMA = 0.5;    //!< Std dev of simulated Odometry linear velocity measurement noise
 static constexpr double ODOM_VYAW_SIGMA = 0.5;  //!< Std dev of simulated Odometry angular velocity measurement noise
-static constexpr double RANGE_SIGMA = 0.5;  //!< Std dev of simulated beacon range measurement noise
+static constexpr double RANGE_SIGMA = 0.5;      //!< Std dev of simulated beacon range measurement noise
 
 /**
  * @brief The position of a "range beacon"
@@ -91,7 +91,7 @@ std::vector<Beacon> createBeacons()
   {
     for (auto y = -SITE_WIDTH / 2; y <= SITE_WIDTH / 2; y += BEACON_SPACING)
     {
-      beacons.push_back({x, y});  // NOLINT[whitespace/braces]
+      beacons.push_back({ x, y });  // NOLINT[whitespace/braces]
     }
   }
   return beacons;
@@ -103,13 +103,13 @@ std::vector<Beacon> createBeacons()
 std::vector<Beacon> createNoisyBeacons(const std::vector<Beacon>& beacons)
 {
   static std::random_device rd{};
-  static std::mt19937 generator{rd()};
-  static std::normal_distribution<> noise{0.0, BEACON_SIGMA};
+  static std::mt19937 generator{ rd() };
+  static std::normal_distribution<> noise{ 0.0, BEACON_SIGMA };
 
   auto noisy_beacons = std::vector<Beacon>();
   for (const auto& beacon : beacons)
   {
-    noisy_beacons.push_back({beacon.x + noise(generator), beacon.y + noise(generator)});  // NOLINT[whitespace/braces]
+    noisy_beacons.push_back({ beacon.x + noise(generator), beacon.y + noise(generator) });  // NOLINT[whitespace/braces]
   }
   return noisy_beacons;
 }
@@ -123,11 +123,9 @@ sensor_msgs::PointCloud2::ConstPtr beaconsToPointcloud(const std::vector<Beacon>
   msg->header.stamp = ros::Time::now();
   msg->header.frame_id = MAP_FRAME;
   sensor_msgs::PointCloud2Modifier modifier(*msg);
-  modifier.setPointCloud2Fields(5, "x", 1, sensor_msgs::PointField::FLOAT32,
-                                   "y", 1, sensor_msgs::PointField::FLOAT32,
-                                   "z", 1, sensor_msgs::PointField::FLOAT32,
-                                   "sigma", 1, sensor_msgs::PointField::FLOAT32,
-                                   "id", 1, sensor_msgs::PointField::UINT32);
+  modifier.setPointCloud2Fields(5, "x", 1, sensor_msgs::PointField::FLOAT32, "y", 1, sensor_msgs::PointField::FLOAT32,
+                                "z", 1, sensor_msgs::PointField::FLOAT32, "sigma", 1, sensor_msgs::PointField::FLOAT32,
+                                "id", 1, sensor_msgs::PointField::UINT32);
   modifier.resize(beacons.size());
   sensor_msgs::PointCloud2Iterator<float> x_it(*msg, "x");
   sensor_msgs::PointCloud2Iterator<float> y_it(*msg, "y");
@@ -143,7 +141,10 @@ sensor_msgs::PointCloud2::ConstPtr beaconsToPointcloud(const std::vector<Beacon>
     *z_it = 10.0f;
     *sigma_it = static_cast<float>(BEACON_SIGMA);
     *id_it = id;
-    ++x_it; ++y_it; ++z_it; ++sigma_it, ++id_it;
+    ++x_it;
+    ++y_it;
+    ++z_it;
+    ++sigma_it, ++id_it;
   }
   return msg;
 }
@@ -243,8 +244,8 @@ Robot simulateRobotMotion(const Robot& previous_state, const ros::Time& now)
 sensor_msgs::Imu::ConstPtr simulateImu(const Robot& robot)
 {
   static std::random_device rd{};
-  static std::mt19937 generator{rd()};
-  static std::normal_distribution<> noise{0.0, IMU_SIGMA};
+  static std::mt19937 generator{ rd() };
+  static std::normal_distribution<> noise{ 0.0, IMU_SIGMA };
 
   auto msg = boost::make_shared<sensor_msgs::Imu>();
   msg->header.stamp = robot.stamp;
@@ -262,9 +263,9 @@ sensor_msgs::Imu::ConstPtr simulateImu(const Robot& robot)
 nav_msgs::Odometry::ConstPtr simulateWheelOdometry(const Robot& robot)
 {
   static std::random_device rd{};
-  static std::mt19937 generator{rd()};
-  static std::normal_distribution<> vx_noise{0.0, ODOM_VX_SIGMA};
-  static std::normal_distribution<> vyaw_noise{0.0, ODOM_VYAW_SIGMA};
+  static std::mt19937 generator{ rd() };
+  static std::normal_distribution<> vx_noise{ 0.0, ODOM_VX_SIGMA };
+  static std::normal_distribution<> vyaw_noise{ 0.0, ODOM_VYAW_SIGMA };
 
   auto msg = boost::make_shared<nav_msgs::Odometry>();
   msg->header.stamp = robot.stamp;
@@ -282,8 +283,8 @@ nav_msgs::Odometry::ConstPtr simulateWheelOdometry(const Robot& robot)
 sensor_msgs::PointCloud2::ConstPtr simulateRangeSensor(const Robot& robot, const std::vector<Beacon>& beacons)
 {
   static std::random_device rd{};
-  static std::mt19937 generator{rd()};
-  static std::normal_distribution<> noise{0.0, RANGE_SIGMA};
+  static std::mt19937 generator{ rd() };
+  static std::normal_distribution<> noise{ 0.0, RANGE_SIGMA };
 
   auto msg = boost::make_shared<sensor_msgs::PointCloud2>();
   msg->header.stamp = robot.stamp;
@@ -291,9 +292,8 @@ sensor_msgs::PointCloud2::ConstPtr simulateRangeSensor(const Robot& robot, const
 
   // Configure the pointcloud to have the following fields: id, range, sigma
   sensor_msgs::PointCloud2Modifier modifier(*msg);
-  modifier.setPointCloud2Fields(3, "id", 1, sensor_msgs::PointField::UINT32,
-                                   "range", 1, sensor_msgs::PointField::FLOAT64,
-                                   "sigma", 1, sensor_msgs::PointField::FLOAT64);
+  modifier.setPointCloud2Fields(3, "id", 1, sensor_msgs::PointField::UINT32, "range", 1,
+                                sensor_msgs::PointField::FLOAT64, "sigma", 1, sensor_msgs::PointField::FLOAT64);
 
   // Generate the simulated range to each known beacon
   modifier.resize(beacons.size());
@@ -311,7 +311,9 @@ sensor_msgs::PointCloud2::ConstPtr simulateRangeSensor(const Robot& robot, const
     *id_it = id;
     *range_it = range;
     *sigma_it = RANGE_SIGMA;
-    ++id_it; ++range_it; ++sigma_it;
+    ++id_it;
+    ++range_it;
+    ++sigma_it;
   }
   return msg;
 }
@@ -336,7 +338,7 @@ sensor_msgs::PointCloud2::ConstPtr simulateRangeSensor(const Robot& robot, const
  *  - The true position and velocity of the robot is published as a nav_msgs::Odometry message on the /ground_truth
  *    topic at 10Hz
  */
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
   ros::init(argc, argv, "range_sensor_simulator");
 

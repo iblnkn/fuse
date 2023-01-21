@@ -44,10 +44,8 @@
 
 #include <array>
 
-
 namespace fuse_variables
 {
-
 /**
  * @brief A Variable base class for fixed-sized variables
  *
@@ -77,10 +75,10 @@ public:
   /**
    * @brief Constructor
    */
-  explicit FixedSizeVariable(const fuse_core::UUID& uuid) :
-    fuse_core::Variable(uuid),
-    data_{}  // zero-initialize the data array
-  {}
+  explicit FixedSizeVariable(const fuse_core::UUID& uuid)
+    : fuse_core::Variable(uuid), data_{}  // zero-initialize the data array
+  {
+  }
 
   /**
    * @brief Destructor
@@ -92,27 +90,42 @@ public:
    *
    * The number of scalar values contained by this variable type is defined by the class template parameter \p N.
    */
-  size_t size() const override { return N; }
+  size_t size() const override
+  {
+    return N;
+  }
 
   /**
    * @brief Read-only access to the variable data
    */
-  const double* data() const override { return data_.data(); }
+  const double* data() const override
+  {
+    return data_.data();
+  }
 
   /**
    * @brief Read-write access to the variable data
    */
-  double* data() override { return data_.data(); }
+  double* data() override
+  {
+    return data_.data();
+  }
 
   /**
    * @brief Read-only access to the variable data as a std::array
    */
-  const std::array<double, N>& array() const { return data_; }
+  const std::array<double, N>& array() const
+  {
+    return data_;
+  }
 
   /**
    * @brief Read-write access to the variable data as a std::array
    */
-  std::array<double, N>& array() { return data_; }
+  std::array<double, N>& array()
+  {
+    return data_;
+  }
 
 protected:
   std::array<double, N> data_;  //!< Fixed-sized, contiguous memory for holding the variable data members
@@ -126,11 +139,11 @@ protected:
    * @param[in/out] archive - The archive object that holds the serialized class members
    * @param[in] version - The version of the archive being read/written. Generally unused.
    */
-  template<class Archive>
+  template <class Archive>
   void serialize(Archive& archive, const unsigned int /* version */)
   {
-    archive & boost::serialization::base_object<fuse_core::Variable>(*this);
-    archive & data_;
+    archive& boost::serialization::base_object<fuse_core::Variable>(*this);
+    archive& data_;
   }
 };
 

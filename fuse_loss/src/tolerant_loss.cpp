@@ -41,12 +41,9 @@
 #include <ostream>
 #include <string>
 
-
 namespace fuse_loss
 {
-
-TolerantLoss::TolerantLoss(const double a, const double b)
-  : a_(a), b_(b)
+TolerantLoss::TolerantLoss(const double a, const double b) : a_(a), b_(b)
 {
 }
 

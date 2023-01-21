@@ -46,7 +46,6 @@
 #include <ostream>
 #include <string>
 
-
 /**
  * @brief Implementation of the clone() member function for derived classes
  *
@@ -60,10 +59,10 @@
  * }
  * @endcode
  */
-#define FUSE_VARIABLE_CLONE_DEFINITION(...) \
-  fuse_core::Variable::UniquePtr clone() const override \
-  { \
-    return __VA_ARGS__::make_unique(*this); \
+#define FUSE_VARIABLE_CLONE_DEFINITION(...)                                                                            \
+  fuse_core::Variable::UniquePtr clone() const override                                                                \
+  {                                                                                                                    \
+    return __VA_ARGS__::make_unique(*this);                                                                            \
   }
 
 /**
@@ -79,22 +78,22 @@
  * }
  * @endcode
  */
-#define FUSE_VARIABLE_SERIALIZE_DEFINITION(...) \
-  void serialize(fuse_core::BinaryOutputArchive& archive) const override \
-  { \
-    archive << *this; \
-  }  /* NOLINT */ \
-  void serialize(fuse_core::TextOutputArchive& archive) const override \
-  { \
-    archive << *this; \
-  }  /* NOLINT */ \
-  void deserialize(fuse_core::BinaryInputArchive& archive) override \
-  { \
-    archive >> *this; \
-  }  /* NOLINT */ \
-  void deserialize(fuse_core::TextInputArchive& archive) override \
-  { \
-    archive >> *this; \
+#define FUSE_VARIABLE_SERIALIZE_DEFINITION(...)                                                                        \
+  void serialize(fuse_core::BinaryOutputArchive& archive) const override                                               \
+  {                                                                                                                    \
+    archive << *this;                                                                                                  \
+  } /* NOLINT */                                                                                                       \
+  void serialize(fuse_core::TextOutputArchive& archive) const override                                                 \
+  {                                                                                                                    \
+    archive << *this;                                                                                                  \
+  } /* NOLINT */                                                                                                       \
+  void deserialize(fuse_core::BinaryInputArchive& archive) override                                                    \
+  {                                                                                                                    \
+    archive >> *this;                                                                                                  \
+  } /* NOLINT */                                                                                                       \
+  void deserialize(fuse_core::TextInputArchive& archive) override                                                      \
+  {                                                                                                                    \
+    archive >> *this;                                                                                                  \
   }
 
 /**
@@ -112,17 +111,17 @@
  * }
  * @endcode
  */
-#define FUSE_VARIABLE_TYPE_DEFINITION(...) \
-  struct detail \
-  { \
-    static std::string type() \
-    { \
-      return boost::typeindex::stl_type_index::type_id<__VA_ARGS__>().pretty_name(); \
-    }  /* NOLINT */ \
-  };  /* NOLINT */ \
-  std::string type() const override \
-  { \
-    return detail::type(); \
+#define FUSE_VARIABLE_TYPE_DEFINITION(...)                                                                             \
+  struct detail                                                                                                        \
+  {                                                                                                                    \
+    static std::string type()                                                                                          \
+    {                                                                                                                  \
+      return boost::typeindex::stl_type_index::type_id<__VA_ARGS__>().pretty_name();                                   \
+    } /* NOLINT */                                                                                                     \
+  };  /* NOLINT */                                                                                                     \
+  std::string type() const override                                                                                    \
+  {                                                                                                                    \
+    return detail::type();                                                                                             \
   }
 
 /**
@@ -138,10 +137,10 @@
  * }
  * @endcode
  */
-#define FUSE_VARIABLE_DEFINITIONS(...) \
-  FUSE_SMART_PTR_DEFINITIONS(__VA_ARGS__) \
-  FUSE_VARIABLE_TYPE_DEFINITION(__VA_ARGS__) \
-  FUSE_VARIABLE_CLONE_DEFINITION(__VA_ARGS__) \
+#define FUSE_VARIABLE_DEFINITIONS(...)                                                                                 \
+  SMART_PTR_DEFINITIONS(__VA_ARGS__)                                                                                   \
+  FUSE_VARIABLE_TYPE_DEFINITION(__VA_ARGS__)                                                                           \
+  FUSE_VARIABLE_CLONE_DEFINITION(__VA_ARGS__)                                                                          \
   FUSE_VARIABLE_SERIALIZE_DEFINITION(__VA_ARGS__)
 
 /**
@@ -158,16 +157,14 @@
  * }
  * @endcode
  */
-#define FUSE_VARIABLE_DEFINITIONS_WITH_EIGEN(...) \
-  FUSE_SMART_PTR_DEFINITIONS_WITH_EIGEN(__VA_ARGS__) \
-  FUSE_VARIABLE_TYPE_DEFINITION(__VA_ARGS__) \
-  FUSE_VARIABLE_CLONE_DEFINITION(__VA_ARGS__) \
+#define FUSE_VARIABLE_DEFINITIONS_WITH_EIGEN(...)                                                                      \
+  SMART_PTR_DEFINITIONS_WITH_EIGEN(__VA_ARGS__)                                                                        \
+  FUSE_VARIABLE_TYPE_DEFINITION(__VA_ARGS__)                                                                           \
+  FUSE_VARIABLE_CLONE_DEFINITION(__VA_ARGS__)                                                                          \
   FUSE_VARIABLE_SERIALIZE_DEFINITION(__VA_ARGS__)
-
 
 namespace fuse_core
 {
-
 /**
  * @brief The Variable interface definition.
  *
@@ -221,7 +218,10 @@ public:
   /**
    * @brief Returns a UUID for this variable.
    */
-  const UUID& uuid() const { return uuid_; }
+  const UUID& uuid() const
+  {
+    return uuid_;
+  }
 
   /**
    * @brief Returns a unique name for this variable type.
@@ -254,7 +254,10 @@ public:
    * If you override the \p manifold() method, it is good practice to also override the \p tangentSize()
    * method. By default, the \p size() method is used for \p tangentSize() as well.
    */
-  virtual size_t tangentSize() const { return size(); }
+  virtual size_t tangentSize() const
+  {
+    return size();
+  }
 
   /**
    * @brief Read-only access to the variable data
@@ -415,17 +418,17 @@ private:
    * @param[in/out] archive - The archive object that holds the serialized class members
    * @param[in] version - The version of the archive being read/written. Generally unused.
    */
-  template<class Archive>
+  template <class Archive>
   void serialize(Archive& archive, const unsigned int /* version */)
   {
-    archive & uuid_;
+    archive& uuid_;
   }
 };
 
 /**
  * Stream operator implementation used for all derived Variable classes.
  */
-std::ostream& operator <<(std::ostream& stream, const Variable& variable);
+std::ostream& operator<<(std::ostream& stream, const Variable& variable);
 
 }  // namespace fuse_core
 

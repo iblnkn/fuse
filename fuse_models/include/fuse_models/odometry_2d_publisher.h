@@ -57,10 +57,9 @@
 
 namespace fuse_models
 {
-
 /**
- * @class Odometry2DPublisher plugin that publishes a nav_msgs::Odometry message and broadcasts a tf transform for optimized 2D
- * state data (combination of Position2DStamped, Orientation2DStamped, VelocityLinear2DStamped, and
+ * @class Odometry2DPublisher plugin that publishes a nav_msgs::Odometry message and broadcasts a tf transform for
+ * optimized 2D state data (combination of Position2DStamped, Orientation2DStamped, VelocityLinear2DStamped, and
  * VelocityAngular2DStamped, AccelerationLinear2DStamped).
  *
  * Parameters:
@@ -122,9 +121,8 @@ protected:
    * @param[in] transaction A Transaction object, describing the set of variables that have been added and/or removed
    * @param[in] graph       A read-only pointer to the graph object, allowing queries to be performed whenever needed
    */
-  void notifyCallback(
-    fuse_core::Transaction::ConstSharedPtr transaction,
-    fuse_core::Graph::ConstSharedPtr graph) override;
+  void notifyCallback(fuse_core::Transaction::ConstSharedPtr transaction,
+                      fuse_core::Graph::ConstSharedPtr graph) override;
 
   /**
    * @brief Perform any required operations before the first call to notify() occurs
@@ -151,17 +149,11 @@ protected:
    * @param[out] acceleration All of the fuse acceleration variable values get packed into this structure
    * @return true if the checks pass, false otherwise
    */
-  bool getState(
-    const fuse_core::Graph& graph,
-    const ros::Time& stamp,
-    const fuse_core::UUID& device_id,
-    fuse_core::UUID& position_uuid,
-    fuse_core::UUID& orientation_uuid,
-    fuse_core::UUID& velocity_linear_uuid,
-    fuse_core::UUID& velocity_angular_uuid,
-    fuse_core::UUID& acceleration_linear_uuid,
-    nav_msgs::Odometry& odometry,
-    geometry_msgs::AccelWithCovarianceStamped& acceleration);
+  bool getState(const fuse_core::Graph& graph, const ros::Time& stamp, const fuse_core::UUID& device_id,
+                fuse_core::UUID& position_uuid, fuse_core::UUID& orientation_uuid,
+                fuse_core::UUID& velocity_linear_uuid, fuse_core::UUID& velocity_angular_uuid,
+                fuse_core::UUID& acceleration_linear_uuid, nav_msgs::Odometry& odometry,
+                geometry_msgs::AccelWithCovarianceStamped& acceleration);
 
   /**
    * @brief Timer callback method for the filtered state publication and tf broadcasting
@@ -172,11 +164,9 @@ protected:
   /**
    * @brief Object that searches for the most recent common timestamp for a set of variables
    */
-  using Synchronizer = fuse_publishers::StampedVariableSynchronizer<fuse_variables::Orientation2DStamped,
-                                                                    fuse_variables::Position2DStamped,
-                                                                    fuse_variables::VelocityLinear2DStamped,
-                                                                    fuse_variables::VelocityAngular2DStamped,
-                                                                    fuse_variables::AccelerationLinear2DStamped>;
+  using Synchronizer = fuse_publishers::StampedVariableSynchronizer<
+      fuse_variables::Orientation2DStamped, fuse_variables::Position2DStamped, fuse_variables::VelocityLinear2DStamped,
+      fuse_variables::VelocityAngular2DStamped, fuse_variables::AccelerationLinear2DStamped>;
 
   fuse_core::UUID device_id_;  //!< The UUID of this device
 

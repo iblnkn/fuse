@@ -57,10 +57,8 @@
 #include <string>
 #include <vector>
 
-
 namespace fuse_constraints
 {
-
 /**
  * @brief A constraint that represents remaining marginal information on a set of variables
  *
@@ -93,14 +91,9 @@ public:
    * @param[in] last_A         Iterator pointing to one past the last A matrix
    * @param[in] b              The b vector of the marginal cost (of the form A*(x - x_bar) + b)
    */
-  template<typename VariableIterator, typename MatrixIterator>
-  MarginalConstraint(
-    const std::string& source,
-    VariableIterator first_variable,
-    VariableIterator last_variable,
-    MatrixIterator first_A,
-    MatrixIterator last_A,
-    const fuse_core::VectorXd& b);
+  template <typename VariableIterator, typename MatrixIterator>
+  MarginalConstraint(const std::string& source, VariableIterator first_variable, VariableIterator last_variable,
+                     MatrixIterator first_A, MatrixIterator last_A, const fuse_core::VectorXd& b);
 
   /**
    * @brief Destructor
@@ -110,17 +103,26 @@ public:
   /**
    * @brief Read-only access to the A matrices of the marginal constraint
    */
-  const std::vector<fuse_core::MatrixXd>& A() const { return A_; }
+  const std::vector<fuse_core::MatrixXd>& A() const
+  {
+    return A_;
+  }
 
   /**
    * @brief Read-only access to the b vector of the marginal constraint
    */
-  const fuse_core::VectorXd& b() const { return b_; }
+  const fuse_core::VectorXd& b() const
+  {
+    return b_;
+  }
 
   /**
    * @brief Read-only access to the variable linearization points, x_bar
    */
-  const std::vector<fuse_core::VectorXd>& x_bar() const { return x_bar_; }
+  const std::vector<fuse_core::VectorXd>& x_bar() const
+  {
+    return x_bar_;
+  }
 
   /**
    * @brief Read-only access to the variable manifolds
@@ -149,10 +151,10 @@ public:
   ceres::CostFunction* costFunction() const override;
 
 protected:
-  std::vector<fuse_core::MatrixXd> A_;  //!< The A matrices of the marginal constraint
-  fuse_core::VectorXd b_;  //!< The b vector of the marginal constraint
+  std::vector<fuse_core::MatrixXd> A_;                     //!< The A matrices of the marginal constraint
+  fuse_core::VectorXd b_;                                  //!< The b vector of the marginal constraint
   std::vector<fuse_core::Manifold::SharedPtr> manifolds_;  //!< The manifolds
-  std::vector<fuse_core::VectorXd> x_bar_;  //!< The linearization point of each involved variable
+  std::vector<fuse_core::VectorXd> x_bar_;                 //!< The linearization point of each involved variable
 
 private:
   // Allow Boost Serialization access to private methods
@@ -164,20 +166,19 @@ private:
    * @param[in/out] archive - The archive object that holds the serialized class members
    * @param[in] version - The version of the archive being read/written. Generally unused.
    */
-  template<class Archive>
+  template <class Archive>
   void serialize(Archive& archive, const unsigned int /* version */)
   {
-    archive & boost::serialization::base_object<fuse_core::Constraint>(*this);
-    archive & A_;
-    archive & b_;
-    archive & manifolds_;
-    archive & x_bar_;
+    archive& boost::serialization::base_object<fuse_core::Constraint>(*this);
+    archive& A_;
+    archive& b_;
+    archive& manifolds_;
+    archive& x_bar_;
   }
 };
 
 namespace detail
 {
-
 /**
  * @brief Return the UUID of the provided variable
  */
@@ -204,37 +205,29 @@ inline fuse_core::Manifold::SharedPtr const getManifold(const fuse_core::Variabl
 
 }  // namespace detail
 
-template<typename VariableIterator, typename MatrixIterator>
-MarginalConstraint::MarginalConstraint(
-  const std::string& source,
-  VariableIterator first_variable,
-  VariableIterator last_variable,
-  MatrixIterator first_A,
-  MatrixIterator last_A,
-  const fuse_core::VectorXd& b) :
-    Constraint(source,
-               boost::make_transform_iterator(first_variable, &fuse_constraints::detail::getUuid),
-               boost::make_transform_iterator(last_variable, &fuse_constraints::detail::getUuid)),
-    A_(first_A, last_A),
-    b_(b),
-    manifolds_(boost::make_transform_iterator(first_variable,
-                                                            &fuse_constraints::detail::getManifold),
-                             boost::make_transform_iterator(last_variable,
-                                                            &fuse_constraints::detail::getManifold)),
-    x_bar_(boost::make_transform_iterator(first_variable, &fuse_constraints::detail::getCurrentValue),
+template <typename VariableIterator, typename MatrixIterator>
+MarginalConstraint::MarginalConstraint(const std::string& source, VariableIterator first_variable,
+                                       VariableIterator last_variable, MatrixIterator first_A, MatrixIterator last_A,
+                                       const fuse_core::VectorXd& b)
+  : Constraint(source, boost::make_transform_iterator(first_variable, &fuse_constraints::detail::getUuid),
+               boost::make_transform_iterator(last_variable, &fuse_constraints::detail::getUuid))
+  , A_(first_A, last_A)
+  , b_(b)
+  , manifolds_(boost::make_transform_iterator(first_variable, &fuse_constraints::detail::getManifold),
+               boost::make_transform_iterator(last_variable, &fuse_constraints::detail::getManifold))
+  , x_bar_(boost::make_transform_iterator(first_variable, &fuse_constraints::detail::getCurrentValue),
            boost::make_transform_iterator(last_variable, &fuse_constraints::detail::getCurrentValue))
 {
   assert(!A_.empty());
   assert(A_.size() == x_bar_.size());
   assert(A_.size() == manifolds_.size());
   assert(b_.rows() > 0);
-  assert(std::all_of(A_.begin(), A_.end(), [this](const auto& A){ return A.rows() == this->b_.rows(); }));  // NOLINT
+  assert(std::all_of(A_.begin(), A_.end(), [this](const auto& A) { return A.rows() == this->b_.rows(); }));
   assert(std::all_of(boost::make_zip_iterator(boost::make_tuple(A_.begin(), first_variable)),
                      boost::make_zip_iterator(boost::make_tuple(A_.end(), last_variable)),
-                     [](const boost::tuple<const fuse_core::MatrixXd&, const fuse_core::Variable&>& tuple)  // NOLINT
-                     {
+                     [](const boost::tuple<const fuse_core::MatrixXd&, const fuse_core::Variable&>& tuple) {
                        return static_cast<size_t>(tuple.get<0>().cols()) == tuple.get<1>().tangentSize();
-                     }));  // NOLINT
+                     }));
 }
 
 }  // namespace fuse_constraints

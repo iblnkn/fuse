@@ -39,15 +39,13 @@
 #include <fuse_core/transaction_deserializer.h>
 #include <ros/ros.h>
 
-
 /**
  * Class that subscribes to the 'graph' and 'transaction' topics and prints the objects to stdout
  */
 class FuseEcho
 {
 public:
-  explicit FuseEcho(const ros::NodeHandle& node_handle = ros::NodeHandle()) :
-    node_handle_(node_handle)
+  explicit FuseEcho(const ros::NodeHandle& node_handle = ros::NodeHandle()) : node_handle_(node_handle)
   {
     // Subscribe to the constraint topic
     graph_subscriber_ = node_handle_.subscribe("graph", 100, &FuseEcho::graphCallback, this);
@@ -80,7 +78,7 @@ private:
   }
 };
 
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
   ros::init(argc, argv, "fuse_echo", ros::init_options::AnonymousName);
 

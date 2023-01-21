@@ -46,9 +46,7 @@ class Unicycle2DStateCostFunction : public benchmark::Fixture
 public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
-  Unicycle2DStateCostFunction()
-    : jacobians(num_parameter_blocks)
-    , J(num_parameter_blocks)
+  Unicycle2DStateCostFunction() : jacobians(num_parameter_blocks), J(num_parameter_blocks)
   {
     for (size_t i = 0; i < num_parameter_blocks; ++i)
     {
@@ -108,16 +106,16 @@ const fuse_core::Matrix8d Unicycle2DStateCostFunction::covariance =
 
 // Parameter blocks
 const double Unicycle2DStateCostFunction::position1[] = { 0.0, 0.0 };
-const double Unicycle2DStateCostFunction::yaw1[] = {0.0};
-const double Unicycle2DStateCostFunction::vel_linear1[] = {1.0, 0.0};
-const double Unicycle2DStateCostFunction::vel_yaw1[] = {1.570796327};
-const double Unicycle2DStateCostFunction::acc_linear1[] = {1.0, 0.0};
+const double Unicycle2DStateCostFunction::yaw1[] = { 0.0 };
+const double Unicycle2DStateCostFunction::vel_linear1[] = { 1.0, 0.0 };
+const double Unicycle2DStateCostFunction::vel_yaw1[] = { 1.570796327 };
+const double Unicycle2DStateCostFunction::acc_linear1[] = { 1.0, 0.0 };
 
-const double Unicycle2DStateCostFunction::position2[] = {0.105, 0.0};
-const double Unicycle2DStateCostFunction::yaw2[] = {0.1570796327};
-const double Unicycle2DStateCostFunction::vel_linear2[] = {1.1, 0.0};
-const double Unicycle2DStateCostFunction::vel_yaw2[] = {1.570796327};
-const double Unicycle2DStateCostFunction::acc_linear2[] = {1.0, 0.0};
+const double Unicycle2DStateCostFunction::position2[] = { 0.105, 0.0 };
+const double Unicycle2DStateCostFunction::yaw2[] = { 0.1570796327 };
+const double Unicycle2DStateCostFunction::vel_linear2[] = { 1.1, 0.0 };
+const double Unicycle2DStateCostFunction::vel_yaw2[] = { 1.570796327 };
+const double Unicycle2DStateCostFunction::acc_linear2[] = { 1.0, 0.0 };
 
 // Analytic cost function
 const fuse_core::Matrix8d Unicycle2DStateCostFunction::sqrt_information(covariance.inverse().llt().matrixU());

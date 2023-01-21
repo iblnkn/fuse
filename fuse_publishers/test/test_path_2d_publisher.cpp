@@ -49,7 +49,6 @@
 
 #include <vector>
 
-
 /**
  * @brief Test fixture for the Path2DPublisher
  *
@@ -59,12 +58,12 @@
 class Path2DPublisherTestFixture : public ::testing::Test
 {
 public:
-  Path2DPublisherTestFixture() :
-    private_node_handle_("~"),
-    graph_(fuse_graphs::HashGraph::make_shared()),
-    transaction_(fuse_core::Transaction::make_shared()),
-    received_path_msg_(false),
-    received_pose_array_msg_(false)
+  Path2DPublisherTestFixture()
+    : private_node_handle_("~")
+    , graph_(fuse_graphs::HashGraph::make_shared())
+    , transaction_(fuse_core::Transaction::make_shared())
+    , received_path_msg_(false)
+    , received_pose_array_msg_(false)
   {
     // Add a few pose variables
     auto position1 = fuse_variables::Position2DStamped::make_shared(ros::Time(1234, 10));
@@ -82,12 +81,12 @@ public:
     position3->y() = 2.03;
     auto orientation3 = fuse_variables::Orientation2DStamped::make_shared(ros::Time(1235, 9));
     orientation3->yaw() = 3.03;
-    auto position4 = fuse_variables::Position2DStamped::make_shared(ros::Time(1235, 11),
-                                                                    fuse_core::uuid::generate("kitt"));
+    auto position4 =
+        fuse_variables::Position2DStamped::make_shared(ros::Time(1235, 11), fuse_core::uuid::generate("kitt"));
     position4->x() = 1.04;
     position4->y() = 2.04;
-    auto orientation4 = fuse_variables::Orientation2DStamped::make_shared(ros::Time(1235, 11),
-                                                                          fuse_core::uuid::generate("kitt"));
+    auto orientation4 =
+        fuse_variables::Orientation2DStamped::make_shared(ros::Time(1235, 11), fuse_core::uuid::generate("kitt"));
     orientation4->yaw() = 3.04;
 
     transaction_->addInvolvedStamp(position1->stamp());
@@ -110,27 +109,27 @@ public:
     fuse_core::Vector3d mean1;
     mean1 << 1.01, 2.01, 3.01;
     fuse_core::Matrix3d cov1;
-    cov1 << 1.01, 0.0, 0.0,  0.0, 2.01, 0.0,  0.0, 0.0, 3.01;
-    auto constraint1 = fuse_constraints::AbsolutePose2DStampedConstraint::make_shared(
-      "test", *position1, *orientation1, mean1, cov1);
+    cov1 << 1.01, 0.0, 0.0, 0.0, 2.01, 0.0, 0.0, 0.0, 3.01;
+    auto constraint1 =
+        fuse_constraints::AbsolutePose2DStampedConstraint::make_shared("test", *position1, *orientation1, mean1, cov1);
     fuse_core::Vector3d mean2;
     mean2 << 1.02, 2.02, 3.02;
     fuse_core::Matrix3d cov2;
-    cov2 << 1.02, 0.0, 0.0,  0.0, 2.02, 0.0,  0.0, 0.0, 3.02;
-    auto constraint2 = fuse_constraints::AbsolutePose2DStampedConstraint::make_shared(
-      "test", *position2, *orientation2, mean2, cov2);
+    cov2 << 1.02, 0.0, 0.0, 0.0, 2.02, 0.0, 0.0, 0.0, 3.02;
+    auto constraint2 =
+        fuse_constraints::AbsolutePose2DStampedConstraint::make_shared("test", *position2, *orientation2, mean2, cov2);
     fuse_core::Vector3d mean3;
     mean3 << 1.03, 2.03, 3.03;
     fuse_core::Matrix3d cov3;
-    cov3 << 1.03, 0.0, 0.0,  0.0, 2.03, 0.0,  0.0, 0.0, 3.03;
-    auto constraint3 = fuse_constraints::AbsolutePose2DStampedConstraint::make_shared(
-      "test", *position3, *orientation3, mean3, cov3);
+    cov3 << 1.03, 0.0, 0.0, 0.0, 2.03, 0.0, 0.0, 0.0, 3.03;
+    auto constraint3 =
+        fuse_constraints::AbsolutePose2DStampedConstraint::make_shared("test", *position3, *orientation3, mean3, cov3);
     fuse_core::Vector3d mean4;
     mean4 << 1.04, 2.04, 3.04;
     fuse_core::Matrix3d cov4;
-    cov4 << 1.04, 0.0, 0.0,  0.0, 2.04, 0.0,  0.0, 0.0, 3.04;
-    auto constraint4 = fuse_constraints::AbsolutePose2DStampedConstraint::make_shared(
-      "test", *position4, *orientation4, mean4, cov4);
+    cov4 << 1.04, 0.0, 0.0, 0.0, 2.04, 0.0, 0.0, 0.0, 3.04;
+    auto constraint4 =
+        fuse_constraints::AbsolutePose2DStampedConstraint::make_shared("test", *position4, *orientation4, mean4, cov4);
     transaction_->addConstraint(constraint1);
     transaction_->addConstraint(constraint2);
     transaction_->addConstraint(constraint3);
@@ -175,18 +174,14 @@ TEST_F(Path2DPublisherTestFixture, PublishPath)
   publisher.start();
 
   // Subscribe to the "path" topic
-  ros::Subscriber subscriber1 = private_node_handle_.subscribe(
-    "test_publisher/path",
-    1,
-    &Path2DPublisherTestFixture::pathCallback,
-    reinterpret_cast<Path2DPublisherTestFixture*>(this));
+  ros::Subscriber subscriber1 =
+      private_node_handle_.subscribe("test_publisher/path", 1, &Path2DPublisherTestFixture::pathCallback,
+                                     reinterpret_cast<Path2DPublisherTestFixture*>(this));
 
   // Subscribe to the "pose_array" topic
-  ros::Subscriber subscriber2 = private_node_handle_.subscribe(
-    "test_publisher/pose_array",
-    1,
-    &Path2DPublisherTestFixture::poseArrayCallback,
-    reinterpret_cast<Path2DPublisherTestFixture*>(this));
+  ros::Subscriber subscriber2 =
+      private_node_handle_.subscribe("test_publisher/pose_array", 1, &Path2DPublisherTestFixture::poseArrayCallback,
+                                     reinterpret_cast<Path2DPublisherTestFixture*>(this));
 
   // Send the graph to the Publisher to trigger message publishing
   publisher.notify(transaction_, graph_);
@@ -223,7 +218,6 @@ TEST_F(Path2DPublisherTestFixture, PublishPath)
   EXPECT_NEAR(2.02, path_msg_.poses[2].pose.position.y, 1.0e-9);
   EXPECT_NEAR(0.00, path_msg_.poses[2].pose.position.z, 1.0e-9);
   EXPECT_NEAR(3.02, tf2::getYaw(path_msg_.poses[2].pose.orientation), 1.0e-9);
-
 
   ASSERT_TRUE(received_pose_array_msg_);
   EXPECT_EQ(ros::Time(1235, 10), pose_array_msg_.header.stamp);

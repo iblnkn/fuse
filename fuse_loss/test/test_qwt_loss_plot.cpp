@@ -52,7 +52,6 @@
 #include <memory>
 #include <vector>
 
-
 class QwtLossPlotTest : public testing::Test
 {
 public:
@@ -79,19 +78,15 @@ public:
 TEST_F(QwtLossPlotTest, PlotLossQt)
 {
   // Create losses
-  std::vector<std::shared_ptr<fuse_core::Loss>> losses{ {  // NOLINT(whitespace/braces)
-    std::make_shared<fuse_loss::ArctanLoss>(),
-    std::make_shared<fuse_loss::CauchyLoss>(),
-    std::make_shared<fuse_loss::DCSLoss>(),
-    std::make_shared<fuse_loss::FairLoss>(),
-    std::make_shared<fuse_loss::GemanMcClureLoss>(),
-    std::make_shared<fuse_loss::HuberLoss>(),
-    std::make_shared<fuse_loss::SoftLOneLoss>(),
-    std::make_shared<fuse_loss::TolerantLoss>(),
-    std::make_shared<fuse_loss::TrivialLoss>(),
-    std::make_shared<fuse_loss::TukeyLoss>(),
-    std::make_shared<fuse_loss::WelschLoss>()
-  } };
+  std::vector<std::shared_ptr<fuse_core::Loss>> losses{
+    { // NOLINT(whitespace/braces)
+      std::make_shared<fuse_loss::ArctanLoss>(), std::make_shared<fuse_loss::CauchyLoss>(),
+      std::make_shared<fuse_loss::DCSLoss>(), std::make_shared<fuse_loss::FairLoss>(),
+      std::make_shared<fuse_loss::GemanMcClureLoss>(), std::make_shared<fuse_loss::HuberLoss>(),
+      std::make_shared<fuse_loss::SoftLOneLoss>(), std::make_shared<fuse_loss::TolerantLoss>(),
+      std::make_shared<fuse_loss::TrivialLoss>(), std::make_shared<fuse_loss::TukeyLoss>(),
+      std::make_shared<fuse_loss::WelschLoss>() }
+  };
 
   // Create a Qt application:
   int argc = 0;

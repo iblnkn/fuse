@@ -36,13 +36,9 @@
 #include <Eigen/Core>
 #include <glog/logging.h>
 
-
 namespace fuse_constraints
 {
-
-NormalDelta::NormalDelta(const fuse_core::MatrixXd& A, const fuse_core::VectorXd& b) :
-  A_(A),
-  b_(b)
+NormalDelta::NormalDelta(const fuse_core::MatrixXd& A, const fuse_core::VectorXd& b) : A_(A), b_(b)
 {
   CHECK_GT(b_.rows(), 0);
   CHECK_GT(A_.rows(), 0);
@@ -52,10 +48,7 @@ NormalDelta::NormalDelta(const fuse_core::MatrixXd& A, const fuse_core::VectorXd
   mutable_parameter_block_sizes()->push_back(b_.rows());
 }
 
-bool NormalDelta::Evaluate(
-  double const* const* parameters,
-  double* residuals,
-  double** jacobians) const
+bool NormalDelta::Evaluate(double const* const* parameters, double* residuals, double** jacobians) const
 {
   Eigen::Map<const fuse_core::VectorXd> x0(parameters[0], parameter_block_sizes()[0]);
   Eigen::Map<const fuse_core::VectorXd> x1(parameters[1], parameter_block_sizes()[1]);

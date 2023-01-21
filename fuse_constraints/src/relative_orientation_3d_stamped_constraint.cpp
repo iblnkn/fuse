@@ -45,39 +45,31 @@
 
 #include <string>
 
-
 namespace fuse_constraints
 {
-
 RelativeOrientation3DStampedConstraint::RelativeOrientation3DStampedConstraint(
-  const std::string& source,
-  const fuse_variables::Orientation3DStamped& orientation1,
-  const fuse_variables::Orientation3DStamped& orientation2,
-  const fuse_core::Vector4d& delta,
-  const fuse_core::Matrix3d& covariance) :
-    fuse_core::Constraint(source, {orientation1.uuid(), orientation2.uuid()}),  // NOLINT(whitespace/braces)
-    delta_(delta),
-    sqrt_information_(covariance.inverse().llt().matrixU())
+    const std::string& source, const fuse_variables::Orientation3DStamped& orientation1,
+    const fuse_variables::Orientation3DStamped& orientation2, const fuse_core::Vector4d& delta,
+    const fuse_core::Matrix3d& covariance)
+  : fuse_core::Constraint(source, { orientation1.uuid(), orientation2.uuid() })
+  , delta_(delta)
+  , sqrt_information_(covariance.inverse().llt().matrixU())
 {
 }
 
 RelativeOrientation3DStampedConstraint::RelativeOrientation3DStampedConstraint(
-  const std::string& source,
-  const fuse_variables::Orientation3DStamped& orientation1,
-  const fuse_variables::Orientation3DStamped& orientation2,
-  const Eigen::Quaterniond& delta,
-  const fuse_core::Matrix3d& covariance) :
-    RelativeOrientation3DStampedConstraint(source, orientation1, orientation2, toEigen(delta), covariance)
+    const std::string& source, const fuse_variables::Orientation3DStamped& orientation1,
+    const fuse_variables::Orientation3DStamped& orientation2, const Eigen::Quaterniond& delta,
+    const fuse_core::Matrix3d& covariance)
+  : RelativeOrientation3DStampedConstraint(source, orientation1, orientation2, toEigen(delta), covariance)
 {
 }
 
 RelativeOrientation3DStampedConstraint::RelativeOrientation3DStampedConstraint(
-  const std::string& source,
-  const fuse_variables::Orientation3DStamped& orientation1,
-  const fuse_variables::Orientation3DStamped& orientation2,
-  const geometry_msgs::Quaternion& delta,
-  const std::array<double, 9>& covariance) :
-    RelativeOrientation3DStampedConstraint(source, orientation1, orientation2, toEigen(delta), toEigen(covariance))
+    const std::string& source, const fuse_variables::Orientation3DStamped& orientation1,
+    const fuse_variables::Orientation3DStamped& orientation2, const geometry_msgs::Quaternion& delta,
+    const std::array<double, 9>& covariance)
+  : RelativeOrientation3DStampedConstraint(source, orientation1, orientation2, toEigen(delta), toEigen(covariance))
 {
 }
 
@@ -106,7 +98,7 @@ void RelativeOrientation3DStampedConstraint::print(std::ostream& stream) const
 ceres::CostFunction* RelativeOrientation3DStampedConstraint::costFunction() const
 {
   return new ceres::AutoDiffCostFunction<NormalDeltaOrientation3DCostFunctor, 3, 4, 4>(
-    new NormalDeltaOrientation3DCostFunctor(sqrt_information_, delta_));
+      new NormalDeltaOrientation3DCostFunctor(sqrt_information_, delta_));
 }
 
 fuse_core::Vector4d RelativeOrientation3DStampedConstraint::toEigen(const Eigen::Quaterniond& quaternion)

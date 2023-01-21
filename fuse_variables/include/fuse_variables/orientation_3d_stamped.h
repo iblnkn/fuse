@@ -50,10 +50,8 @@
 
 #include <ostream>
 
-
 namespace fuse_variables
 {
-
 /**
  * @brief A Manifold class for 3D Orientations.
  *
@@ -69,8 +67,8 @@ public:
    *
    * ceres/rotation.h is missing this function for some reason.
    */
-  template<typename T> inline
-  static void QuaternionInverse(const T in[4], T out[4])
+  template <typename T>
+  inline static void QuaternionInverse(const T in[4], T out[4])
   {
     out[0] = in[0];
     out[1] = -in[1];
@@ -88,36 +86,36 @@ public:
     return 3;
   }
 
-  bool Plus(
-    const double* x,
-    const double* delta,
-    double* x_plus_delta) const override
+  bool Plus(const double* x, const double* delta, double* x_plus_delta) const override
   {
     double q_delta[4];
     ceres::AngleAxisToQuaternion(delta, q_delta);
     ceres::QuaternionProduct(x, q_delta, x_plus_delta);
     return true;
-}
+  }
 
-  bool PlusJacobian(
-    const double* x,
-    double* jacobian) const override
+  bool PlusJacobian(const double* x, double* jacobian) const override
   {
     double x0 = x[0] / 2;
     double x1 = x[1] / 2;
     double x2 = x[2] / 2;
     double x3 = x[3] / 2;
-    jacobian[0] = -x1; jacobian[1]  = -x2; jacobian[2]  = -x3;  // NOLINT
-    jacobian[3] =  x0; jacobian[4]  = -x3; jacobian[5]  =  x2;  // NOLINT
-    jacobian[6] =  x3; jacobian[7]  =  x0; jacobian[8]  = -x1;  // NOLINT
-    jacobian[9] = -x2; jacobian[10] =  x1; jacobian[11] =  x0;  // NOLINT
+    jacobian[0] = -x1;
+    jacobian[1] = -x2;
+    jacobian[2] = -x3;  // NOLINT
+    jacobian[3] = x0;
+    jacobian[4] = -x3;
+    jacobian[5] = x2;  // NOLINT
+    jacobian[6] = x3;
+    jacobian[7] = x0;
+    jacobian[8] = -x1;  // NOLINT
+    jacobian[9] = -x2;
+    jacobian[10] = x1;
+    jacobian[11] = x0;  // NOLINT
     return true;
   }
 
-  bool Minus(
-    const double* x2,
-    const double* x1,
-    double* delta) const override
+  bool Minus(const double* x2, const double* x1, double* delta) const override
   {
     double x1_inverse[4];
     QuaternionInverse(x1, x1_inverse);
@@ -127,17 +125,24 @@ public:
     return true;
   }
 
-  bool MinusJacobian(
-    const double* x,
-    double* jacobian) const override
+  bool MinusJacobian(const double* x, double* jacobian) const override
   {
     double x0 = x[0] * 2;
     double x1 = x[1] * 2;
     double x2 = x[2] * 2;
     double x3 = x[3] * 2;
-    jacobian[0] = -x1; jacobian[1]  =  x0; jacobian[2]  =  x3;  jacobian[3]  = -x2;  // NOLINT
-    jacobian[4] = -x2; jacobian[5]  = -x3; jacobian[6]  =  x0;  jacobian[7]  =  x1;  // NOLINT
-    jacobian[8] = -x3; jacobian[9]  =  x2; jacobian[10] = -x1;  jacobian[11] =  x0;  // NOLINT
+    jacobian[0] = -x1;
+    jacobian[1] = x0;
+    jacobian[2] = x3;
+    jacobian[3] = -x2;  // NOLINT
+    jacobian[4] = -x2;
+    jacobian[5] = -x3;
+    jacobian[6] = x0;
+    jacobian[7] = x1;  // NOLINT
+    jacobian[8] = -x3;
+    jacobian[9] = x2;
+    jacobian[10] = -x1;
+    jacobian[11] = x0;  // NOLINT
     return true;
   }
 
@@ -151,10 +156,10 @@ private:
    * @param[in/out] archive - The archive object that holds the serialized class members
    * @param[in] version - The version of the archive being read/written. Generally unused.
    */
-  template<class Archive>
+  template <class Archive>
   void serialize(Archive& archive, const unsigned int /* version */)
   {
-    archive & boost::serialization::base_object<fuse_core::Manifold>(*this);
+    archive& boost::serialization::base_object<fuse_core::Manifold>(*this);
   }
 };
 
@@ -165,7 +170,7 @@ private:
  * This is commonly used to represent a robot orientation in single or multi-robot systems. The UUID of this class is
  * static after construction. As such, the timestamp and device ID cannot be modified. The value of the orientation
  * can be modified.
- * 
+ *
  * The internal representation for this is different from the typical ROS representation, as w is the first component.
  * This is necessary to use the Ceres manifold for quaternions.
  */
@@ -211,57 +216,90 @@ public:
   /**
    * @brief Read-write access to the quaternion w component
    */
-  double& w() { return data_[W]; }
+  double& w()
+  {
+    return data_[W];
+  }
 
   /**
    * @brief Read-only access to the quaternion w component
    */
-  const double& w() const { return data_[W]; }
+  const double& w() const
+  {
+    return data_[W];
+  }
 
   /**
    * @brief Read-write access to the quaternion x component
    */
-  double& x() { return data_[X]; }
+  double& x()
+  {
+    return data_[X];
+  }
 
   /**
    * @brief Read-only access to the quaternion x component
    */
-  const double& x() const { return data_[X]; }
+  const double& x() const
+  {
+    return data_[X];
+  }
 
   /**
    * @brief Read-write access to the quaternion y component
    */
-  double& y() { return data_[Y]; }
+  double& y()
+  {
+    return data_[Y];
+  }
 
   /**
    * @brief Read-only access to the quaternion y component
    */
-  const double& y() const { return data_[Y]; }
+  const double& y() const
+  {
+    return data_[Y];
+  }
 
   /**
    * @brief Read-write access to the quaternion z component
    */
-  double& z() { return data_[Z]; }
+  double& z()
+  {
+    return data_[Z];
+  }
 
   /**
    * @brief Read-only access to the quaternion z component
    */
-  const double& z() const { return data_[Z]; }
+  const double& z() const
+  {
+    return data_[Z];
+  }
 
   /**
    * @brief Read-only access to quaternion's Euler roll angle component
    */
-  double roll() { return fuse_core::getRoll(w(), x(), y(), z()); }
+  double roll()
+  {
+    return fuse_core::getRoll(w(), x(), y(), z());
+  }
 
   /**
    * @brief Read-only access to quaternion's Euler pitch angle component
    */
-  double pitch() { return fuse_core::getPitch(w(), x(), y(), z()); }
+  double pitch()
+  {
+    return fuse_core::getPitch(w(), x(), y(), z());
+  }
 
   /**
    * @brief Read-only access to quaternion's Euler yaw angle component
    */
-  double yaw() { return fuse_core::getYaw(w(), x(), y(), z()); }
+  double yaw()
+  {
+    return fuse_core::getYaw(w(), x(), y(), z());
+  }
 
   /**
    * @brief Print a human-readable description of the variable to the provided stream.
@@ -276,7 +314,10 @@ public:
    * While a quaternion has 4 parameters, a 3D rotation only has 3 degrees of freedom. Hence, the manifold
    *  space is only size 3.
    */
-  size_t tangentSize() const override { return 3u; }
+  size_t tangentSize() const override
+  {
+    return 3u;
+  }
 
   /**
    * @brief Provides a Ceres manifold for the quaternion
@@ -295,11 +336,11 @@ private:
    * @param[in/out] archive - The archive object that holds the serialized class members
    * @param[in] version - The version of the archive being read/written. Generally unused.
    */
-  template<class Archive>
+  template <class Archive>
   void serialize(Archive& archive, const unsigned int /* version */)
   {
-    archive & boost::serialization::base_object<FixedSizeVariable<SIZE>>(*this);
-    archive & boost::serialization::base_object<Stamped>(*this);
+    archive& boost::serialization::base_object<FixedSizeVariable<SIZE>>(*this);
+    archive& boost::serialization::base_object<Stamped>(*this);
   }
 };
 

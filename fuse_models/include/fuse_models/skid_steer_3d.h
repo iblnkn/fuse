@@ -53,10 +53,8 @@
 #include <utility>
 #include <vector>
 
-
 namespace fuse_models
 {
-
 /**
  * @brief A fuse_models 2D kinematic model that generates kinematic constraints between provided time stamps, and adds
  * those constraints to the fuse graph.
@@ -97,16 +95,16 @@ protected:
    */
   struct StateHistoryElement
   {
-    fuse_core::UUID position_uuid;        //!< The uuid of the associated position variable
-    fuse_core::UUID orientation_uuid;             //!< The uuid of the associated orientation variable
-    fuse_core::UUID vel_linear_uuid;      //!< The uuid of the associated linear velocity variable
-    fuse_core::UUID vel_angular_uuid;         //!< The uuid of the associated angular velocity variable
-    fuse_core::UUID acc_linear_uuid;      //!< The uuid of the associated linear acceleration variable
-    fuse_core::UUID acc_angular_uuid;      //!< The uuid of the associated linear acceleration variable
-    geometry_msgs::Pose pose;               //!< Map-frame pose
-    geometry_msgs::Twist velocity_linear;      //!< Body-frame linear velocity
+    fuse_core::UUID position_uuid;              //!< The uuid of the associated position variable
+    fuse_core::UUID orientation_uuid;           //!< The uuid of the associated orientation variable
+    fuse_core::UUID vel_linear_uuid;            //!< The uuid of the associated linear velocity variable
+    fuse_core::UUID vel_angular_uuid;           //!< The uuid of the associated angular velocity variable
+    fuse_core::UUID acc_linear_uuid;            //!< The uuid of the associated linear acceleration variable
+    fuse_core::UUID acc_angular_uuid;           //!< The uuid of the associated linear acceleration variable
+    geometry_msgs::Pose pose;                   //!< Map-frame pose
+    geometry_msgs::Twist velocity_linear;       //!< Body-frame linear velocity
     geometry_msgs::Twist velocity_angular;      //!< Body-frame linear velocity
-    geometry_msgs::Accel acceleration_linear;  //!< Body-frame linear acceleration
+    geometry_msgs::Accel acceleration_linear;   //!< Body-frame linear acceleration
     geometry_msgs::Accel acceleration_angular;  //!< Body-frame linear acceleration
 
     void print(std::ostream& stream = std::cout) const;
@@ -142,11 +140,9 @@ protected:
    * @param[out] variables       One or more variables at both the \p beginning_stamp and \p ending_stamp. The
    *                             variables should include initial values for the optimizer.
    */
-  void generateMotionModel(
-    const ros::Time& beginning_stamp,
-    const ros::Time& ending_stamp,
-    std::vector<fuse_core::Constraint::SharedPtr>& constraints,
-    std::vector<fuse_core::Variable::SharedPtr>& variables);
+  void generateMotionModel(const ros::Time& beginning_stamp, const ros::Time& ending_stamp,
+                           std::vector<fuse_core::Constraint::SharedPtr>& constraints,
+                           std::vector<fuse_core::Variable::SharedPtr>& variables);
 
   /**
    * @brief Callback fired in the local callback queue thread(s) whenever a new Graph is received from the optimizer
@@ -170,10 +166,8 @@ protected:
    * @param[in] state_history The state history object to be updated
    * @param[in] buffer_length States older than this in the history will be pruned
    */
-  static void updateStateHistoryEstimates(
-    const fuse_core::Graph& graph,
-    StateHistory& state_history,
-    const ros::Duration& buffer_length);
+  static void updateStateHistoryEstimates(const fuse_core::Graph& graph, StateHistory& state_history,
+                                          const ros::Duration& buffer_length);
 
   /**
    * @brief Validate the motion model state #1, state #2 and process noise covariance
@@ -191,7 +185,7 @@ protected:
   ros::Duration buffer_length_;                    //!< The length of the state history
   fuse_core::UUID device_id_;                      //!< The UUID of the device to be published
   fuse_core::TimestampManager timestamp_manager_;  //!< Tracks timestamps and previously created motion model segments
-  fuse_core::Matrix18d process_noise_covariance_;   //!< Process noise covariance matrix
+  fuse_core::Matrix18d process_noise_covariance_;  //!< Process noise covariance matrix
   bool scale_process_noise_{ false };              //!< Whether to scale the process noise covariance pose by the norm
                                                    //!< of the current state twist
   double velocity_norm_min_{ 1e-4 };               //!< The minimum velocity/twist norm allowed when scaling the

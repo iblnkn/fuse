@@ -44,18 +44,16 @@
 #include <pluginlib/class_list_macros.h>
 #include <ros/ros.h>
 
-
 // Register this publisher with ROS as a plugin.
 PLUGINLIB_EXPORT_CLASS(fuse_publishers::SerializedPublisher, fuse_core::Publisher);
 
 namespace fuse_publishers
 {
-
-SerializedPublisher::SerializedPublisher() :
-  fuse_core::AsyncPublisher(1),
-  frame_id_("map"),
-  graph_publisher_throttled_callback_(
-      std::bind(&SerializedPublisher::graphPublisherCallback, this, std::placeholders::_1, std::placeholders::_2))
+SerializedPublisher::SerializedPublisher()
+  : fuse_core::AsyncPublisher(1)
+  , frame_id_("map")
+  , graph_publisher_throttled_callback_(
+        std::bind(&SerializedPublisher::graphPublisherCallback, this, std::placeholders::_1, std::placeholders::_2))
 {
 }
 
@@ -81,9 +79,8 @@ void SerializedPublisher::onInit()
   transaction_publisher_ = private_node_handle_.advertise<fuse_msgs::SerializedTransaction>("transaction", 1, latch);
 }
 
-void SerializedPublisher::notifyCallback(
-  fuse_core::Transaction::ConstSharedPtr transaction,
-  fuse_core::Graph::ConstSharedPtr graph)
+void SerializedPublisher::notifyCallback(fuse_core::Transaction::ConstSharedPtr transaction,
+                                         fuse_core::Graph::ConstSharedPtr graph)
 {
   const auto& stamp = transaction->stamp();
   if (graph_publisher_.getNumSubscribers() > 0)

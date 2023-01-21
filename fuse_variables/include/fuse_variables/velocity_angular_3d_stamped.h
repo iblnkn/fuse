@@ -47,10 +47,8 @@
 
 #include <ostream>
 
-
 namespace fuse_variables
 {
-
 /**
  * @brief Variable representing a 3D angular velocity (vroll, vpitch, vyaw) at a specific time, with a specific piece
  * of hardware.
@@ -89,32 +87,50 @@ public:
   /**
    * @brief Read-write access to the roll (X-axis) angular velocity.
    */
-  double& roll() { return data_[ROLL]; }
+  double& roll()
+  {
+    return data_[ROLL];
+  }
 
   /**
    * @brief Read-only access to the roll (X-axis) angular velocity.
    */
-  const double& roll() const { return data_[ROLL]; }
+  const double& roll() const
+  {
+    return data_[ROLL];
+  }
 
   /**
    * @brief Read-write access to the pitch (Y-axis) angular velocity.
    */
-  double& pitch() { return data_[PITCH]; }
+  double& pitch()
+  {
+    return data_[PITCH];
+  }
 
   /**
    * @brief Read-only access to the pitch (Y-axis) angular velocity.
    */
-  const double& pitch() const { return data_[PITCH]; }
+  const double& pitch() const
+  {
+    return data_[PITCH];
+  }
 
   /**
    * @brief Read-write access to the yaw (Z-axis) angular velocity.
    */
-  double& yaw() { return data_[YAW]; }
+  double& yaw()
+  {
+    return data_[YAW];
+  }
 
   /**
    * @brief Read-only access to the yaw (Z-axis) angular velocity.
    */
-  const double& yaw() const { return data_[YAW]; }
+  const double& yaw() const
+  {
+    return data_[YAW];
+  }
 
   /**
    * @brief Print a human-readable description of the variable to the provided stream.
@@ -133,11 +149,11 @@ private:
    * @param[in/out] archive - The archive object that holds the serialized class members
    * @param[in] version - The version of the archive being read/written. Generally unused.
    */
-  template<class Archive>
+  template <class Archive>
   void serialize(Archive& archive, const unsigned int /* version */)
   {
-    archive & boost::serialization::base_object<FixedSizeVariable<SIZE>>(*this);
-    archive & boost::serialization::base_object<Stamped>(*this);
+    archive& boost::serialization::base_object<FixedSizeVariable<SIZE>>(*this);
+    archive& boost::serialization::base_object<Stamped>(*this);
   }
 };
 

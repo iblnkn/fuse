@@ -42,10 +42,8 @@
 #include <ceres/rotation.h>
 #include <Eigen/Core>
 
-
 namespace fuse_constraints
 {
-
 /**
  * @brief Implements a cost function that models a difference between 3D orientation variables (quaternion)
  *
@@ -77,11 +75,7 @@ public:
    * @param[in] A The residual weighting matrix, most likely the square root information matrix in order (x, y, z)
    * @param[in] b The measured change between the two orientation variables
    */
-  NormalDeltaOrientation3DCostFunctor(
-    const fuse_core::Matrix3d& A,
-    const fuse_core::Vector4d& b) :
-      A_(A),
-      b_(b)
+  NormalDeltaOrientation3DCostFunctor(const fuse_core::Matrix3d& A, const fuse_core::Vector4d& b) : A_(A), b_(b)
   {
   }
 
@@ -93,21 +87,9 @@ public:
   {
     using fuse_variables::Orientation3DStamped;
 
-    T orientation1_inverse[4] =
-    {
-       orientation1[0],
-      -orientation1[1],
-      -orientation1[2],
-      -orientation1[3]
-    };
+    T orientation1_inverse[4] = { orientation1[0], -orientation1[1], -orientation1[2], -orientation1[3] };
 
-    T observation_inverse[4] =
-    {
-      T(b_(0)),
-      T(-b_(1)),
-      T(-b_(2)),
-      T(-b_(3))
-    };
+    T observation_inverse[4] = { T(b_(0)), T(-b_(1)), T(-b_(2)), T(-b_(3)) };
 
     T difference[4];
     ceres::QuaternionProduct(orientation1_inverse, orientation2, difference);

@@ -52,10 +52,8 @@
 #include <utility>
 #include <vector>
 
-
 namespace fuse_models
 {
-
 /**
  * @brief A fuse_models 2D kinematic model that generates kinematic constraints between provided time stamps, and adds
  * those constraints to the fuse graph.
@@ -96,14 +94,14 @@ protected:
    */
   struct StateHistoryElement
   {
-    fuse_core::UUID position_uuid;        //!< The uuid of the associated position variable
-    fuse_core::UUID yaw_uuid;             //!< The uuid of the associated orientation variable
-    fuse_core::UUID vel_linear_uuid;      //!< The uuid of the associated linear velocity variable
-    fuse_core::UUID vel_yaw_uuid;         //!< The uuid of the associated angular velocity variable
-    fuse_core::UUID acc_linear_uuid;      //!< The uuid of the associated linear acceleration variable
-    geometry_msgs::Pose2D pose;               //!< Map-frame pose
+    fuse_core::UUID position_uuid;             //!< The uuid of the associated position variable
+    fuse_core::UUID yaw_uuid;                  //!< The uuid of the associated orientation variable
+    fuse_core::UUID vel_linear_uuid;           //!< The uuid of the associated linear velocity variable
+    fuse_core::UUID vel_yaw_uuid;              //!< The uuid of the associated angular velocity variable
+    fuse_core::UUID acc_linear_uuid;           //!< The uuid of the associated linear acceleration variable
+    geometry_msgs::Pose2D pose;                //!< Map-frame pose
     geometry_msgs::Twist velocity_linear;      //!< Body-frame linear velocity
-    double velocity_yaw{ 0.0 };           //!< Body-frame yaw velocity
+    double velocity_yaw{ 0.0 };                //!< Body-frame yaw velocity
     geometry_msgs::Accel acceleration_linear;  //!< Body-frame linear acceleration
 
     void print(std::ostream& stream = std::cout) const;
@@ -139,11 +137,9 @@ protected:
    * @param[out] variables       One or more variables at both the \p beginning_stamp and \p ending_stamp. The
    *                             variables should include initial values for the optimizer.
    */
-  void generateMotionModel(
-    const ros::Time& beginning_stamp,
-    const ros::Time& ending_stamp,
-    std::vector<fuse_core::Constraint::SharedPtr>& constraints,
-    std::vector<fuse_core::Variable::SharedPtr>& variables);
+  void generateMotionModel(const ros::Time& beginning_stamp, const ros::Time& ending_stamp,
+                           std::vector<fuse_core::Constraint::SharedPtr>& constraints,
+                           std::vector<fuse_core::Variable::SharedPtr>& variables);
 
   /**
    * @brief Callback fired in the local callback queue thread(s) whenever a new Graph is received from the optimizer
@@ -167,10 +163,8 @@ protected:
    * @param[in] state_history The state history object to be updated
    * @param[in] buffer_length States older than this in the history will be pruned
    */
-  static void updateStateHistoryEstimates(
-    const fuse_core::Graph& graph,
-    StateHistory& state_history,
-    const ros::Duration& buffer_length);
+  static void updateStateHistoryEstimates(const fuse_core::Graph& graph, StateHistory& state_history,
+                                          const ros::Duration& buffer_length);
 
   /**
    * @brief Validate the motion model state #1, state #2 and process noise covariance

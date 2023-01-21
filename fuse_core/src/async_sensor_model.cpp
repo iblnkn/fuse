@@ -44,26 +44,21 @@
 #include <utility>
 #include <string>
 
-
 namespace fuse_core
 {
-
-AsyncSensorModel::AsyncSensorModel(size_t thread_count) :
-  name_("uninitialized"),
-  spinner_(thread_count, &callback_queue_)
+AsyncSensorModel::AsyncSensorModel(size_t thread_count)
+  : name_("uninitialized"), spinner_(thread_count, &callback_queue_)
 {
 }
 
 void AsyncSensorModel::graphCallback(Graph::ConstSharedPtr graph)
 {
   callback_queue_.addCallback(
-    boost::make_shared<CallbackWrapper<void>>(std::bind(&AsyncSensorModel::onGraphUpdate, this, std::move(graph))),
-    reinterpret_cast<uint64_t>(this));
+      boost::make_shared<CallbackWrapper<void>>(std::bind(&AsyncSensorModel::onGraphUpdate, this, std::move(graph))),
+      reinterpret_cast<uint64_t>(this));
 }
 
-void AsyncSensorModel::initialize(
-  const std::string& name,
-  TransactionCallback transaction_callback)
+void AsyncSensorModel::initialize(const std::string& name, TransactionCallback transaction_callback)
 {
   // Initialize internal state
   name_ = name;

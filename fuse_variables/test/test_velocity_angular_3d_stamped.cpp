@@ -46,7 +46,6 @@
 
 using fuse_variables::VelocityAngular3DStamped;
 
-
 TEST(VelocityAngular3DStamped, Type)
 {
   VelocityAngular3DStamped variable(ros::Time(12345678, 910111213));
@@ -86,8 +85,8 @@ TEST(VelocityAngular3DStamped, UUID)
 
 TEST(VelocityAngular3DStamped, Stamped)
 {
-  fuse_core::Variable::SharedPtr base = VelocityAngular3DStamped::make_shared(ros::Time(12345678, 910111213),
-                                                                              fuse_core::uuid::generate("mo"));
+  fuse_core::Variable::SharedPtr base =
+      VelocityAngular3DStamped::make_shared(ros::Time(12345678, 910111213), fuse_core::uuid::generate("mo"));
   auto derived = std::dynamic_pointer_cast<VelocityAngular3DStamped>(base);
   ASSERT_TRUE(static_cast<bool>(derived));
   EXPECT_EQ(ros::Time(12345678, 910111213), derived->stamp());
@@ -101,9 +100,12 @@ TEST(VelocityAngular3DStamped, Stamped)
 
 struct CostFunctor
 {
-  CostFunctor() {}
+  CostFunctor()
+  {
+  }
 
-  template <typename T> bool operator()(const T* const x, T* residual) const
+  template <typename T>
+  bool operator()(const T* const x, T* residual) const
   {
     residual[0] = x[0] - T(3.0);
     residual[1] = x[1] + T(8.0);
@@ -125,16 +127,10 @@ TEST(VelocityAngular3DStamped, Optimization)
 
   // Build the problem.
   ceres::Problem problem;
-  problem.AddParameterBlock(
-    velocity.data(),
-    velocity.size(),
-    velocity.manifold());
+  problem.AddParameterBlock(velocity.data(), velocity.size(), velocity.manifold());
   std::vector<double*> parameter_blocks;
   parameter_blocks.push_back(velocity.data());
-  problem.AddResidualBlock(
-    cost_function,
-    nullptr,
-    parameter_blocks);
+  problem.AddResidualBlock(cost_function, nullptr, parameter_blocks);
 
   // Run the solver
   ceres::Solver::Options options;
@@ -177,7 +173,7 @@ TEST(VelocityAngular3DStamped, Serialization)
   EXPECT_EQ(expected.yaw(), actual.yaw());
 }
 
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
   testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();

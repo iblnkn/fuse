@@ -42,10 +42,8 @@
 
 #include <boost/serialization/access.hpp>
 
-
 namespace fuse_variables
 {
-
 /**
  * @brief A class that provides a timestamp and device id
  *
@@ -67,10 +65,10 @@ public:
   /**
    * @brief Constructor
    */
-  explicit Stamped(const ros::Time& stamp, const fuse_core::UUID& device_id = fuse_core::uuid::NIL) :
-    device_id_(device_id),
-    stamp_(stamp)
-  {}
+  explicit Stamped(const ros::Time& stamp, const fuse_core::UUID& device_id = fuse_core::uuid::NIL)
+    : device_id_(device_id), stamp_(stamp)
+  {
+  }
 
   /**
    * @brief Destructor
@@ -80,16 +78,22 @@ public:
   /**
    * @brief Read-only access to the associated timestamp.
    */
-  const ros::Time& stamp() const { return stamp_; }
+  const ros::Time& stamp() const
+  {
+    return stamp_;
+  }
 
   /**
    * @brief Read-only access to the associated device ID.
    */
-  const fuse_core::UUID& deviceId() const { return device_id_; }
+  const fuse_core::UUID& deviceId() const
+  {
+    return device_id_;
+  }
 
 private:
   fuse_core::UUID device_id_;  //!< The UUID associated with this specific device or hardware
-  ros::Time stamp_;  //!< The timestamp associated with this variable instance
+  ros::Time stamp_;            //!< The timestamp associated with this variable instance
 
   // Allow Boost Serialization access to private methods
   friend class boost::serialization::access;
@@ -100,11 +104,11 @@ private:
    * @param[in/out] archive - The archive object that holds the serialized class members
    * @param[in] version - The version of the archive being read/written. Generally unused.
    */
-  template<class Archive>
+  template <class Archive>
   void serialize(Archive& archive, const unsigned int /* version */)
   {
-    archive & device_id_;
-    archive & stamp_;
+    archive& device_id_;
+    archive& stamp_;
   }
 };
 

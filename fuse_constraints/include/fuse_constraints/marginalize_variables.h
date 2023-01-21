@@ -54,10 +54,8 @@
 #include <string>
 #include <vector>
 
-
 namespace fuse_constraints
 {
-
 /**
  * @brief Compute an efficient elimination order for the marginalized variables
  *
@@ -74,9 +72,8 @@ namespace fuse_constraints
  *                                   marginalized variable
  * @return The mapping from variable UUID to the computed elimination order
  */
-UuidOrdering computeEliminationOrder(
-  const std::vector<fuse_core::UUID>& marginalized_variables,
-  const fuse_core::Graph& graph);
+UuidOrdering computeEliminationOrder(const std::vector<fuse_core::UUID>& marginalized_variables,
+                                     const fuse_core::Graph& graph);
 
 /**
  * @brief Generate a transaction that, when applied to the graph, will marginalize out the requested variables
@@ -96,10 +93,9 @@ UuidOrdering computeEliminationOrder(
  * @return A transaction object containing the computed marginal constraints to be added, as well as the set of
  *         variables and constraints to be removed.
  */
-fuse_core::Transaction marginalizeVariables(
-  const std::string& source,
-  const std::vector<fuse_core::UUID>& marginalized_variables,
-  const fuse_core::Graph& graph);
+fuse_core::Transaction marginalizeVariables(const std::string& source,
+                                            const std::vector<fuse_core::UUID>& marginalized_variables,
+                                            const fuse_core::Graph& graph);
 
 /**
  * @brief Generate a transaction that, when applied to the graph, will marginalize out the requested variables
@@ -121,15 +117,13 @@ fuse_core::Transaction marginalizeVariables(
  * @return A transaction object containing the computed marginal constraints to be added, as well as the set of
  *         variables and constraints to be removed.
  */
-fuse_core::Transaction marginalizeVariables(
-  const std::string& source,
-  const std::vector<fuse_core::UUID>& marginalized_variables,
-  const fuse_core::Graph& graph,
-  const fuse_constraints::UuidOrdering& elimination_order);
+fuse_core::Transaction marginalizeVariables(const std::string& source,
+                                            const std::vector<fuse_core::UUID>& marginalized_variables,
+                                            const fuse_core::Graph& graph,
+                                            const fuse_constraints::UuidOrdering& elimination_order);
 
 namespace detail
 {
-
 /**
  * @brief Structure holding linearized Jacobian blocks
  *
@@ -153,10 +147,8 @@ struct LinearTerm
  * @param[in] elimination_order A mapping from variable UUID to elimination order
  * @return A LinearTerm consisting of Jacobian blocks associated with each involved variable in elimination order
  */
-LinearTerm linearize(
-  const fuse_core::Constraint& constraint,
-  const fuse_core::Graph& graph,
-  const UuidOrdering& elimination_order);
+LinearTerm linearize(const fuse_core::Constraint& constraint, const fuse_core::Graph& graph,
+                     const UuidOrdering& elimination_order);
 
 /**
  * @brief Marginalize out the lowest-ordered variable from the provided set of linear terms
@@ -178,11 +170,9 @@ LinearTerm marginalizeNext(const std::vector<LinearTerm>& linear_terms);
  * @param[in] elimination_order The mapping from variable UUID to LinearTerm variable index
  * @return An equivalent MarginalConstraint object
  */
-MarginalConstraint::SharedPtr createMarginalConstraint(
-  const std::string& source,
-  const LinearTerm& linear_term,
-  const fuse_core::Graph& graph,
-  const UuidOrdering& elimination_order);
+MarginalConstraint::SharedPtr createMarginalConstraint(const std::string& source, const LinearTerm& linear_term,
+                                                       const fuse_core::Graph& graph,
+                                                       const UuidOrdering& elimination_order);
 }  // namespace detail
 
 }  // namespace fuse_constraints

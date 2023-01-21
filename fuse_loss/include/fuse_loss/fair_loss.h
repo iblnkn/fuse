@@ -43,10 +43,8 @@
 #include <ostream>
 #include <string>
 
-
 namespace fuse_loss
 {
-
 /**
  * @brief The Fair loss function.
  *
@@ -135,11 +133,11 @@ private:
    * @param[in/out] archive - The archive object that holds the serialized class members
    * @param[in] version - The version of the archive being read/written. Generally unused.
    */
-  template<class Archive>
+  template <class Archive>
   void serialize(Archive& archive, const unsigned int /* version */)
   {
-    archive & boost::serialization::base_object<fuse_core::Loss>(*this);
-    archive & a_;
+    archive& boost::serialization::base_object<fuse_core::Loss>(*this);
+    archive& a_;
   }
 };
 

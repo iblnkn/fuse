@@ -38,10 +38,8 @@
 
 #include <boost/iostreams/stream.hpp>
 
-
 namespace fuse_core
 {
-
 void serializeGraph(const fuse_core::Graph& graph, fuse_msgs::SerializedGraph& msg)
 {
   // Serialize the graph into the msg.data field
@@ -55,11 +53,11 @@ void serializeGraph(const fuse_core::Graph& graph, fuse_msgs::SerializedGraph& m
   msg.plugin_name = graph.type();
 }
 
-GraphDeserializer::GraphDeserializer() :
-  variable_loader_("fuse_core", "fuse_core::Variable"),
-  constraint_loader_("fuse_core", "fuse_core::Constraint"),
-  loss_loader_("fuse_core", "fuse_core::Loss"),
-  graph_loader_("fuse_core", "fuse_core::Graph")
+GraphDeserializer::GraphDeserializer()
+  : variable_loader_("fuse_core", "fuse_core::Variable")
+  , constraint_loader_("fuse_core", "fuse_core::Constraint")
+  , loss_loader_("fuse_core", "fuse_core::Loss")
+  , graph_loader_("fuse_core", "fuse_core::Graph")
 {
   // Load all known plugin libraries
   // I believe the library containing a given Variable or Constraint type must be loaded in order to deserialize

@@ -41,10 +41,8 @@
 #include <functional>
 #include <string>
 
-
 namespace fuse_core
 {
-
 /**
  * @brief The signature of the callback function that will be executed for every generated transaction object.
  */
@@ -87,9 +85,11 @@ public:
    *
    * @param[in] graph A read-only pointer to the graph object, allowing queries to be performed whenever needed.
    */
-  virtual void graphCallback(Graph::ConstSharedPtr /*graph*/) {}
+  virtual void graphCallback(Graph::ConstSharedPtr /*graph*/)
+  {
+  }
 
-   /**
+  /**
    * @brief Perform any required post-construction initialization, such as subscribing to topics or reading from the
    * parameter server.
    *
@@ -100,9 +100,7 @@ public:
    * @param[in] name                 A unique name to give this plugin instance
    * @param[in] transaction_callback The function to call every time a transaction is published
    */
-  virtual void initialize(
-    const std::string& name,
-    TransactionCallback transaction_callback) = 0;
+  virtual void initialize(const std::string& name, TransactionCallback transaction_callback) = 0;
 
   /**
    * @brief Get the unique name of this sensor
@@ -119,7 +117,9 @@ public:
    *
    * The sensor model must not send any transactions to the optimizer before start() is called.
    */
-  virtual void start() {}
+  virtual void start()
+  {
+  }
 
   /**
    * @brief Function to be executed whenever the optimizer is no longer ready to receive transactions
@@ -130,7 +130,9 @@ public:
    *
    * The sensor model must not send any transactions to the optimizer after stop() is called.
    */
-  virtual void stop() {}
+  virtual void stop()
+  {
+  }
 
 protected:
   /**

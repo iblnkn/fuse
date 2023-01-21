@@ -35,20 +35,13 @@
 
 #include <fuse_core/util.h>
 
-
 namespace fuse_constraints
 {
-
-NormalDeltaOrientation2D::NormalDeltaOrientation2D(const double A, const double b) :
-  A_(A),
-  b_(b)
+NormalDeltaOrientation2D::NormalDeltaOrientation2D(const double A, const double b) : A_(A), b_(b)
 {
 }
 
-bool NormalDeltaOrientation2D::Evaluate(
-  double const* const* parameters,
-  double* residuals,
-  double** jacobians) const
+bool NormalDeltaOrientation2D::Evaluate(double const* const* parameters, double* residuals, double** jacobians) const
 {
   // The following lines should read as
   // r = A_ * ((x1 - x0) - b_);

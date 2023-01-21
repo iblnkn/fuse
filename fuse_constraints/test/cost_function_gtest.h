@@ -78,9 +78,9 @@ static void ExpectCostFunctionsAreEqual(const ceres::CostFunction& cost_function
   std::unique_ptr<double[]> actual_residuals(new double[num_residuals]);
   std::unique_ptr<double[]> actual_jacobians(new double[num_parameters * num_residuals]);
 
-  std::unique_ptr<double* []> parameter_blocks(new double*[parameter_block_sizes.size()]);
-  std::unique_ptr<double* []> jacobian_blocks(new double*[parameter_block_sizes.size()]);
-  std::unique_ptr<double* []> actual_jacobian_blocks(new double*[parameter_block_sizes.size()]);
+  std::unique_ptr<double*[]> parameter_blocks(new double*[parameter_block_sizes.size()]);
+  std::unique_ptr<double*[]> jacobian_blocks(new double*[parameter_block_sizes.size()]);
+  std::unique_ptr<double*[]> actual_jacobian_blocks(new double*[parameter_block_sizes.size()]);
 
   num_parameters = 0;
   for (size_t i = 0; i < parameter_block_sizes.size(); ++i)

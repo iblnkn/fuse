@@ -45,10 +45,8 @@
 #include <ros/ros.h>
 #include <tf2_ros/transform_listener.h>
 
-
 namespace fuse_models
 {
-
 /**
  * @brief An adapter-type sensor that produces absolute or relative pose constraints from information published by
  * another node.

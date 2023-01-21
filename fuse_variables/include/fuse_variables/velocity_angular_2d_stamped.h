@@ -47,10 +47,8 @@
 
 #include <ostream>
 
-
 namespace fuse_variables
 {
-
 /**
  * @brief Variable representing a 2D angular velocity (vtheta) at a specific time, with a specific piece of hardware.
  *
@@ -86,12 +84,18 @@ public:
   /**
    * @brief Read-write access to the angular velocity.
    */
-  double& yaw() { return data_[YAW]; }
+  double& yaw()
+  {
+    return data_[YAW];
+  }
 
   /**
    * @brief Read-only access to the angular velocity.
    */
-  const double& yaw() const { return data_[YAW]; }
+  const double& yaw() const
+  {
+    return data_[YAW];
+  }
 
   /**
    * @brief Print a human-readable description of the variable to the provided stream.
@@ -110,11 +114,11 @@ private:
    * @param[in/out] archive - The archive object that holds the serialized class members
    * @param[in] version - The version of the archive being read/written. Generally unused.
    */
-  template<class Archive>
+  template <class Archive>
   void serialize(Archive& archive, const unsigned int /* version */)
   {
-    archive & boost::serialization::base_object<FixedSizeVariable<SIZE>>(*this);
-    archive & boost::serialization::base_object<Stamped>(*this);
+    archive& boost::serialization::base_object<FixedSizeVariable<SIZE>>(*this);
+    archive& boost::serialization::base_object<Stamped>(*this);
   }
 };
 

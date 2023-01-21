@@ -44,7 +44,6 @@
 #include <ostream>
 #include <string>
 
-
 /**
  * @brief Implementation of the clone() member function for derived classes
  *
@@ -58,10 +57,10 @@
  * }
  * @endcode
  */
-#define FUSE_LOSS_CLONE_DEFINITION(...) \
-  fuse_core::Loss::UniquePtr clone() const override \
-  { \
-    return __VA_ARGS__::make_unique(*this); \
+#define FUSE_LOSS_CLONE_DEFINITION(...)                                                                                \
+  fuse_core::Loss::UniquePtr clone() const override                                                                    \
+  {                                                                                                                    \
+    return __VA_ARGS__::make_unique(*this);                                                                            \
   }
 
 /**
@@ -77,22 +76,22 @@
  * }
  * @endcode
  */
-#define FUSE_LOSS_SERIALIZE_DEFINITION(...) \
-  void serialize(fuse_core::BinaryOutputArchive& archive) const override \
-  { \
-    archive << *this; \
-  }  /* NOLINT */ \
-  void serialize(fuse_core::TextOutputArchive& archive) const override \
-  { \
-    archive << *this; \
-  }  /* NOLINT */ \
-  void deserialize(fuse_core::BinaryInputArchive& archive) override \
-  { \
-    archive >> *this; \
-  }  /* NOLINT */ \
-  void deserialize(fuse_core::TextInputArchive& archive) override \
-  { \
-    archive >> *this; \
+#define FUSE_LOSS_SERIALIZE_DEFINITION(...)                                                                            \
+  void serialize(fuse_core::BinaryOutputArchive& archive) const override                                               \
+  {                                                                                                                    \
+    archive << *this;                                                                                                  \
+  } /* NOLINT */                                                                                                       \
+  void serialize(fuse_core::TextOutputArchive& archive) const override                                                 \
+  {                                                                                                                    \
+    archive << *this;                                                                                                  \
+  } /* NOLINT */                                                                                                       \
+  void deserialize(fuse_core::BinaryInputArchive& archive) override                                                    \
+  {                                                                                                                    \
+    archive >> *this;                                                                                                  \
+  } /* NOLINT */                                                                                                       \
+  void deserialize(fuse_core::TextInputArchive& archive) override                                                      \
+  {                                                                                                                    \
+    archive >> *this;                                                                                                  \
   }
 
 /**
@@ -110,17 +109,17 @@
  * }
  * @endcode
  */
-#define FUSE_LOSS_TYPE_DEFINITION(...) \
-  struct detail \
-  { \
-    static std::string type() \
-    { \
-      return boost::typeindex::stl_type_index::type_id<__VA_ARGS__>().pretty_name(); \
-    }  /* NOLINT */ \
-  };  /* NOLINT */ \
-  std::string type() const override \
-  { \
-    return detail::type(); \
+#define FUSE_LOSS_TYPE_DEFINITION(...)                                                                                 \
+  struct detail                                                                                                        \
+  {                                                                                                                    \
+    static std::string type()                                                                                          \
+    {                                                                                                                  \
+      return boost::typeindex::stl_type_index::type_id<__VA_ARGS__>().pretty_name();                                   \
+    } /* NOLINT */                                                                                                     \
+  };  /* NOLINT */                                                                                                     \
+  std::string type() const override                                                                                    \
+  {                                                                                                                    \
+    return detail::type();                                                                                             \
   }
 
 /**
@@ -136,16 +135,14 @@
  * }
  * @endcode
  */
-#define FUSE_LOSS_DEFINITIONS(...) \
-  FUSE_SMART_PTR_DEFINITIONS(__VA_ARGS__) \
-  FUSE_LOSS_TYPE_DEFINITION(__VA_ARGS__) \
-  FUSE_LOSS_CLONE_DEFINITION(__VA_ARGS__) \
+#define FUSE_LOSS_DEFINITIONS(...)                                                                                     \
+  SMART_PTR_DEFINITIONS(__VA_ARGS__)                                                                                   \
+  FUSE_LOSS_TYPE_DEFINITION(__VA_ARGS__)                                                                               \
+  FUSE_LOSS_CLONE_DEFINITION(__VA_ARGS__)                                                                              \
   FUSE_LOSS_SERIALIZE_DEFINITION(__VA_ARGS__)
-
 
 namespace fuse_core
 {
-
 /**
  * @brief The Loss function interface definition.
  *
@@ -290,7 +287,7 @@ private:
    * @param[in/out] archive - The archive object that holds the serialized class members
    * @param[in] version - The version of the archive being read/written. Generally unused.
    */
-  template<class Archive>
+  template <class Archive>
   void serialize(Archive& /* archive */, const unsigned int /* version */)
   {
   }
@@ -299,7 +296,7 @@ private:
 /**
  * Stream operator implementation used for all derived Loss classes.
  */
-std::ostream& operator <<(std::ostream& stream, const Loss& loss);
+std::ostream& operator<<(std::ostream& stream, const Loss& loss);
 
 }  // namespace fuse_core
 

@@ -82,27 +82,42 @@ public:
   /**
    * @brief Read-write access to the X-axis position.
    */
-  double& x() { return data_[X]; }
+  double& x()
+  {
+    return data_[X];
+  }
 
   /**
    * @brief Read-only access to the X-axis position.
    */
-  const double& x() const { return data_[X]; }
+  const double& x() const
+  {
+    return data_[X];
+  }
 
   /**
    * @brief Read-write access to the Y-axis position.
    */
-  double& y() { return data_[Y]; }
+  double& y()
+  {
+    return data_[Y];
+  }
 
   /**
    * @brief Read-only access to the Y-axis position.
    */
-  const double& y() const { return data_[Y]; }
+  const double& y() const
+  {
+    return data_[Y];
+  }
 
   /**
    * @brief Read-only access to the id
    */
-  const uint64_t& id() const { return id_; }
+  const uint64_t& id() const
+  {
+    return id_;
+  }
 
   /**
    * @brief Print a human-readable description of the variable to the provided
@@ -115,7 +130,7 @@ public:
 private:
   // Allow Boost Serialization access to private methods
   friend class boost::serialization::access;
-  uint64_t id_ { 0 };
+  uint64_t id_{ 0 };
 
   /**
    * @brief The Boost Serialize method that serializes all of the data members

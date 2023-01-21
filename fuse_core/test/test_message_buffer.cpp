@@ -37,7 +37,6 @@
 
 #include <gtest/gtest.h>
 
-
 /**
  * Test fixture that adds a known set of entries to the timestamp manager.
  * Used to test the interactions with existing entries.
@@ -45,8 +44,7 @@
 class MessageBufferTestFixture : public ::testing::Test
 {
 public:
-  MessageBufferTestFixture() :
-    buffer(ros::DURATION_MAX)
+  MessageBufferTestFixture() : buffer(ros::DURATION_MAX)
   {
   }
 
@@ -201,7 +199,7 @@ TEST_F(MessageBufferTestFixture, Purge)
   }
 }
 
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
   testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();

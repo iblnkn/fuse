@@ -106,12 +106,8 @@ public:
    * @param[in] z - The distance measured between the robot and beacon by our new sensor
    * @param[in] sigma - The uncertainty of measured distance
    */
-  RangeConstraint(
-    const std::string& source,
-    const fuse_variables::Position2DStamped& robot_position,
-    const fuse_variables::Point2DLandmark& beacon_position,
-    const double z,
-    const double sigma);
+  RangeConstraint(const std::string& source, const fuse_variables::Position2DStamped& robot_position,
+                  const fuse_variables::Point2DLandmark& beacon_position, const double z, const double sigma);
 
   /**
    * @brief Print a human-readable description of the constraint to the provided stream.
@@ -162,8 +158,8 @@ private:
     archive& z_;
   }
 
-  double sigma_ { 0.0 };  //!< The standard deviation of the range measurement
-  double z_ { 0.0 };  //!< The measured range to the beacon
+  double sigma_{ 0.0 };  //!< The standard deviation of the range measurement
+  double z_{ 0.0 };      //!< The measured range to the beacon
 };
 
 }  // namespace fuse_tutorials

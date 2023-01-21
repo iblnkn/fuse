@@ -44,28 +44,24 @@
 #include <stdexcept>
 #include <utility>
 
-
 namespace fuse_core
 {
-
-template<class Message>
-MessageBuffer<Message>::MessageBuffer(const ros::Duration& buffer_length) :
-  buffer_length_(buffer_length)
+template <class Message>
+MessageBuffer<Message>::MessageBuffer(const ros::Duration& buffer_length) : buffer_length_(buffer_length)
 {
 }
 
-template<class Message>
+template <class Message>
 void MessageBuffer<Message>::insert(const ros::Time& stamp, const Message& msg)
 {
   buffer_.emplace_back(stamp, msg);
   purgeHistory();
 }
 
-template<class Message>
-typename MessageBuffer<Message>::message_range MessageBuffer<Message>::query(
-  const ros::Time& beginning_stamp,
-  const ros::Time& ending_stamp,
-  bool extended_range)
+template <class Message>
+typename MessageBuffer<Message>::message_range MessageBuffer<Message>::query(const ros::Time& beginning_stamp,
+                                                                             const ros::Time& ending_stamp,
+                                                                             bool extended_range)
 {
   // Verify the query is valid
   if (ending_stamp < beginning_stamp)
@@ -74,8 +70,10 @@ typename MessageBuffer<Message>::message_range MessageBuffer<Message>::query(
     beginning_time_ss << beginning_stamp;
     std::stringstream ending_time_ss;
     ending_time_ss << ending_stamp;
-    throw std::invalid_argument("The beginning_stamp (" + beginning_time_ss.str() + ") must be less than or equal to "
-                                "the ending_stamp (" + ending_time_ss.str() + ").");
+    throw std::invalid_argument("The beginning_stamp (" + beginning_time_ss.str() +
+                                ") must be less than or equal to "
+                                "the ending_stamp (" +
+                                ending_time_ss.str() + ").");
   }
   // Verify the query is within the bounds of the buffer
   if (buffer_.empty() || (beginning_stamp < buffer_.front().first) || (ending_stamp > buffer_.back().first))
@@ -91,15 +89,14 @@ typename MessageBuffer<Message>::message_range MessageBuffer<Message>::query(
     {
       available_time_range_ss << "(" << buffer_.front().first << ", " << buffer_.back().first << ")";
     }
-    throw std::out_of_range("The requested time range " + requested_time_range_ss.str() + " is outside the available "
-                            "time range " + available_time_range_ss.str() + ".");
+    throw std::out_of_range("The requested time range " + requested_time_range_ss.str() +
+                            " is outside the available "
+                            "time range " +
+                            available_time_range_ss.str() + ".");
   }
   // Find the entry that is strictly greater than the requested beginning stamp. If the extended range flag is true,
   // we will then back up one entry.
-  auto upper_bound_comparison = [](const auto& stamp, const auto& element) -> bool
-  {
-    return (element.first > stamp);
-  };
+  auto upper_bound_comparison = [](const auto& stamp, const auto& element) -> bool { return (element.first > stamp); };
   auto beginning_iter = std::upper_bound(buffer_.begin(), buffer_.end(), beginning_stamp, upper_bound_comparison);
   if (extended_range)
   {
@@ -107,10 +104,7 @@ typename MessageBuffer<Message>::message_range MessageBuffer<Message>::query(
   }
   // Find the entry that is greater than or equal to the ending stamp. If the extended range flag is false, we will
   // back up one entry.
-  auto lower_bound_comparison = [](const auto& element, const auto& stamp) -> bool
-  {
-    return (element.first < stamp);
-  };
+  auto lower_bound_comparison = [](const auto& element, const auto& stamp) -> bool { return (element.first < stamp); };
   auto ending_iter = std::lower_bound(buffer_.begin(), buffer_.end(), ending_stamp, lower_bound_comparison);
   if (extended_range && (ending_iter != buffer_.end()))
   {
@@ -120,14 +114,14 @@ typename MessageBuffer<Message>::message_range MessageBuffer<Message>::query(
   return message_range(beginning_iter, ending_iter);
 }
 
-template<class Message>
+template <class Message>
 typename MessageBuffer<Message>::stamp_range MessageBuffer<Message>::stamps() const
 {
   return stamp_range(boost::make_transform_iterator(buffer_.begin(), extractStamp),
                      boost::make_transform_iterator(buffer_.end(), extractStamp));
 }
 
-template<class Message>
+template <class Message>
 void MessageBuffer<Message>::purgeHistory()
 {
   // Purge any messages that are more than buffer_length_ seconds older than the most recent entry
@@ -146,10 +140,7 @@ void MessageBuffer<Message>::purgeHistory()
   // Be careful to ensure that:
   //  - at least two entries remains at all times
   //  - the buffer covers *at least* until the expiration time. Longer is acceptable.
-  auto is_greater = [](const auto& stamp, const auto& element) -> bool
-  {
-    return (element.first > stamp);
-  };
+  auto is_greater = [](const auto& stamp, const auto& element) -> bool { return (element.first > stamp); };
   auto expiration_iter = std::upper_bound(buffer_.begin(), buffer_.end(), expiration_time, is_greater);
   if (expiration_iter != buffer_.begin())
   {

@@ -37,7 +37,6 @@
 
 #include <gtest/gtest.h>
 
-
 /**
  * @brief A helper class to publish a given number geometry_msgs::Point messages at a given frequency.
  *
@@ -52,8 +51,7 @@ public:
    *
    * @param[in] frequency The publishing frequency in Hz
    */
-  explicit PointPublisher(const double frequency)
-    : frequency_(frequency)
+  explicit PointPublisher(const double frequency) : frequency_(frequency)
   {
     publisher_ = node_handle_.advertise<geometry_msgs::Point>("point", 1);
   }
@@ -112,8 +110,8 @@ public:
     : throttled_callback_(std::bind(&PointSensorModel::keepCallback, this, std::placeholders::_1),
                           std::bind(&PointSensorModel::dropCallback, this, std::placeholders::_1), throttle_period)
   {
-    subscriber_ = node_handle_.subscribe<geometry_msgs::Point>(
-        "point", 10, &PointThrottledCallback::callback, &throttled_callback_);
+    subscriber_ = node_handle_.subscribe<geometry_msgs::Point>("point", 10, &PointThrottledCallback::callback,
+                                                               &throttled_callback_);
   }
 
   /**
@@ -178,7 +176,6 @@ private:
   size_t dropped_messages_{ 0 };                      //!< Messages dropped
   geometry_msgs::Point::ConstPtr last_kept_message_;  //!< The last message kept
 };
-
 
 TEST(ThrottledCallback, NoDroppedMessagesIfThrottlePeriodIsZero)
 {

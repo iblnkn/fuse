@@ -52,7 +52,6 @@
 #include <fuse_variables/velocity_linear_2d_stamped.h>
 #include <fuse_variables/velocity_linear_3d_stamped.h>
 
-
 #include <boost/serialization/access.hpp>
 #include <boost/serialization/base_object.hpp>
 #include <boost/serialization/export.hpp>
@@ -62,10 +61,8 @@
 #include <string>
 #include <vector>
 
-
 namespace fuse_constraints
 {
-
 /**
  * @brief A constraint that represents prior information about a variable or a direct measurement of the variable.
  *
@@ -74,7 +71,7 @@ namespace fuse_constraints
  * acceleration). And localization systems often match laserscans to a prior map (scan-to-map measurements).
  * This constraint holds the measured variable value and the measurement uncertainty/covariance.
  */
-template<class Variable>
+template <class Variable>
 class AbsoluteConstraint : public fuse_core::Constraint
 {
 public:
@@ -93,11 +90,8 @@ public:
    * @param[in] mean       The measured/prior value of all variable dimensions
    * @param[in] covariance The measurement/prior uncertainty of all variable dimensions
    */
-  AbsoluteConstraint(
-    const std::string& source,
-    const Variable& variable,
-    const fuse_core::VectorXd& mean,
-    const fuse_core::MatrixXd& covariance);
+  AbsoluteConstraint(const std::string& source, const Variable& variable, const fuse_core::VectorXd& mean,
+                     const fuse_core::MatrixXd& covariance);
 
   /**
    * @brief Create a constraint using a measurement/prior of only a partial set of dimensions of the target variable
@@ -108,12 +102,8 @@ public:
    * @param[in] partial_covariance The uncertainty of the subset of dimensions in the order defined by \p indices.
    * @param[in] indices            The set of indices corresponding to the measured dimensions
    */
-  AbsoluteConstraint(
-    const std::string& source,
-    const Variable& variable,
-    const fuse_core::VectorXd& partial_mean,
-    const fuse_core::MatrixXd& partial_covariance,
-    const std::vector<size_t>& indices);
+  AbsoluteConstraint(const std::string& source, const Variable& variable, const fuse_core::VectorXd& partial_mean,
+                     const fuse_core::MatrixXd& partial_covariance, const std::vector<size_t>& indices);
 
   /**
    * @brief Destructor
@@ -127,7 +117,10 @@ public:
    * defined by the variable, not the order defined by the \p indices parameter. All unmeasured variable dimensions
    * are set to zero.
    */
-  const fuse_core::VectorXd& mean() const { return mean_; }
+  const fuse_core::VectorXd& mean() const
+  {
+    return mean_;
+  }
 
   /**
    * @brief Read-only access to the square root information matrix.
@@ -136,7 +129,10 @@ public:
    * square root information matrix will have size measured_dimensions X variable_dimensions. If only a partial set
    * of dimensions are measured, then this matrix will not be square.
    */
-  const fuse_core::MatrixXd& sqrtInformation() const { return sqrt_information_; }
+  const fuse_core::MatrixXd& sqrtInformation() const
+  {
+    return sqrt_information_;
+  }
 
   /**
    * @brief Compute the measurement covariance matrix.
@@ -167,7 +163,7 @@ public:
   ceres::CostFunction* costFunction() const override;
 
 protected:
-  fuse_core::VectorXd mean_;  //!< The measured/prior mean vector for this variable
+  fuse_core::VectorXd mean_;              //!< The measured/prior mean vector for this variable
   fuse_core::MatrixXd sqrt_information_;  //!< The square root information matrix
 
 private:
@@ -180,12 +176,12 @@ private:
    * @param[in/out] archive - The archive object that holds the serialized class members
    * @param[in] version - The version of the archive being read/written. Generally unused.
    */
-  template<class Archive>
+  template <class Archive>
   void serialize(Archive& archive, const unsigned int /* version */)
   {
-    archive & boost::serialization::base_object<fuse_core::Constraint>(*this);
-    archive & mean_;
-    archive & sqrt_information_;
+    archive& boost::serialization::base_object<fuse_core::Constraint>(*this);
+    archive& mean_;
+    archive& sqrt_information_;
   }
 };
 

@@ -44,13 +44,10 @@
 
 #include <ostream>
 
-
 namespace fuse_variables
 {
-
-Orientation2DStamped::Orientation2DStamped(const ros::Time& stamp, const fuse_core::UUID& device_id) :
-  FixedSizeVariable(fuse_core::uuid::generate(detail::type(), stamp, device_id)),
-  Stamped(stamp, device_id)
+Orientation2DStamped::Orientation2DStamped(const ros::Time& stamp, const fuse_core::UUID& device_id)
+  : FixedSizeVariable(fuse_core::uuid::generate(detail::type(), stamp, device_id)), Stamped(stamp, device_id)
 {
 }
 

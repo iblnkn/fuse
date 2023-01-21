@@ -45,7 +45,6 @@
 #include <utility>
 #include <vector>
 
-
 /**
  * Test fixture that adds a known set of entries to the timestamp manager.
  * Used to test the interactions with existing entries.
@@ -53,14 +52,10 @@
 class TimestampManagerTestFixture : public ::testing::Test
 {
 public:
-  TimestampManagerTestFixture() :
-    manager(std::bind(&TimestampManagerTestFixture::generator,
-                      this,
-                      std::placeholders::_1,
-                      std::placeholders::_2,
-                      std::placeholders::_3,
-                      std::placeholders::_4),
-            ros::DURATION_MAX)
+  TimestampManagerTestFixture()
+    : manager(std::bind(&TimestampManagerTestFixture::generator, this, std::placeholders::_1, std::placeholders::_2,
+                        std::placeholders::_3, std::placeholders::_4),
+              ros::DURATION_MAX)
   {
   }
 
@@ -76,11 +71,9 @@ public:
     generated_time_spans.clear();
   }
 
-  void generator(
-    const ros::Time& beginning_stamp,
-    const ros::Time& ending_stamp,
-    std::vector<fuse_core::Constraint::SharedPtr>& /*constraints*/,
-    std::vector<fuse_core::Variable::SharedPtr>& /*variables*/)
+  void generator(const ros::Time& beginning_stamp, const ros::Time& ending_stamp,
+                 std::vector<fuse_core::Constraint::SharedPtr>& /*constraints*/,
+                 std::vector<fuse_core::Variable::SharedPtr>& /*variables*/)
   {
     generated_time_spans.emplace_back(beginning_stamp, ending_stamp);
   }
@@ -88,7 +81,6 @@ public:
   fuse_core::TimestampManager manager;
   std::vector<std::pair<ros::Time, ros::Time> > generated_time_spans;
 };
-
 
 TEST_F(TimestampManagerTestFixture, Empty)
 {
@@ -856,7 +848,7 @@ TEST_F(TimestampManagerTestFixture, SplitSameMultiple)
   EXPECT_EQ(ros::Time(30, 0), generated_time_spans[4].second);
 }
 
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
   testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();

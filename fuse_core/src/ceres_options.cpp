@@ -42,10 +42,8 @@
 #include <stdexcept>
 #include <string>
 
-
 namespace fuse_core
 {
-
 void loadCovarianceOptionsFromROS(const ros::NodeHandle& nh, ceres::Covariance::Options& covariance_options)
 {
 #if CERES_VERSION_AT_LEAST(1, 13, 0)
@@ -132,16 +130,15 @@ void loadSolverOptionsFromROS(const ros::NodeHandle& nh, ceres::Solver::Options&
   nh.param("gradient_tolerance", solver_options.gradient_tolerance, solver_options.gradient_tolerance);
   nh.param("parameter_tolerance", solver_options.parameter_tolerance, solver_options.parameter_tolerance);
 
-  solver_options.linear_solver_type =
-      fuse_core::getParam(nh, "linear_solver_type", solver_options.linear_solver_type);
+  solver_options.linear_solver_type = fuse_core::getParam(nh, "linear_solver_type", solver_options.linear_solver_type);
   solver_options.preconditioner_type =
       fuse_core::getParam(nh, "preconditioner_type", solver_options.preconditioner_type);
   solver_options.visibility_clustering_type =
       fuse_core::getParam(nh, "visibility_clustering_type", solver_options.visibility_clustering_type);
   solver_options.dense_linear_algebra_library_type =
       fuse_core::getParam(nh, "dense_linear_algebra_library_type", solver_options.dense_linear_algebra_library_type);
-  solver_options.sparse_linear_algebra_library_type = fuse_core::getParam(
-      nh, "sparse_linear_algebra_library_type", solver_options.sparse_linear_algebra_library_type);
+  solver_options.sparse_linear_algebra_library_type =
+      fuse_core::getParam(nh, "sparse_linear_algebra_library_type", solver_options.sparse_linear_algebra_library_type);
 
   // No parameter is loaded for: std::shared_ptr<ParameterBlockOrdering> linear_solver_ordering;
 

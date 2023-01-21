@@ -71,12 +71,18 @@ public:
   /**
    * @brief Return true if no variables exist in the index
    */
-  bool empty() const { return variables_.empty() && constraints_.empty(); }
+  bool empty() const
+  {
+    return variables_.empty() && constraints_.empty();
+  }
 
   /**
    * @brief Returns the number of variables in the index
    */
-  size_t size() const { return variables_.size(); }
+  size_t size() const
+  {
+    return variables_.size();
+  }
 
   /**
    * @brief Clear all tracked state

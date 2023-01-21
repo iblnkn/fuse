@@ -41,10 +41,8 @@
 #include <ostream>
 #include <string>
 
-
 namespace fuse_loss
 {
-
 SoftLOneLoss::SoftLOneLoss(const double a) : a_(a)
 {
 }

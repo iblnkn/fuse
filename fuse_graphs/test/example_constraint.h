@@ -46,15 +46,13 @@
 
 #include <string>
 
-
 /**
  * @brief Dummy cost function used for testing
  */
 class ExampleFunctor
 {
 public:
-  explicit ExampleFunctor(const double& b) :
-    b_(b)
+  explicit ExampleFunctor(const double& b) : b_(b)
   {
   }
 
@@ -79,13 +77,16 @@ public:
 
   ExampleConstraint() = default;
 
-  explicit ExampleConstraint(const std::string& source, const fuse_core::UUID& variable_uuid) :
-    fuse_core::Constraint(source, {variable_uuid}),  // NOLINT
+  explicit ExampleConstraint(const std::string& source, const fuse_core::UUID& variable_uuid)
+    : fuse_core::Constraint(source, { variable_uuid })
+    ,  // NOLINT
     data(0.0)
   {
   }
 
-  void print(std::ostream& /*stream = std::cout*/) const override {}
+  void print(std::ostream& /*stream = std::cout*/) const override
+  {
+  }
   ceres::CostFunction* costFunction() const override
   {
     return new ceres::AutoDiffCostFunction<ExampleFunctor, 1, 1>(new ExampleFunctor(data));
@@ -103,11 +104,11 @@ private:
    * @param[in/out] archive - The archive object that holds the serialized class members
    * @param[in] version - The version of the archive being read/written. Generally unused.
    */
-  template<class Archive>
+  template <class Archive>
   void serialize(Archive& archive, const unsigned int /* version */)
   {
-    archive & boost::serialization::base_object<fuse_core::Constraint>(*this);
-    archive & data;
+    archive& boost::serialization::base_object<fuse_core::Constraint>(*this);
+    archive& data;
   }
 };
 

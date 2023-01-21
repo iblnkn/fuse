@@ -39,7 +39,6 @@
 #include <iterator>
 #include <vector>
 
-
 using fuse_constraints::VariableConstraints;
 
 TEST(VariableConstraints, Size)
@@ -49,9 +48,9 @@ TEST(VariableConstraints, Size)
   EXPECT_TRUE(vars.empty());
   EXPECT_EQ(0u, vars.size());
 
-  vars.insert(0u, {0u, 1u});  // NOLINT
-  vars.insert(1u, {0u, 1u});  // NOLINT
-  vars.insert(2u, {0u, 1u});  // NOLINT
+  vars.insert(0u, { 0u, 1u });  // NOLINT
+  vars.insert(1u, { 0u, 1u });  // NOLINT
+  vars.insert(2u, { 0u, 1u });  // NOLINT
 
   EXPECT_FALSE(vars.empty());
   EXPECT_EQ(6u, vars.size());
@@ -62,7 +61,7 @@ TEST(VariableConstraints, NextVariableIndex)
   auto vars = VariableConstraints();
   EXPECT_EQ(0u, vars.nextVariableIndex());
 
-  vars.insert(0u, {9u, 10u});  // NOLINT
+  vars.insert(0u, { 9u, 10u });  // NOLINT
 
   EXPECT_EQ(11u, vars.nextVariableIndex());
 }
@@ -71,15 +70,15 @@ TEST(VariableConstraints, GetConstraints)
 {
   auto vars = VariableConstraints();
 
-  vars.insert(0u, {0u, 1u, 2u});  // NOLINT
-  vars.insert(1u, {0u, 2u});      // NOLINT
-  vars.insert(2u, {1u, 2u});      // NOLINT
-  vars.insert(3u, {2u, 3u});      // NOLINT
+  vars.insert(0u, { 0u, 1u, 2u });  // NOLINT
+  vars.insert(1u, { 0u, 2u });      // NOLINT
+  vars.insert(2u, { 1u, 2u });      // NOLINT
+  vars.insert(3u, { 2u, 3u });      // NOLINT
 
-  auto expected0 = std::vector<size_t>{0u, 1u};          // NOLINT
-  auto expected1 = std::vector<size_t>{0u, 2u};          // NOLINT
-  auto expected2 = std::vector<size_t>{0u, 1u, 2u, 3u};  // NOLINT
-  auto expected3 = std::vector<size_t>{3u};              // NOLINT
+  auto expected0 = std::vector<size_t>{ 0u, 1u };          // NOLINT
+  auto expected1 = std::vector<size_t>{ 0u, 2u };          // NOLINT
+  auto expected2 = std::vector<size_t>{ 0u, 1u, 2u, 3u };  // NOLINT
+  auto expected3 = std::vector<size_t>{ 3u };              // NOLINT
 
   std::vector<size_t> actual0;
   vars.getConstraints(0u, std::back_inserter(actual0));
@@ -132,7 +131,7 @@ TEST(VariableConstraints, InsertOrphanVariable)
   EXPECT_TRUE(actual.empty());
 }
 
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
   testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();

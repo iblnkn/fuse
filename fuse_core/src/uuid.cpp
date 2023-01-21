@@ -44,13 +44,10 @@
 #include <random>
 #include <string>
 
-
 namespace fuse_core
 {
-
 namespace uuid
 {
-
 UUID generate()
 {
   static boost::uuids::random_generator generator;
@@ -71,11 +68,9 @@ UUID generate(const std::string& namespace_string, const ros::Time& stamp)
   std::array<unsigned char, buffer_size> buffer;
   auto iter = buffer.begin();
   iter = std::copy(reinterpret_cast<const unsigned char*>(&stamp.sec),
-                   reinterpret_cast<const unsigned char*>(&stamp.sec) + sizeof(stamp.sec),
-                   iter);
+                   reinterpret_cast<const unsigned char*>(&stamp.sec) + sizeof(stamp.sec), iter);
   iter = std::copy(reinterpret_cast<const unsigned char*>(&stamp.nsec),
-                   reinterpret_cast<const unsigned char*>(&stamp.nsec) + sizeof(stamp.nsec),
-                   iter);
+                   reinterpret_cast<const unsigned char*>(&stamp.nsec) + sizeof(stamp.nsec), iter);
   return generate(namespace_string, buffer.data(), buffer.size());
 }
 
@@ -85,14 +80,10 @@ UUID generate(const std::string& namespace_string, const ros::Time& stamp, const
   std::array<unsigned char, buffer_size> buffer;
   auto iter = buffer.begin();
   iter = std::copy(reinterpret_cast<const unsigned char*>(&stamp.sec),
-                   reinterpret_cast<const unsigned char*>(&stamp.sec) + sizeof(stamp.sec),
-                   iter);
+                   reinterpret_cast<const unsigned char*>(&stamp.sec) + sizeof(stamp.sec), iter);
   iter = std::copy(reinterpret_cast<const unsigned char*>(&stamp.nsec),
-                   reinterpret_cast<const unsigned char*>(&stamp.nsec) + sizeof(stamp.nsec),
-                   iter);
-  iter = std::copy(id.begin(),
-                   id.end(),
-                   iter);
+                   reinterpret_cast<const unsigned char*>(&stamp.nsec) + sizeof(stamp.nsec), iter);
+  iter = std::copy(id.begin(), id.end(), iter);
   return generate(namespace_string, buffer.data(), buffer.size());
 }
 

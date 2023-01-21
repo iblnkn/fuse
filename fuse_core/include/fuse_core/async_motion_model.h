@@ -44,10 +44,8 @@
 
 #include <string>
 
-
 namespace fuse_core
 {
-
 /**
  * @brief A motion model base class that provides node handles and a private callback queue.
  *
@@ -67,7 +65,7 @@ namespace fuse_core
  * together (along with any previously existing timestamps). In lieu of a ROS service callback function, the
  * AsyncMotionModel class requires the applyCallback() function to be implemented. This callback will be executed
  * from the same callback queue as any other subscriptions or service callbacks.
- * 
+ *
  * Derived classes:
  * - _probably_ need to implement the onInit() method. This method is used to configure the motion model for operation.
  *   This includes things like accessing the parameter server and subscribing to sensor topics.
@@ -135,7 +133,10 @@ public:
   /**
    * @brief Get the unique name of this motion model
    */
-  const std::string& name() const override { return name_; }
+  const std::string& name() const override
+  {
+    return name_;
+  }
 
   /**
    * @brief Function to be executed whenever the optimizer is ready to receive transactions
@@ -170,15 +171,15 @@ public:
   void stop() override;
 
 protected:
-  ros::CallbackQueue callback_queue_;  //!< The local callback queue used for all subscriptions
-  std::string name_;  //!< The unique name for this motion model instance
-  ros::NodeHandle node_handle_;  //!< A node handle in the global namespace using the local callback queue
+  ros::CallbackQueue callback_queue_;    //!< The local callback queue used for all subscriptions
+  std::string name_;                     //!< The unique name for this motion model instance
+  ros::NodeHandle node_handle_;          //!< A node handle in the global namespace using the local callback queue
   ros::NodeHandle private_node_handle_;  //!< A node handle in the private namespace using the local callback queue
-  ros::AsyncSpinner spinner_;  //!< A single/multi-threaded spinner assigned to the local callback queue
+  ros::AsyncSpinner spinner_;            //!< A single/multi-threaded spinner assigned to the local callback queue
 
   /**
    * @brief Constructor
-   * 
+   *
    * Construct a new motion model and create a local callback queue and thread spinner.
    *
    * @param[in] thread_count The number of threads used to service the local callback queue
@@ -202,19 +203,21 @@ protected:
 
   /**
    * @brief Callback fired in the local callback queue thread(s) whenever a new Graph is received from the optimizer
-   * 
+   *
    * Receiving a new Graph object generally means that new variables have been inserted into the Graph, and new
    * optimized values are available. To simplify synchronization between the sensor models and other consumers of
    * Graph data, the provided Graph object will never be updated be updated by anyone. Thus, only read access to the
    * Graph is provided. Information may be accessed or computed, but it cannot be changed. The optimizer provides
    * the sensors with Graph updates by sending a new Graph object, not by modifying the Graph object.
-   * 
+   *
    * If the derived sensor model does not need access to the Graph object, there is not reason to overload this
    * empty implementation.
-   * 
+   *
    * @param[in] graph A read-only pointer to the graph object, allowing queries to be performed whenever needed.
    */
-  virtual void onGraphUpdate(Graph::ConstSharedPtr /*graph*/) {}
+  virtual void onGraphUpdate(Graph::ConstSharedPtr /*graph*/)
+  {
+  }
 
   /**
    * @brief Perform any required initialization for the motion model
@@ -223,7 +226,9 @@ protected:
    * handles will be properly initialized before onInit() is called. Spinning of the callback queue will
    * not begin until after the call to onInit() completes.
    */
-  virtual void onInit() {}
+  virtual void onInit()
+  {
+  }
 
   /**
    * @brief Perform any required operations to prepare for servicing calls to apply()
@@ -231,7 +236,9 @@ protected:
    * This function will be called once after initialize() but before any calls to apply(). It may also be called
    * at any time after a call to stop().
    */
-  virtual void onStart() {}
+  virtual void onStart()
+  {
+  }
 
   /**
    * @brief Perform any required operations to clean up the internal state
@@ -239,7 +246,9 @@ protected:
    * This function will be called once before destruction. It may also be called at any time after a call to start().
    * No calls to apply() will occur after stop() is called, but before start() is called.
    */
-  virtual void onStop() {}
+  virtual void onStop()
+  {
+  }
 };
 
 }  // namespace fuse_core

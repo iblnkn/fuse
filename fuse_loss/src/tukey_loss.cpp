@@ -43,10 +43,8 @@
 #include <ostream>
 #include <string>
 
-
 namespace fuse_loss
 {
-
 TukeyLoss::TukeyLoss(const double a) : a_(a)
 {
 }

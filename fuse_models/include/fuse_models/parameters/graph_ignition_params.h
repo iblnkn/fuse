@@ -43,10 +43,8 @@
 
 namespace fuse_models
 {
-
 namespace parameters
 {
-
 /**
  * @brief Defines the set of parameters required by the GraphIgnition class
  */

@@ -56,7 +56,6 @@
 #include <utility>
 #include <vector>
 
-
 /**
  * @brief Implementation of the serialize() and deserialize() member functions for derived classes
  *
@@ -70,22 +69,22 @@
  * }
  * @endcode
  */
-#define FUSE_GRAPH_SERIALIZE_DEFINITION(...) \
-  void serialize(fuse_core::BinaryOutputArchive& archive) const override \
-  { \
-    archive << *this; \
-  }  /* NOLINT */ \
-  void serialize(fuse_core::TextOutputArchive& archive) const override \
-  { \
-    archive << *this; \
-  }  /* NOLINT */ \
-  void deserialize(fuse_core::BinaryInputArchive& archive) override \
-  { \
-    archive >> *this; \
-  }  /* NOLINT */ \
-  void deserialize(fuse_core::TextInputArchive& archive) override \
-  { \
-    archive >> *this; \
+#define FUSE_GRAPH_SERIALIZE_DEFINITION(...)                                                                           \
+  void serialize(fuse_core::BinaryOutputArchive& archive) const override                                               \
+  {                                                                                                                    \
+    archive << *this;                                                                                                  \
+  } /* NOLINT */                                                                                                       \
+  void serialize(fuse_core::TextOutputArchive& archive) const override                                                 \
+  {                                                                                                                    \
+    archive << *this;                                                                                                  \
+  } /* NOLINT */                                                                                                       \
+  void deserialize(fuse_core::BinaryInputArchive& archive) override                                                    \
+  {                                                                                                                    \
+    archive >> *this;                                                                                                  \
+  } /* NOLINT */                                                                                                       \
+  void deserialize(fuse_core::TextInputArchive& archive) override                                                      \
+  {                                                                                                                    \
+    archive >> *this;                                                                                                  \
   }
 
 /**
@@ -103,41 +102,39 @@
  * }
  * @endcode
  */
-#define FUSE_GRAPH_TYPE_DEFINITION(...) \
-  struct detail \
-  { \
-    static std::string type() \
-    { \
-      return boost::typeindex::stl_type_index::type_id<__VA_ARGS__>().pretty_name(); \
-    }  /* NOLINT */ \
-  };  /* NOLINT */ \
-  std::string type() const override \
-  { \
-    return detail::type(); \
+#define FUSE_GRAPH_TYPE_DEFINITION(...)                                                                                \
+  struct detail                                                                                                        \
+  {                                                                                                                    \
+    static std::string type()                                                                                          \
+    {                                                                                                                  \
+      return boost::typeindex::stl_type_index::type_id<__VA_ARGS__>().pretty_name();                                   \
+    } /* NOLINT */                                                                                                     \
+  };  /* NOLINT */                                                                                                     \
+  std::string type() const override                                                                                    \
+  {                                                                                                                    \
+    return detail::type();                                                                                             \
   }
 
 /**
-* @brief Convenience function that creates the required pointer aliases, and type() method
-*
-* Usage:
-* @code{.cpp}
-* class Derived : public Graph
-* {
-* public:
-*   FUSE_GRAPH_DEFINITIONS(Derived);
-*   // The rest of the derived graph implementation
-* }
-* @endcode
-*/
-#define FUSE_GRAPH_DEFINITIONS(...) \
-  FUSE_SMART_PTR_DEFINITIONS(__VA_ARGS__) \
-  FUSE_GRAPH_TYPE_DEFINITION(__VA_ARGS__) \
+ * @brief Convenience function that creates the required pointer aliases, and type() method
+ *
+ * Usage:
+ * @code{.cpp}
+ * class Derived : public Graph
+ * {
+ * public:
+ *   FUSE_GRAPH_DEFINITIONS(Derived);
+ *   // The rest of the derived graph implementation
+ * }
+ * @endcode
+ */
+#define FUSE_GRAPH_DEFINITIONS(...)                                                                                    \
+  SMART_PTR_DEFINITIONS(__VA_ARGS__)                                                                                   \
+  FUSE_GRAPH_TYPE_DEFINITION(__VA_ARGS__)                                                                              \
   FUSE_GRAPH_SERIALIZE_DEFINITION(__VA_ARGS__)
-
 
 namespace fuse_core
 {
-
 /**
  * @brief This is an interface definition describing the collection of constraints and variables that form the factor
  * graph, a graphical model of a nonlinear least-squares problem.
@@ -342,11 +339,10 @@ public:
    *                                 space/local coordinates. Otherwise it is computed in the variable's parameter
    *                                 space.
    */
-  virtual void getCovariance(
-    const std::vector<std::pair<UUID, UUID>>& covariance_requests,
-    std::vector<std::vector<double>>& covariance_matrices,
-    const ceres::Covariance::Options& options = ceres::Covariance::Options(),
-    const bool use_tangent_space = true) const = 0;
+  virtual void getCovariance(const std::vector<std::pair<UUID, UUID>>& covariance_requests,
+                             std::vector<std::vector<double>>& covariance_matrices,
+                             const ceres::Covariance::Options& options = ceres::Covariance::Options(),
+                             const bool use_tangent_space = true) const = 0;
 
   /**
    * @brief Update the graph with the contents of a transaction
@@ -378,9 +374,8 @@ public:
    *                    See https://ceres-solver.googlesource.com/ceres-solver/+/master/include/ceres/solver.h#59
    * @return            A Ceres Solver Summary structure containing information about the optimization process
    */
-  virtual ceres::Solver::Summary optimizeFor(
-    const ros::Duration& max_optimization_time,
-    const ceres::Solver::Options& options = ceres::Solver::Options()) = 0;
+  virtual ceres::Solver::Summary optimizeFor(const ros::Duration& max_optimization_time,
+                                             const ceres::Solver::Options& options = ceres::Solver::Options()) = 0;
 
   /**
    * @brief Evalute the values of the current set of variables, given the current set of constraints.
@@ -410,8 +405,8 @@ public:
    */
   struct ConstraintCost
   {
-    double cost {};  //!< The pre-loss-function cost of the constraint, computed as the norm of the residuals
-    double loss {};  //!< The final cost of the constraint after any loss functions have been applied
+    double cost{};  //!< The pre-loss-function cost of the constraint, computed as the norm of the residuals
+    double loss{};  //!< The final cost of the constraint after any loss functions have been applied
     std::vector<double> residuals;  //!< The individual residuals for the constraint
   };
 
@@ -425,10 +420,7 @@ public:
    * @param[out] output  An output iterator capable of assignment to a ConstraintCost object
    */
   template <class UuidForwardIterator, class OutputIterator>
-  void getConstraintCosts(
-    UuidForwardIterator first,
-    UuidForwardIterator last,
-    OutputIterator output);
+  void getConstraintCosts(UuidForwardIterator first, UuidForwardIterator last, OutputIterator output);
 
   /**
    * @brief Print a human-readable description of the graph to the provided stream.
@@ -499,7 +491,7 @@ private:
    * @param[in/out] archive - The archive object that holds the serialized class members
    * @param[in] version - The version of the archive being read/written. Generally unused.
    */
-  template<class Archive>
+  template <class Archive>
   void serialize(Archive& /* archive */, const unsigned int /* version */)
   {
   }
@@ -508,14 +500,10 @@ private:
 /**
  * Stream operator for printing Graph objects.
  */
-std::ostream& operator <<(std::ostream& stream, const Graph& graph);
-
+std::ostream& operator<<(std::ostream& stream, const Graph& graph);
 
 template <class UuidForwardIterator, class OutputIterator>
-void Graph::getConstraintCosts(
-  UuidForwardIterator first,
-  UuidForwardIterator last,
-  OutputIterator output)
+void Graph::getConstraintCosts(UuidForwardIterator first, UuidForwardIterator last, OutputIterator output)
 {
   // @todo(swilliams) When I eventually refactor the Graph class to implement more of the requirements in the base
   //                  class, it should be possible to make better use of the Problem object and avoid creating and
@@ -539,7 +527,7 @@ void Graph::getConstraintCosts(
     cost_function->Evaluate(parameter_blocks.data(), cost.residuals.data(), nullptr);
     // Compute the combined cost
     cost.cost =
-      std::sqrt(std::inner_product(cost.residuals.begin(), cost.residuals.end(), cost.residuals.begin(), 0.0));
+        std::sqrt(std::inner_product(cost.residuals.begin(), cost.residuals.end(), cost.residuals.begin(), 0.0));
     // Apply the loss function, if one is configured
     auto loss_function = std::unique_ptr<ceres::LossFunction>(constraint.lossFunction());
     if (loss_function)

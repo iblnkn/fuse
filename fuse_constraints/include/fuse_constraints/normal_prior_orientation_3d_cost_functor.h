@@ -42,10 +42,8 @@
 #include <ceres/rotation.h>
 #include <Eigen/Core>
 
-
 namespace fuse_constraints
 {
-
 /**
  * @brief Create a prior cost function on a 3D orientation variable (quaternion)
  *
@@ -78,11 +76,7 @@ public:
    *              (quaternion_x, quaternion_y, quaternion_z)
    * @param[in] b The orientation measurement or prior in order (w, x, y, z)
    */
-  NormalPriorOrientation3DCostFunctor(
-    const fuse_core::Matrix3d& A,
-    const fuse_core::Vector4d& b) :
-      A_(A),
-      b_(b)
+  NormalPriorOrientation3DCostFunctor(const fuse_core::Matrix3d& A, const fuse_core::Vector4d& b) : A_(A), b_(b)
   {
   }
 
@@ -95,21 +89,9 @@ public:
     using fuse_variables::Orientation3DStamped;
 
     // Compute the delta quaternion
-    T variable[4] =
-    {
-      orientation[0],
-      orientation[1],
-      orientation[2],
-      orientation[3]
-    };
+    T variable[4] = { orientation[0], orientation[1], orientation[2], orientation[3] };
 
-    T observation_inverse[4] =
-    {
-      T(b_(0)),
-      T(-b_(1)),
-      T(-b_(2)),
-      T(-b_(3))
-    };
+    T observation_inverse[4] = { T(b_(0)), T(-b_(1)), T(-b_(2)), T(-b_(3)) };
 
     T difference[4];
     ceres::QuaternionProduct(observation_inverse, variable, difference);

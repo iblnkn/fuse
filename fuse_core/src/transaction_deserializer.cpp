@@ -38,10 +38,8 @@
 
 #include <boost/iostreams/stream.hpp>
 
-
 namespace fuse_core
 {
-
 void serializeTransaction(const fuse_core::Transaction& transaction, fuse_msgs::SerializedTransaction& msg)
 {
   // Serialize the transaction into the msg.data field
@@ -53,10 +51,10 @@ void serializeTransaction(const fuse_core::Transaction& transaction, fuse_msgs::
   }
 }
 
-TransactionDeserializer::TransactionDeserializer() :
-  variable_loader_("fuse_core", "fuse_core::Variable"),
-  constraint_loader_("fuse_core", "fuse_core::Constraint"),
-  loss_loader_("fuse_core", "fuse_core::Loss")
+TransactionDeserializer::TransactionDeserializer()
+  : variable_loader_("fuse_core", "fuse_core::Variable")
+  , constraint_loader_("fuse_core", "fuse_core::Constraint")
+  , loss_loader_("fuse_core", "fuse_core::Loss")
 {
   // Load all known plugin libraries
   // I believe the library containing a given Variable or Constraint must be loaded in order to deserialize

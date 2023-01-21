@@ -42,10 +42,8 @@
 
 #include <string>
 
-
 namespace fuse_publishers
 {
-
 /**
  * @brief Publisher plugin that publishes all of the stamped 2D poses as a nav_msgs::Path message.
  *
@@ -81,14 +79,13 @@ public:
    * @param[in] transaction A Transaction object, describing the set of variables that have been added and/or removed
    * @param[in] graph       A read-only pointer to the graph object, allowing queries to be performed whenever needed
    */
-  void notifyCallback(
-    fuse_core::Transaction::ConstSharedPtr transaction,
-    fuse_core::Graph::ConstSharedPtr graph) override;
+  void notifyCallback(fuse_core::Transaction::ConstSharedPtr transaction,
+                      fuse_core::Graph::ConstSharedPtr graph) override;
 
 protected:
-  fuse_core::UUID device_id_;  //!< The UUID of the device to be published
-  std::string frame_id_;  //!< The name of the frame for this path
-  ros::Publisher path_publisher_;  //!< The publisher that sends the entire robot trajectory as a path
+  fuse_core::UUID device_id_;            //!< The UUID of the device to be published
+  std::string frame_id_;                 //!< The name of the frame for this path
+  ros::Publisher path_publisher_;        //!< The publisher that sends the entire robot trajectory as a path
   ros::Publisher pose_array_publisher_;  //!< The publisher that sends the entire robot trajectory as a pose array
 };
 

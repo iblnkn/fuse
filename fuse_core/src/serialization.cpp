@@ -36,13 +36,9 @@
 #include <algorithm>
 #include <vector>
 
-
 namespace fuse_core
 {
-
-MessageBufferStreamSource::MessageBufferStreamSource(const std::vector<unsigned char>& data) :
-  data_(data),
-  index_(0)
+MessageBufferStreamSource::MessageBufferStreamSource(const std::vector<unsigned char>& data) : data_(data), index_(0)
 {
 }
 
@@ -61,8 +57,7 @@ std::streamsize MessageBufferStreamSource::read(char_type* s, std::streamsize n)
   }
 }
 
-MessageBufferStreamSink::MessageBufferStreamSink(std::vector<unsigned char>& data) :
-  data_(data)
+MessageBufferStreamSink::MessageBufferStreamSink(std::vector<unsigned char>& data) : data_(data)
 {
 }
 

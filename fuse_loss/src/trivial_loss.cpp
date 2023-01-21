@@ -40,10 +40,8 @@
 
 #include <ostream>
 
-
 namespace fuse_loss
 {
-
 void TrivialLoss::print(std::ostream& stream) const
 {
   stream << type() << "\n";

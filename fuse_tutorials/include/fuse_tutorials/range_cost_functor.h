@@ -87,7 +87,9 @@ public:
    * @param[in] z The measured range to the beacon
    * @param[in] sigma The standard deviation of the range measurement
    */
-  RangeCostFunctor(const double z, const double sigma) : sigma_(sigma), z_(z) {}
+  RangeCostFunctor(const double z, const double sigma) : sigma_(sigma), z_(z)
+  {
+  }
 
   /**
    * @brief Compute the costs using the provided stored measurement details and the provided variable values.
@@ -138,7 +140,7 @@ public:
 
 private:
   double sigma_;  //!< The standard deviation of the range measurement
-  double z_;  //!< The measured range to the beacon
+  double z_;      //!< The measured range to the beacon
 };
 
 }  // namespace fuse_tutorials

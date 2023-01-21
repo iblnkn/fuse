@@ -37,29 +37,23 @@
 #include <Eigen/Core>
 #include <glog/logging.h>
 
-
 namespace fuse_constraints
 {
-
-NormalDeltaPose3D::NormalDeltaPose3D(const fuse_core::MatrixXd& A, const fuse_core::Vector7d& b) :
-  A_(A),
-  b_(b)
+NormalDeltaPose3D::NormalDeltaPose3D(const fuse_core::MatrixXd& A, const fuse_core::Vector7d& b) : A_(A), b_(b)
 {
   CHECK_GT(A_.rows(), 0);
   CHECK_EQ(A_.cols(), 7);
   set_num_residuals(A_.rows());
 }
 
-bool NormalDeltaPose3D::Evaluate(
-  double const* const* parameters,
-  double* residuals,
-  double** jacobians) const
-{//TODO::There is no way this is right
-  const fuse_core::Matrix3d R1_transpose = fuse_core::rotationMatrix3D(parameters[1][0], parameters[1][0], parameters[1][0]).transpose();  // orientation1
+bool NormalDeltaPose3D::Evaluate(double const* const* parameters, double* residuals, double** jacobians) const
+{  // TODO::There is no way this is right
+  const fuse_core::Matrix3d R1_transpose =
+      fuse_core::rotationMatrix3D(parameters[1][0], parameters[1][0], parameters[1][0]).transpose();  // orientation1
   const fuse_core::Vector3d position_delta =
       R1_transpose * fuse_core::Vector3d(parameters[2][0] - parameters[0][0],   // position2.x - position1.x
-                                         parameters[2][1] - parameters[0][1],  // position2.y - position1.y
-                                         parameters[2][2] - parameters[0][2]);   // position2.z - position1.z
+                                         parameters[2][1] - parameters[0][1],   // position2.y - position1.y
+                                         parameters[2][2] - parameters[0][2]);  // position2.z - position1.z
 
   const fuse_core::Vector3d full_residuals_vector(
       position_delta[0] - b_[0], position_delta[1] - b_[1],
@@ -80,7 +74,7 @@ bool NormalDeltaPose3D::Evaluate(
     // Jacobian wrt orientation1
     if (jacobians[1] != nullptr)
     {
-       Eigen::Map<fuse_core::MatrixXd>(jacobians[1], num_residuals(), 2) = -A_.leftCols<3>() * R1_transpose;
+      Eigen::Map<fuse_core::MatrixXd>(jacobians[1], num_residuals(), 2) = -A_.leftCols<3>() * R1_transpose;
     }
 
     // Jacobian wrt position2

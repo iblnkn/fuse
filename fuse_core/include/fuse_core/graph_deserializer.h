@@ -40,10 +40,8 @@
 #include <fuse_core/variable.h>
 #include <pluginlib/class_loader.h>
 
-
 namespace fuse_core
 {
-
 /**
  * @brief Serialize a graph into a message
  */
@@ -92,7 +90,7 @@ private:
   pluginlib::ClassLoader<fuse_core::Loss> loss_loader_;              //!< Pluginlib class loader for Loss types
   // TODO(efernandez) Try to make pluginlib::ClassLoader<T>::createUnmanagedInstance() method const, so we can remove
   // the mutable modifier here and still have the deserialize methods const
-  mutable pluginlib::ClassLoader<fuse_core::Graph> graph_loader_;    //!< Pluginlib class loader for Graph types
+  mutable pluginlib::ClassLoader<fuse_core::Graph> graph_loader_;  //!< Pluginlib class loader for Graph types
 };
 
 }  // namespace fuse_core

@@ -44,13 +44,9 @@
 #include <utility>
 #include <string>
 
-
 namespace fuse_core
 {
-
-AsyncPublisher::AsyncPublisher(size_t thread_count) :
-  name_("uninitialized"),
-  spinner_(thread_count, &callback_queue_)
+AsyncPublisher::AsyncPublisher(size_t thread_count) : name_("uninitialized"), spinner_(thread_count, &callback_queue_)
 {
 }
 
@@ -74,7 +70,7 @@ void AsyncPublisher::notify(Transaction::ConstSharedPtr transaction, Graph::Cons
   // Insert a call to the `notifyCallback` method into the internal callback queue.
   // This minimizes the time spent by the optimizer's thread calling this function.
   auto callback = boost::make_shared<CallbackWrapper<void>>(
-    std::bind(&AsyncPublisher::notifyCallback, this, std::move(transaction), std::move(graph)));
+      std::bind(&AsyncPublisher::notifyCallback, this, std::move(transaction), std::move(graph)));
   callback_queue_.addCallback(callback, reinterpret_cast<uint64_t>(this));
 }
 

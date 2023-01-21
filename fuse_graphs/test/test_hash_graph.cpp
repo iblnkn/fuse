@@ -72,32 +72,48 @@ public:
     if (expected.type() != actual.type())
     {
       variables_equal = false;
-      failure_description += "The variables have different types.\n"
-        "  expected type is '" + expected.type() + "'\n"
-        "    actual type is '" + actual.type() + "'\n";
+      failure_description +=
+          "The variables have different types.\n"
+          "  expected type is '" +
+          expected.type() +
+          "'\n"
+          "    actual type is '" +
+          actual.type() + "'\n";
     }
     if (expected.size() != actual.size())
     {
       variables_equal = false;
-      failure_description += "The variables have different sizes.\n"
-        "  expected size is '" + std::to_string(expected.size()) + "'\n"
-        "    actual size is '" + std::to_string(actual.size()) + "'\n";
+      failure_description +=
+          "The variables have different sizes.\n"
+          "  expected size is '" +
+          std::to_string(expected.size()) +
+          "'\n"
+          "    actual size is '" +
+          std::to_string(actual.size()) + "'\n";
     }
     if (expected.uuid() != actual.uuid())
     {
       variables_equal = false;
-      failure_description += "The variables have different UUIDs.\n"
-        "  expected UUID is '" + fuse_core::uuid::to_string(expected.uuid()) + "'\n"
-        "    actual UUID is '" + fuse_core::uuid::to_string(actual.uuid()) + "'\n";
+      failure_description +=
+          "The variables have different UUIDs.\n"
+          "  expected UUID is '" +
+          fuse_core::uuid::to_string(expected.uuid()) +
+          "'\n"
+          "    actual UUID is '" +
+          fuse_core::uuid::to_string(actual.uuid()) + "'\n";
     }
     for (size_t i = 0; i < expected.size(); ++i)
     {
       if (expected.data()[i] != actual.data()[i])
       {
         variables_equal = false;
-        failure_description += "The variables have different values.\n"
-          "  expected data(" + std::to_string(i) + ") is '" + std::to_string(expected.data()[i]) + "'\n"
-          "    actual data(" + std::to_string(i) + ") is '" + std::to_string(actual.data()[i]) + "'\n";
+        failure_description +=
+            "The variables have different values.\n"
+            "  expected data(" +
+            std::to_string(i) + ") is '" + std::to_string(expected.data()[i]) +
+            "'\n"
+            "    actual data(" +
+            std::to_string(i) + ") is '" + std::to_string(actual.data()[i]) + "'\n";
       }
     }
     return variables_equal;
@@ -117,23 +133,35 @@ public:
     if (expected.type() != actual.type())
     {
       constraints_equal = false;
-      failure_description += "The constraints have different types.\n"
-        "  expected type is '" + expected.type() + "'\n"
-        "    actual type is '" + actual.type() + "'\n";
+      failure_description +=
+          "The constraints have different types.\n"
+          "  expected type is '" +
+          expected.type() +
+          "'\n"
+          "    actual type is '" +
+          actual.type() + "'\n";
     }
     if (expected.uuid() != actual.uuid())
     {
       constraints_equal = false;
-      failure_description += "The constraints have different UUIDs.\n"
-        "  expected UUID is '" + fuse_core::uuid::to_string(expected.uuid()) + "'\n"
-        "    actual UUID is '" + fuse_core::uuid::to_string(actual.uuid()) + "'\n";
+      failure_description +=
+          "The constraints have different UUIDs.\n"
+          "  expected UUID is '" +
+          fuse_core::uuid::to_string(expected.uuid()) +
+          "'\n"
+          "    actual UUID is '" +
+          fuse_core::uuid::to_string(actual.uuid()) + "'\n";
     }
     if (expected.variables().size() != actual.variables().size())
     {
       constraints_equal = false;
-      failure_description += "The constraints involve a different number of variables.\n"
-        "  expected variable count is '" + std::to_string(expected.variables().size()) + "'\n"
-        "    actual variable count is '" + std::to_string(actual.variables().size()) + "'\n";
+      failure_description +=
+          "The constraints involve a different number of variables.\n"
+          "  expected variable count is '" +
+          std::to_string(expected.variables().size()) +
+          "'\n"
+          "    actual variable count is '" +
+          std::to_string(actual.variables().size()) + "'\n";
     }
     for (size_t i = 0; i < expected.variables().size(); ++i)
     {
@@ -141,15 +169,19 @@ public:
       {
         constraints_equal = false;
         std::string i_str = std::to_string(i);
-        failure_description += "The constraints involve different variable UUIDs.\n"
-          "  expected variables(" + i_str + ") is '" + fuse_core::uuid::to_string(expected.variables()[i]) + "'\n"
-          "    actual variables(" + i_str + ") is '" + fuse_core::uuid::to_string(actual.variables()[i]) + "'\n";
+        failure_description +=
+            "The constraints involve different variable UUIDs.\n"
+            "  expected variables(" +
+            i_str + ") is '" + fuse_core::uuid::to_string(expected.variables()[i]) +
+            "'\n"
+            "    actual variables(" +
+            i_str + ") is '" + fuse_core::uuid::to_string(actual.variables()[i]) + "'\n";
       }
     }
     return constraints_equal;
   }
 
-  std::string failure_description { "" };  //!< The last failure description. Empty if no failure happened
+  std::string failure_description{ "" };  //!< The last failure description. Empty if no failure happened
 };
 
 TEST_F(HashGraphTestFixture, AddVariable)
@@ -806,11 +838,11 @@ TEST_F(HashGraphTestFixture, GetCovariance)
     // [ XX (2x2), XY(2x3), XZ (2x1)]
     // [ YX (3x2), YY(3x3), YZ (3x1)]
     // [ ZX (1x2), ZY(1x3), ZZ (1x1)]
-    std::vector<double> expected0 = { 7.0747e-02, -8.4923e-03, -8.4923e-03, 8.1352e-02};  // XX
-    std::vector<double> expected1 = { 1.6821e-02,  3.3643e-02,  5.0464e-02, 2.4758e-02, 4.9517e-02, 7.4275e-02};  // XY
-    std::vector<double> expected2 = { 1.6821e-02,  2.4758e-02,  3.3643e-02, 4.9517e-02, 5.0464e-02, 7.4275e-02};  // YX
-    std::vector<double> expected3 = { 1.6821e-02,  3.3643e-02,  5.0464e-02, 2.4758e-02, 4.9517e-02, 7.4275e-02};  // XY
-    std::vector<double> expected4 = {-6.5325e-05, -1.3065e-04, -1.9598e-04};  // ZY
+    std::vector<double> expected0 = { 7.0747e-02, -8.4923e-03, -8.4923e-03, 8.1352e-02 };                        // XX
+    std::vector<double> expected1 = { 1.6821e-02, 3.3643e-02, 5.0464e-02, 2.4758e-02, 4.9517e-02, 7.4275e-02 };  // XY
+    std::vector<double> expected2 = { 1.6821e-02, 2.4758e-02, 3.3643e-02, 4.9517e-02, 5.0464e-02, 7.4275e-02 };  // YX
+    std::vector<double> expected3 = { 1.6821e-02, 3.3643e-02, 5.0464e-02, 2.4758e-02, 4.9517e-02, 7.4275e-02 };  // XY
+    std::vector<double> expected4 = { -6.5325e-05, -1.3065e-04, -1.9598e-04 };                                   // ZY
 
     ASSERT_EQ(expected0.size(), actual0.size());
     for (size_t i = 0; i < expected0.size(); ++i)
@@ -846,7 +878,7 @@ TEST_F(HashGraphTestFixture, GetCovariance)
 
 TEST_F(HashGraphTestFixture, Copy)
 {
-    // Create the graph
+  // Create the graph
   fuse_graphs::HashGraph graph;
 
   // Add a few variables
@@ -1019,7 +1051,7 @@ TEST_F(HashGraphTestFixture, GetConstraintCosts)
   EXPECT_NEAR(costs[1].residuals[0], 1.0, 1.0e-5);
 }
 
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
   testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();

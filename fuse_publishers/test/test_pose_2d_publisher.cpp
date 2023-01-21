@@ -51,7 +51,6 @@
 
 #include <vector>
 
-
 /**
  * @brief Test fixture for the LatestStampedPose2DPublisher
  *
@@ -61,13 +60,13 @@
 class Pose2DPublisherTestFixture : public ::testing::Test
 {
 public:
-  Pose2DPublisherTestFixture() :
-    private_node_handle_("~"),
-    graph_(fuse_graphs::HashGraph::make_shared()),
-    transaction_(fuse_core::Transaction::make_shared()),
-    received_pose_msg_(false),
-    received_pose_with_covariance_msg_(false),
-    received_tf_msg_(false)
+  Pose2DPublisherTestFixture()
+    : private_node_handle_("~")
+    , graph_(fuse_graphs::HashGraph::make_shared())
+    , transaction_(fuse_core::Transaction::make_shared())
+    , received_pose_msg_(false)
+    , received_pose_with_covariance_msg_(false)
+    , received_tf_msg_(false)
   {
     // Add a few pose variables
     auto position1 = fuse_variables::Position2DStamped::make_shared(ros::Time(1234, 10));
@@ -85,12 +84,12 @@ public:
     position3->y() = 2.03;
     auto orientation3 = fuse_variables::Orientation2DStamped::make_shared(ros::Time(1235, 9));
     orientation3->yaw() = 3.03;
-    auto position4 = fuse_variables::Position2DStamped::make_shared(ros::Time(1235, 11),
-                                                                    fuse_core::uuid::generate("kitt"));
+    auto position4 =
+        fuse_variables::Position2DStamped::make_shared(ros::Time(1235, 11), fuse_core::uuid::generate("kitt"));
     position4->x() = 1.04;
     position4->y() = 2.04;
-    auto orientation4 = fuse_variables::Orientation2DStamped::make_shared(ros::Time(1235, 11),
-                                                                          fuse_core::uuid::generate("kitt"));
+    auto orientation4 =
+        fuse_variables::Orientation2DStamped::make_shared(ros::Time(1235, 11), fuse_core::uuid::generate("kitt"));
     orientation4->yaw() = 3.04;
 
     transaction_->addInvolvedStamp(position1->stamp());
@@ -113,27 +112,27 @@ public:
     fuse_core::Vector3d mean1;
     mean1 << 1.01, 2.01, 3.01;
     fuse_core::Matrix3d cov1;
-    cov1 << 1.01, 0.0, 0.0,  0.0, 2.01, 0.0,  0.0, 0.0, 3.01;
-    auto constraint1 = fuse_constraints::AbsolutePose2DStampedConstraint::make_shared(
-      "test", *position1, *orientation1, mean1, cov1);
+    cov1 << 1.01, 0.0, 0.0, 0.0, 2.01, 0.0, 0.0, 0.0, 3.01;
+    auto constraint1 =
+        fuse_constraints::AbsolutePose2DStampedConstraint::make_shared("test", *position1, *orientation1, mean1, cov1);
     fuse_core::Vector3d mean2;
     mean2 << 1.02, 2.02, 3.02;
     fuse_core::Matrix3d cov2;
-    cov2 << 1.02, 0.0, 0.0,  0.0, 2.02, 0.0,  0.0, 0.0, 3.02;
-    auto constraint2 = fuse_constraints::AbsolutePose2DStampedConstraint::make_shared(
-      "test", *position2, *orientation2, mean2, cov2);
+    cov2 << 1.02, 0.0, 0.0, 0.0, 2.02, 0.0, 0.0, 0.0, 3.02;
+    auto constraint2 =
+        fuse_constraints::AbsolutePose2DStampedConstraint::make_shared("test", *position2, *orientation2, mean2, cov2);
     fuse_core::Vector3d mean3;
     mean3 << 1.03, 2.03, 3.03;
     fuse_core::Matrix3d cov3;
-    cov3 << 1.03, 0.0, 0.0,  0.0, 2.03, 0.0,  0.0, 0.0, 3.03;
-    auto constraint3 = fuse_constraints::AbsolutePose2DStampedConstraint::make_shared(
-      "test", *position3, *orientation3, mean3, cov3);
+    cov3 << 1.03, 0.0, 0.0, 0.0, 2.03, 0.0, 0.0, 0.0, 3.03;
+    auto constraint3 =
+        fuse_constraints::AbsolutePose2DStampedConstraint::make_shared("test", *position3, *orientation3, mean3, cov3);
     fuse_core::Vector3d mean4;
     mean4 << 1.04, 2.04, 3.04;
     fuse_core::Matrix3d cov4;
-    cov4 << 1.04, 0.0, 0.0,  0.0, 2.04, 0.0,  0.0, 0.0, 3.04;
-    auto constraint4 = fuse_constraints::AbsolutePose2DStampedConstraint::make_shared(
-      "test", *position4, *orientation4, mean4, cov4);
+    cov4 << 1.04, 0.0, 0.0, 0.0, 2.04, 0.0, 0.0, 0.0, 3.04;
+    auto constraint4 =
+        fuse_constraints::AbsolutePose2DStampedConstraint::make_shared("test", *position4, *orientation4, mean4, cov4);
     transaction_->addConstraint(constraint1);
     transaction_->addConstraint(constraint2);
     transaction_->addConstraint(constraint3);
@@ -204,11 +203,9 @@ TEST_F(Pose2DPublisherTestFixture, PublishPose)
   publisher.start();
 
   // Subscribe to the "pose" topic
-  ros::Subscriber subscriber = private_node_handle_.subscribe(
-    "test_publisher/pose",
-    1,
-    &Pose2DPublisherTestFixture::poseCallback,
-    reinterpret_cast<Pose2DPublisherTestFixture*>(this));
+  ros::Subscriber subscriber =
+      private_node_handle_.subscribe("test_publisher/pose", 1, &Pose2DPublisherTestFixture::poseCallback,
+                                     reinterpret_cast<Pose2DPublisherTestFixture*>(this));
 
   // Send the graph to the Publisher to trigger message publishing
   publisher.notify(transaction_, graph_);
@@ -243,11 +240,9 @@ TEST_F(Pose2DPublisherTestFixture, PublishPoseWithCovariance)
   publisher.start();
 
   // Subscribe to the "pose_with_covariance" topic
-  ros::Subscriber subscriber = private_node_handle_.subscribe(
-    "test_publisher/pose_with_covariance",
-    1,
-    &Pose2DPublisherTestFixture::poseWithCovarianceCallback,
-    reinterpret_cast<Pose2DPublisherTestFixture*>(this));
+  ros::Subscriber subscriber = private_node_handle_.subscribe("test_publisher/pose_with_covariance", 1,
+                                                              &Pose2DPublisherTestFixture::poseWithCovarianceCallback,
+                                                              reinterpret_cast<Pose2DPublisherTestFixture*>(this));
 
   // Send the graph to the Publisher to trigger message publishing
   publisher.notify(transaction_, graph_);
@@ -266,15 +261,9 @@ TEST_F(Pose2DPublisherTestFixture, PublishPoseWithCovariance)
   EXPECT_NEAR(2.02, pose_with_covariance_msg_.pose.pose.position.y, 1.0e-9);
   EXPECT_NEAR(0.00, pose_with_covariance_msg_.pose.pose.position.z, 1.0e-9);
   EXPECT_NEAR(3.02, tf2::getYaw(pose_with_covariance_msg_.pose.pose.orientation), 1.0e-9);
-  std::vector<double> expected_covariance =
-  {
-    1.02, 0.00, 0.00, 0.00, 0.00, 0.00,
-    0.00, 2.02, 0.00, 0.00, 0.00, 0.00,
-    0.00, 0.00, 0.00, 0.00, 0.00, 0.00,
-    0.00, 0.00, 0.00, 0.00, 0.00, 0.00,
-    0.00, 0.00, 0.00, 0.00, 0.00, 0.00,
-    0.00, 0.00, 0.00, 0.00, 0.00, 3.02
-  };
+  std::vector<double> expected_covariance = { 1.02, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 2.02, 0.00, 0.00, 0.00, 0.00,
+                                              0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00,
+                                              0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 3.02 };
   for (size_t i = 0; i < 36; ++i)
   {
     EXPECT_NEAR(expected_covariance[i], pose_with_covariance_msg_.pose.covariance[i], 1.0e-9);
@@ -295,11 +284,8 @@ TEST_F(Pose2DPublisherTestFixture, PublishTfWithoutOdom)
   publisher.start();
 
   // Subscribe to the "pose" topic
-  ros::Subscriber subscriber = private_node_handle_.subscribe(
-    "/tf",
-    1,
-    &Pose2DPublisherTestFixture::tfCallback,
-    reinterpret_cast<Pose2DPublisherTestFixture*>(this));
+  ros::Subscriber subscriber = private_node_handle_.subscribe("/tf", 1, &Pose2DPublisherTestFixture::tfCallback,
+                                                              reinterpret_cast<Pose2DPublisherTestFixture*>(this));
 
   // Send the graph to the Publisher to trigger message publishing
   publisher.notify(transaction_, graph_);
@@ -335,11 +321,8 @@ TEST_F(Pose2DPublisherTestFixture, PublishTfWithOdom)
   publisher.start();
 
   // Subscribe to the "pose" topic
-  ros::Subscriber subscriber = private_node_handle_.subscribe(
-    "/tf",
-    1,
-    &Pose2DPublisherTestFixture::tfCallback,
-    reinterpret_cast<Pose2DPublisherTestFixture*>(this));
+  ros::Subscriber subscriber = private_node_handle_.subscribe("/tf", 1, &Pose2DPublisherTestFixture::tfCallback,
+                                                              reinterpret_cast<Pose2DPublisherTestFixture*>(this));
 
   // Send the graph to the Publisher to trigger message publishing
   publisher.notify(transaction_, graph_);

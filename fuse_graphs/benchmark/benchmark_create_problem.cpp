@@ -65,8 +65,7 @@ public:
 class ExampleFunctor
 {
 public:
-  explicit ExampleFunctor(const std::vector<double>& b) :
-    b_(b)
+  explicit ExampleFunctor(const std::vector<double>& b) : b_(b)
   {
   }
 
@@ -94,14 +93,15 @@ public:
 
   ExampleConstraint() = default;
 
-  template<typename VariableUuidIterator>
-  explicit ExampleConstraint(const std::string& source, VariableUuidIterator first, VariableUuidIterator last) :
-    fuse_core::Constraint(source, first, last),
-    data(std::distance(first, last), 0.0)
+  template <typename VariableUuidIterator>
+  explicit ExampleConstraint(const std::string& source, VariableUuidIterator first, VariableUuidIterator last)
+    : fuse_core::Constraint(source, first, last), data(std::distance(first, last), 0.0)
   {
   }
 
-  void print(std::ostream& /*stream = std::cout*/) const override {}
+  void print(std::ostream& /*stream = std::cout*/) const override
+  {
+  }
   ceres::CostFunction* costFunction() const override
   {
     auto cost_function = new ceres::DynamicAutoDiffCostFunction<ExampleFunctor>(new ExampleFunctor(data));
@@ -128,11 +128,11 @@ private:
    * @param[in/out] archive - The archive object that holds the serialized class members
    * @param[in] version - The version of the archive being read/written. Generally unused.
    */
-  template<class Archive>
+  template <class Archive>
   void serialize(Archive& archive, const unsigned int /* version */)
   {
-    archive & boost::serialization::base_object<fuse_core::Constraint>(*this);
-    archive & data;
+    archive& boost::serialization::base_object<fuse_core::Constraint>(*this);
+    archive& data;
   }
 };
 
@@ -187,6 +187,6 @@ static void BM_createProblem(benchmark::State& state)
   }
 }
 
-BENCHMARK(BM_createProblem)->RangeMultiplier(2)->Ranges({{200, 4000}, {2, 12}});  // NOLINT
+BENCHMARK(BM_createProblem)->RangeMultiplier(2)->Ranges({ { 200, 4000 }, { 2, 12 } });  // NOLINT
 
 BENCHMARK_MAIN();

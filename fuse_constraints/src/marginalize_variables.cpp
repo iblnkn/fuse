@@ -52,13 +52,10 @@
 #include <utility>
 #include <vector>
 
-
 namespace fuse_constraints
 {
-
-UuidOrdering computeEliminationOrder(
-  const std::vector<fuse_core::UUID>& marginalized_variables,
-  const fuse_core::Graph& graph)
+UuidOrdering computeEliminationOrder(const std::vector<fuse_core::UUID>& marginalized_variables,
+                                     const fuse_core::Graph& graph)
 {
   // COLAMD wants a somewhat weird structure
   // Variables are numbered sequentially in some arbitrary order. We call this the "variable index" order.
@@ -102,10 +99,8 @@ UuidOrdering computeEliminationOrder(
   }
 
   // Construct the CCOLAMD input structures
-  auto recommended_size = ccolamd_recommended(
-    variable_constraints.size(),
-    constraint_order.size(),
-    variable_order.size());
+  auto recommended_size =
+      ccolamd_recommended(variable_constraints.size(), constraint_order.size(), variable_order.size());
   auto A = std::vector<int>(recommended_size);
   auto p = std::vector<int>(variable_order.size() + 1);
 
@@ -136,15 +131,8 @@ UuidOrdering computeEliminationOrder(
   int stats[CCOLAMD_STATS];
 
   // Finally call CCOLAMD
-  auto success = ccolamd(
-    constraint_order.size(),
-    variable_order.size(),
-    recommended_size,
-    A.data(),
-    p.data(),
-    knobs,
-    stats,
-    variable_groups.data());
+  auto success = ccolamd(constraint_order.size(), variable_order.size(), recommended_size, A.data(), p.data(), knobs,
+                         stats, variable_groups.data());
   if (!success)
   {
     throw std::runtime_error("Failed to call CCOLAMD to generate the elimination order.");
@@ -162,23 +150,18 @@ UuidOrdering computeEliminationOrder(
   return elimination_order;
 }
 
-fuse_core::Transaction marginalizeVariables(
-  const std::string& source,
-  const std::vector<fuse_core::UUID>& marginalized_variables,
-  const fuse_core::Graph& graph)
+fuse_core::Transaction marginalizeVariables(const std::string& source,
+                                            const std::vector<fuse_core::UUID>& marginalized_variables,
+                                            const fuse_core::Graph& graph)
 {
-  return marginalizeVariables(
-    source,
-    marginalized_variables,
-    graph,
-    computeEliminationOrder(marginalized_variables, graph));
+  return marginalizeVariables(source, marginalized_variables, graph,
+                              computeEliminationOrder(marginalized_variables, graph));
 }
 
-fuse_core::Transaction marginalizeVariables(
-  const std::string& source,
-  const std::vector<fuse_core::UUID>& marginalized_variables,
-  const fuse_core::Graph& graph,
-  const fuse_constraints::UuidOrdering& elimination_order)
+fuse_core::Transaction marginalizeVariables(const std::string& source,
+                                            const std::vector<fuse_core::UUID>& marginalized_variables,
+                                            const fuse_core::Graph& graph,
+                                            const fuse_constraints::UuidOrdering& elimination_order)
 {
   // TODO(swilliams) The method used to marginalize variables assumes that all variables are fully constrained.
   //                 However, with the introduction of "variables held constant", it is possible to have a well-behaved
@@ -186,10 +169,8 @@ fuse_core::Transaction marginalizeVariables(
   //                 the problem before the linearization and solve steps. A similar approach should be implemented
   //                 here, but that will require a major refactor.
 
-  assert(std::all_of(marginalized_variables.begin(),
-                     marginalized_variables.end(),
-                     [&elimination_order, &marginalized_variables](const fuse_core::UUID& variable_uuid)
-                     {
+  assert(std::all_of(marginalized_variables.begin(), marginalized_variables.end(),
+                     [&elimination_order, &marginalized_variables](const fuse_core::UUID& variable_uuid) {
                        return elimination_order.exists(variable_uuid) &&
                               elimination_order.at(variable_uuid) < marginalized_variables.size();
                      }));  // NOLINT
@@ -278,10 +259,8 @@ namespace detail
  *  - https://github.com/ceres-solver/ceres-solver/blob/master/internal/ceres/residual_block.cc
  *  - https://github.com/ceres-solver/ceres-solver/blob/master/internal/ceres/corrector.cc
  */
-LinearTerm linearize(
-  const fuse_core::Constraint& constraint,
-  const fuse_core::Graph& graph,
-  const UuidOrdering& elimination_order)
+LinearTerm linearize(const fuse_core::Constraint& constraint, const fuse_core::Graph& graph,
+                     const UuidOrdering& elimination_order)
 {
   LinearTerm result;
 
@@ -321,10 +300,11 @@ LinearTerm linearize(
   }
   if (!success)
   {
-    throw std::runtime_error("Error in evaluating the cost function. There are two possible reasons. "
-                             "Either the CostFunction did not evaluate and fill all residual and jacobians "
-                             "that were requested or there was a non-finite value (nan/infinite) generated "
-                             "during the jacobian computation.");
+    throw std::runtime_error(
+        "Error in evaluating the cost function. There are two possible reasons. "
+        "Either the CostFunction did not evaluate and fill all residual and jacobians "
+        "that were requested or there was a non-finite value (nan/infinite) generated "
+        "during the jacobian computation.");
   }
 
   // Update the Jacobians with the manifolds. This potentially changes the size of the Jacobian block.
@@ -535,24 +515,18 @@ LinearTerm marginalizeNext(const std::vector<LinearTerm>& linear_terms)
   return marginal_term;
 }
 
-MarginalConstraint::SharedPtr createMarginalConstraint(
-  const std::string& source,
-  const LinearTerm& linear_term,
-  const fuse_core::Graph& graph,
-  const UuidOrdering& elimination_order)
+MarginalConstraint::SharedPtr createMarginalConstraint(const std::string& source, const LinearTerm& linear_term,
+                                                       const fuse_core::Graph& graph,
+                                                       const UuidOrdering& elimination_order)
 {
-  auto index_to_variable = [&graph, &elimination_order](const unsigned int index) -> const fuse_core::Variable&
-  {
+  auto index_to_variable = [&graph, &elimination_order](const unsigned int index) -> const fuse_core::Variable& {
     return graph.getVariable(elimination_order.at(index));
   };
 
   return MarginalConstraint::make_shared(
-    source,
-    boost::make_transform_iterator(linear_term.variables.begin(), index_to_variable),
-    boost::make_transform_iterator(linear_term.variables.end(), index_to_variable),
-    linear_term.A.begin(),
-    linear_term.A.end(),
-    linear_term.b);
+      source, boost::make_transform_iterator(linear_term.variables.begin(), index_to_variable),
+      boost::make_transform_iterator(linear_term.variables.end(), index_to_variable), linear_term.A.begin(),
+      linear_term.A.end(), linear_term.b);
 }
 
 }  // namespace detail

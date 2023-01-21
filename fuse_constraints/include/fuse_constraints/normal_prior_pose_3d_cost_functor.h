@@ -41,10 +41,8 @@
 
 #include <Eigen/Core>
 
-
 namespace fuse_constraints
 {
-
 /**
  * @brief Create a prior cost function on both the 3D position and orientation variables at once.
  *
@@ -92,10 +90,8 @@ private:
   NormalPriorOrientation3DCostFunctor orientation_functor_;
 };
 
-NormalPriorPose3DCostFunctor::NormalPriorPose3DCostFunctor(const fuse_core::Matrix6d& A, const fuse_core::Vector7d& b) :
-  A_(A),
-  b_(b),
-  orientation_functor_(fuse_core::Matrix3d::Identity(), b_.tail<4>())  // Delta will not be scaled
+NormalPriorPose3DCostFunctor::NormalPriorPose3DCostFunctor(const fuse_core::Matrix6d& A, const fuse_core::Vector7d& b)
+  : A_(A), b_(b), orientation_functor_(fuse_core::Matrix3d::Identity(), b_.tail<4>())  // Delta will not be scaled
 {
 }
 

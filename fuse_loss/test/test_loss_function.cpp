@@ -57,7 +57,6 @@
 // * Minor coding style changes.
 namespace
 {
-
 // Helper function for testing a LossFunction callback.
 //
 // Compares the values of rho'(s) and rho''(s) computed by the
@@ -98,7 +97,7 @@ void AssertLossFunctionIsValid(const ceres::LossFunction& loss, double s)
   ASSERT_NEAR(fd_1, rho[1], 1e-6);
 
   // Second derivative.
-  const double fd_2 = (fwd[0] - 2*rho[0] + bwd[0]) / (kH * kH);
+  const double fd_2 = (fwd[0] - 2 * rho[0] + bwd[0]) / (kH * kH);
   ASSERT_NEAR(fd_2, rho[2], 1e-6);
 }
 

@@ -36,10 +36,8 @@
 
 #include <ceres/sized_cost_function.h>
 
-
 namespace fuse_constraints
 {
-
 /**
  * @brief Implements a cost function that models a direct measurement or prior on a 2D orientation variable
  *
@@ -80,10 +78,7 @@ public:
    * @brief Compute the cost values/residuals, and optionally the Jacobians, using the provided variable/parameter
    *        values
    */
-  virtual bool Evaluate(
-    double const* const* parameters,
-    double* residuals,
-    double** jacobians) const;
+  virtual bool Evaluate(double const* const* parameters, double* residuals, double** jacobians) const;
 
 private:
   double A_;  //!< The residual weighting matrix, most likely the square root information matrix

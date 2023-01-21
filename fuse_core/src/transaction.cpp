@@ -45,10 +45,8 @@
 #include <ostream>
 #include <utility>
 
-
 namespace fuse_core
 {
-
 const ros::Time& Transaction::minStamp() const
 {
   if (involved_stamps_.empty())
@@ -80,14 +78,10 @@ void Transaction::addInvolvedStamp(const ros::Time& stamp)
 
 Transaction::const_constraint_range Transaction::addedConstraints() const
 {
-  auto to_constraint_ref = +[](const Constraint::SharedPtr& constraint) -> const Constraint&
-  {
-    return *constraint;
-  };
+  auto to_constraint_ref = +[](const Constraint::SharedPtr& constraint) -> const Constraint& { return *constraint; };
 
-  return const_constraint_range(
-    boost::make_transform_iterator(added_constraints_.cbegin(), to_constraint_ref),
-    boost::make_transform_iterator(added_constraints_.cend(), to_constraint_ref));
+  return const_constraint_range(boost::make_transform_iterator(added_constraints_.cbegin(), to_constraint_ref),
+                                boost::make_transform_iterator(added_constraints_.cend(), to_constraint_ref));
 }
 
 void Transaction::addConstraint(Constraint::SharedPtr constraint, bool overwrite)
@@ -103,8 +97,7 @@ void Transaction::addConstraint(Constraint::SharedPtr constraint, bool overwrite
   }
 
   // Also don't add the same constraint twice
-  auto is_constraint_added = [&constraint_uuid](const Constraint::SharedPtr& added_constraint)
-  {
+  auto is_constraint_added = [&constraint_uuid](const Constraint::SharedPtr& added_constraint) {
     return constraint_uuid == added_constraint->uuid();
   };
   auto added_constraints_iter = std::find_if(added_constraints_.begin(), added_constraints_.end(), is_constraint_added);
@@ -122,8 +115,7 @@ void Transaction::removeConstraint(const UUID& constraint_uuid)
 {
   // If the constraint being removed is in the 'added' container, then delete it from
   // the 'added' container instead of adding it to the 'removed' container.
-  auto is_constraint_added = [&constraint_uuid](const Constraint::SharedPtr& added_constraint)
-  {
+  auto is_constraint_added = [&constraint_uuid](const Constraint::SharedPtr& added_constraint) {
     return constraint_uuid == added_constraint->uuid();
   };
   auto added_constraints_iter = std::find_if(added_constraints_.begin(), added_constraints_.end(), is_constraint_added);
@@ -143,20 +135,16 @@ void Transaction::removeConstraint(const UUID& constraint_uuid)
 
 Transaction::const_variable_range Transaction::addedVariables() const
 {
-  auto to_variable_ref = +[](const Variable::SharedPtr& variable) -> const Variable&
-  {
-    return *variable;
-  };
+  auto to_variable_ref = +[](const Variable::SharedPtr& variable) -> const Variable& { return *variable; };
 
-  return const_variable_range(
-    boost::make_transform_iterator(added_variables_.cbegin(), to_variable_ref),
-    boost::make_transform_iterator(added_variables_.cend(), to_variable_ref));
+  return const_variable_range(boost::make_transform_iterator(added_variables_.cbegin(), to_variable_ref),
+                              boost::make_transform_iterator(added_variables_.cend(), to_variable_ref));
 }
 
 bool Transaction::empty() const
 {
-  return boost::empty(added_variables_) && boost::empty(removed_variables_) &&
-         boost::empty(added_constraints_) && boost::empty(removed_constraints_) && involved_stamps_.empty();
+  return boost::empty(added_variables_) && boost::empty(removed_variables_) && boost::empty(added_constraints_) &&
+         boost::empty(removed_constraints_) && involved_stamps_.empty();
 }
 
 void Transaction::addVariable(Variable::SharedPtr variable, bool overwrite)
@@ -173,8 +161,7 @@ void Transaction::addVariable(Variable::SharedPtr variable, bool overwrite)
   }
 
   // Also don't add the same variable twice
-  auto is_variable_added = [&variable_uuid](const Variable::SharedPtr& added_variable)
-  {
+  auto is_variable_added = [&variable_uuid](const Variable::SharedPtr& added_variable) {
     return variable_uuid == added_variable->uuid();
   };
   auto added_variables_iter = std::find_if(added_variables_.begin(), added_variables_.end(), is_variable_added);
@@ -192,8 +179,7 @@ void Transaction::removeVariable(const UUID& variable_uuid)
 {
   // If the variable being removed is in the 'added' container, then delete it from
   // the 'added' container instead of adding it to the 'removed' container.
-  auto is_variable_added = [&variable_uuid](const Variable::SharedPtr& added_variable)
-  {
+  auto is_variable_added = [&variable_uuid](const Variable::SharedPtr& added_variable) {
     return variable_uuid == added_variable->uuid();
   };
   auto added_variables_iter = std::find_if(added_variables_.begin(), added_variables_.end(), is_variable_added);
@@ -289,7 +275,7 @@ void Transaction::deserialize(fuse_core::TextInputArchive& archive)
   archive >> *this;
 }
 
-std::ostream& operator <<(std::ostream& stream, const Transaction& transaction)
+std::ostream& operator<<(std::ostream& stream, const Transaction& transaction)
 {
   transaction.print(stream);
   return stream;

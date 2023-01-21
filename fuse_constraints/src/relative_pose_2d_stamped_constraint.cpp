@@ -42,23 +42,15 @@
 #include <string>
 #include <vector>
 
-
 namespace fuse_constraints
 {
-
 RelativePose2DStampedConstraint::RelativePose2DStampedConstraint(
-  const std::string& source,
-  const fuse_variables::Position2DStamped& position1,
-  const fuse_variables::Orientation2DStamped& orientation1,
-  const fuse_variables::Position2DStamped& position2,
-  const fuse_variables::Orientation2DStamped& orientation2,
-  const fuse_core::VectorXd& partial_delta,
-  const fuse_core::MatrixXd& partial_covariance,
-  const std::vector<size_t>& linear_indices,
-  const std::vector<size_t>& angular_indices) :
-    fuse_core::Constraint(
-      source,
-      {position1.uuid(), orientation1.uuid(), position2.uuid(), orientation2.uuid()})  // NOLINT(whitespace/braces)
+    const std::string& source, const fuse_variables::Position2DStamped& position1,
+    const fuse_variables::Orientation2DStamped& orientation1, const fuse_variables::Position2DStamped& position2,
+    const fuse_variables::Orientation2DStamped& orientation2, const fuse_core::VectorXd& partial_delta,
+    const fuse_core::MatrixXd& partial_covariance, const std::vector<size_t>& linear_indices,
+    const std::vector<size_t>& angular_indices)
+  : fuse_core::Constraint(source, { position1.uuid(), orientation1.uuid(), position2.uuid(), orientation2.uuid() })
 {
   size_t total_variable_size = position1.size() + orientation1.size();
   size_t total_indices = linear_indices.size() + angular_indices.size();

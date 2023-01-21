@@ -45,7 +45,6 @@
 
 namespace fuse_models
 {
-
 /**
  * @brief An adapter-type sensor that produces transactions with the same added and removed constraints from an input
  * transaction. This is useful for debugging purposes because it allows to play back the recorded transactions.

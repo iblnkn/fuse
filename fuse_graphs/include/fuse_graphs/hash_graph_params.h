@@ -39,10 +39,8 @@
 
 #include <ceres/problem.h>
 
-
 namespace fuse_graphs
 {
-
 /**
  * @brief Defines the set of parameters required by the fuse_graphs::HashGraph class
  */

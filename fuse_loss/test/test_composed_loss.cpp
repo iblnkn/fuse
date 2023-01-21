@@ -59,7 +59,7 @@ TEST(ComposedLoss, Constructor)
     ASSERT_NE(nullptr, composed_loss_function);
 
     const double s = 1.5;
-    double rho[3] = {0.0};
+    double rho[3] = { 0.0 };
     composed_loss_function->Evaluate(s, rho);
 
     EXPECT_EQ(s, rho[0]);
@@ -85,10 +85,10 @@ TEST(ComposedLoss, Constructor)
     ASSERT_NE(nullptr, f_loss_function);
 
     const double s = 1.5;
-    double rho[3] = {0.0};
+    double rho[3] = { 0.0 };
     composed_loss_function->Evaluate(s, rho);
 
-    double f_rho[3] = {0.0};
+    double f_rho[3] = { 0.0 };
     f_loss_function->Evaluate(s, f_rho);
 
     // Make sure 'f(s) != s', i.e. it is not an inlier, which would be a trivial case
@@ -119,10 +119,10 @@ TEST(ComposedLoss, Constructor)
     ASSERT_NE(nullptr, g_loss_function);
 
     const double s = 1.5;
-    double rho[3] = {0.0};
+    double rho[3] = { 0.0 };
     composed_loss_function->Evaluate(s, rho);
 
-    double g_rho[3] = {0.0};
+    double g_rho[3] = { 0.0 };
     g_loss_function->Evaluate(s, g_rho);
 
     // Make sure 'g(s) != s', i.e. it is not an inlier, which would be a trivial case
@@ -158,16 +158,16 @@ TEST(ComposedLoss, Constructor)
     ASSERT_NE(nullptr, g_loss_function);
 
     const double s = 1.5;
-    double rho[3] = {0.0};
+    double rho[3] = { 0.0 };
     composed_loss_function->Evaluate(s, rho);
 
-    double g_rho[3] = {0.0};
+    double g_rho[3] = { 0.0 };
     g_loss_function->Evaluate(s, g_rho);
 
     // Make sure 'g(s) != s', i.e. it is not an inlier, which would be a trivial case
     ASSERT_NE(s, g_rho[0]);
 
-    double f_rho[3] = {0.0};
+    double f_rho[3] = { 0.0 };
     f_loss_function->Evaluate(g_rho[0], f_rho);
 
     // Make sure 'f(s) != s', i.e. it is not an inlier, which would be a trivial case
@@ -183,11 +183,12 @@ TEST(ComposedLoss, Constructor)
 
 struct CostFunctor
 {
-  explicit CostFunctor(const double data)
-    : data(data)
-  {}
+  explicit CostFunctor(const double data) : data(data)
+  {
+  }
 
-  template <typename T> bool operator()(const T* const x, T* residual) const
+  template <typename T>
+  bool operator()(const T* const x, T* residual) const
   {
     residual[0] = x[0] - T(data);
     return true;
@@ -231,20 +232,16 @@ TEST(ComposedLoss, Optimization)
   const size_t num_inliers{ 1000 };
   for (size_t i = 0; i < num_inliers; ++i)
   {
-    problem.AddResidualBlock(
-      new ceres::AutoDiffCostFunction<CostFunctor, 1, 1>(new CostFunctor(inlier)),
-      composed_loss.lossFunction(),  // A nullptr here would produce a slightly better solution
-      &x);
+    problem.AddResidualBlock(new ceres::AutoDiffCostFunction<CostFunctor, 1, 1>(new CostFunctor(inlier)),
+                             composed_loss.lossFunction(),  // A nullptr here would produce a slightly better solution
+                             &x);
   }
 
   // Add outlier constraints
   const size_t num_outliers{ 9 };
   for (size_t i = 0; i < num_outliers; ++i)
   {
-    problem.AddResidualBlock(
-      cost_function_outlier,
-      composed_loss.lossFunction(),
-      &x);
+    problem.AddResidualBlock(cost_function_outlier, composed_loss.lossFunction(), &x);
   }
 
   // Run the solver
@@ -308,10 +305,10 @@ TEST(ComposedLoss, Serialization)
 
   // Test inlier (s <= g_loss_a*g_loss_a)
   const double s = 0.95 * g_loss_a * g_loss_a;
-  double expected_rho[3] = {0.0};
+  double expected_rho[3] = { 0.0 };
   expected_loss_function->Evaluate(s, expected_rho);
 
-  double actual_rho[3] = {0.0};
+  double actual_rho[3] = { 0.0 };
   actual_loss_function->Evaluate(s, actual_rho);
 
   for (size_t i = 0; i < 3; ++i)

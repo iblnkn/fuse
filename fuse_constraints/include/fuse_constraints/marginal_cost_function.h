@@ -41,10 +41,8 @@
 
 #include <vector>
 
-
 namespace fuse_constraints
 {
-
 /**
  * @brief Implements a cost function designed for precomputed marginal distributions
  *
@@ -56,7 +54,7 @@ namespace fuse_constraints
  *
  * where, the A matrices and the b vector are fixed, x_bar is the linearization point used when calculating the A
  * matrices and b vector, and the minus operator in (x - x_bar) is provided by the variable's manifold.
- * 
+ *
  * The A matrices can have any number of rows, but they must all be the same. The number of columns of each A matrix
  * must match the associated variable's manifold size, and the number of rows of each x_bar must match
  * the associated variable's global size. The cost function will have the same number of residuals as the rows of A.
@@ -70,13 +68,11 @@ public:
    * @param[in] A                       The A matrix of the marginal cost (of the form A*(x - x_bar) + b)
    * @param[in] b                       The b vector of the marginal cost (of the form A*(x - x_bar) + b)
    * @param[in] x_bar                   The linearization point of the involved variables
-   * @param[in] manifolds The manifold associated with the variable
+   * @param[in] manifolds               The manifold associated with the variable
    */
-  MarginalCostFunction(
-    const std::vector<fuse_core::MatrixXd>& A,
-    const fuse_core::VectorXd& b,
-    const std::vector<fuse_core::VectorXd>& x_bar,
-    const std::vector<fuse_core::Manifold::SharedPtr>& manifolds);
+  MarginalCostFunction(const std::vector<fuse_core::MatrixXd>& A, const fuse_core::VectorXd& b,
+                       const std::vector<fuse_core::VectorXd>& x_bar,
+                       const std::vector<fuse_core::Manifold::SharedPtr>& manifolds);
 
   /**
    * @brief Destructor
@@ -87,19 +83,15 @@ public:
    * @brief Compute the cost values/residuals, and optionally the Jacobians, using the provided variable/parameter
    *        values
    */
-  bool Evaluate(
-    double const* const* parameters,
-    double* residuals,
-    double** jacobians) const override;
+  bool Evaluate(double const* const* parameters, double* residuals, double** jacobians) const override;
 
 private:
-  const std::vector<fuse_core::MatrixXd>& A_;  //!< The A matrices of the marginal cost
-  const fuse_core::VectorXd& b_;  //!< The b vector of the marginal cost
+  const std::vector<fuse_core::MatrixXd>& A_;                     //!< The A matrices of the marginal cost
+  const fuse_core::VectorXd& b_;                                  //!< The b vector of the marginal cost
   const std::vector<fuse_core::Manifold::SharedPtr>& manifolds_;  //!< Manifolds
-  const std::vector<fuse_core::VectorXd>& x_bar_;  //!< The linearization point of each variable
+  const std::vector<fuse_core::VectorXd>& x_bar_;                 //!< The linearization point of each variable
 };
 
 }  // namespace fuse_constraints
 
 #endif  // FUSE_CONSTRAINTS_MARGINAL_COST_FUNCTION_H
-

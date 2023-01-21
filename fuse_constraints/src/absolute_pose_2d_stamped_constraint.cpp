@@ -43,19 +43,14 @@
 #include <string>
 #include <vector>
 
-
 namespace fuse_constraints
 {
-
 AbsolutePose2DStampedConstraint::AbsolutePose2DStampedConstraint(
-  const std::string& source,
-  const fuse_variables::Position2DStamped& position,
-  const fuse_variables::Orientation2DStamped& orientation,
-  const fuse_core::VectorXd& partial_mean,
-  const fuse_core::MatrixXd& partial_covariance,
-  const std::vector<size_t>& linear_indices,
-  const std::vector<size_t>& angular_indices) :
-    fuse_core::Constraint(source, {position.uuid(), orientation.uuid()})  // NOLINT(whitespace/braces)
+    const std::string& source, const fuse_variables::Position2DStamped& position,
+    const fuse_variables::Orientation2DStamped& orientation, const fuse_core::VectorXd& partial_mean,
+    const fuse_core::MatrixXd& partial_covariance, const std::vector<size_t>& linear_indices,
+    const std::vector<size_t>& angular_indices)
+  : fuse_core::Constraint(source, { position.uuid(), orientation.uuid() })  // NOLINT(whitespace/braces)
 {
   size_t total_variable_size = position.size() + orientation.size();
   size_t total_indices = linear_indices.size() + angular_indices.size();

@@ -40,7 +40,6 @@
 
 #include <gtest/gtest.h>
 
-
 using fuse_core::uuid::generate;
 using fuse_publishers::StampedVariableSynchronizer;
 using fuse_variables::Orientation2DStamped;

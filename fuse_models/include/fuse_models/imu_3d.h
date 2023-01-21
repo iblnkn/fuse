@@ -49,10 +49,8 @@
 
 #include <memory>
 
-
 namespace fuse_models
 {
-
 /**
  * @brief An adapter-type sensor that produces orientation (relative or absolute), angular velocity, and linear
  * acceleration constraints from IMU sensor data published by another node

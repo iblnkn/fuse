@@ -44,10 +44,8 @@
 #include <ostream>
 #include <string>
 
-
 namespace fuse_loss
 {
-
 /**
  * @brief The ScaledLoss loss function.
  *
@@ -154,12 +152,12 @@ private:
    * @param[in/out] archive - The archive object that holds the serialized class members
    * @param[in] version - The version of the archive being read/written. Generally unused.
    */
-  template<class Archive>
+  template <class Archive>
   void serialize(Archive& archive, const unsigned int /* version */)
   {
-    archive & boost::serialization::base_object<fuse_core::Loss>(*this);
-    archive & a_;
-    archive & loss_;
+    archive& boost::serialization::base_object<fuse_core::Loss>(*this);
+    archive& a_;
+    archive& loss_;
   }
 };
 

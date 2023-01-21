@@ -51,10 +51,8 @@
 #include <string>
 #include <vector>
 
-
 namespace fuse_constraints
 {
-
 /**
  * @brief A constraint that represents either prior information about a 3D pose, or a direct measurement of the 3D pose.
  *
@@ -85,14 +83,15 @@ public:
    * @param[in] covariance  The measurement/prior covariance (6x6 matrix: x, y, z, qx, qy, qz)
    */
   AbsolutePose3DStampedConstraint(
-    const std::string& source,
-    const fuse_variables::Position3DStamped& position,
-    const fuse_variables::Orientation3DStamped& orientation,
-    const fuse_core::VectorXd& partial_mean,
-    const fuse_core::MatrixXd& partial_covariance,
-    const std::vector<size_t>& linear_indices =
-      {fuse_variables::Position3DStamped::X, fuse_variables::Position3DStamped::Y, fuse_variables::Position3DStamped::Z},             // NOLINT
-    const std::vector<size_t>& angular_indices = {fuse_variables::Orientation3DStamped::X, fuse_variables::Orientation3DStamped::Y, fuse_variables::Orientation3DStamped::Z, fuse_variables::Orientation3DStamped::W });  // NOLINT;
+      const std::string& source, const fuse_variables::Position3DStamped& position,
+      const fuse_variables::Orientation3DStamped& orientation, const fuse_core::VectorXd& partial_mean,
+      const fuse_core::MatrixXd& partial_covariance,
+      const std::vector<size_t>& linear_indices = { fuse_variables::Position3DStamped::X,
+                                                    fuse_variables::Position3DStamped::Y,
+                                                    fuse_variables::Position3DStamped::Z },  // NOLINT
+      const std::vector<size_t>& angular_indices = {
+          fuse_variables::Orientation3DStamped::X, fuse_variables::Orientation3DStamped::Y,
+          fuse_variables::Orientation3DStamped::Z, fuse_variables::Orientation3DStamped::W });  // NOLINT;
 
   /**
    * @brief Destructor
@@ -104,14 +103,20 @@ public:
    *
    * Order is (x, y, z, qw, qx, qy, qz)
    */
-  const fuse_core::Vector7d& mean() const { return mean_; }
+  const fuse_core::Vector7d& mean() const
+  {
+    return mean_;
+  }
 
   /**
    * @brief Read-only access to the square root information matrix.
    *
    * Order is (x, y, z, qx, qy, qz)
    */
-  const fuse_core::MatrixXd& sqrtInformation() const { return sqrt_information_; }
+  const fuse_core::MatrixXd& sqrtInformation() const
+  {
+    return sqrt_information_;
+  }
 
   /**
    * @brief Compute the measurement covariance matrix.
@@ -139,7 +144,7 @@ public:
   ceres::CostFunction* costFunction() const override;
 
 protected:
-  fuse_core::Vector7d mean_;  //!< The measured/prior mean vector for this variable
+  fuse_core::Vector7d mean_;              //!< The measured/prior mean vector for this variable
   fuse_core::MatrixXd sqrt_information_;  //!< The square root information matrix
 
 private:
@@ -152,12 +157,12 @@ private:
    * @param[in/out] archive - The archive object that holds the serialized class members
    * @param[in] version - The version of the archive being read/written. Generally unused.
    */
-  template<class Archive>
+  template <class Archive>
   void serialize(Archive& archive, const unsigned int /* version */)
   {
-    archive & boost::serialization::base_object<fuse_core::Constraint>(*this);
-    archive & mean_;
-    archive & sqrt_information_;
+    archive& boost::serialization::base_object<fuse_core::Constraint>(*this);
+    archive& mean_;
+    archive& sqrt_information_;
   }
 };
 

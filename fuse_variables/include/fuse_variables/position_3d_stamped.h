@@ -47,10 +47,8 @@
 
 #include <ostream>
 
-
 namespace fuse_variables
 {
-
 /**
  * @brief Variable representing a 3D position (x, y, z) at a specific time and for a specific piece of hardware
  * (e.g., robot)
@@ -85,37 +83,55 @@ public:
    * @param[in] stamp     The timestamp attached to this position.
    * @param[in] device_id An optional device id, for use when variables originate from multiple robots or devices
    */
-  explicit Position3DStamped(const ros::Time& stamp, const fuse_core::UUID &device_id = fuse_core::uuid::NIL);
+  explicit Position3DStamped(const ros::Time& stamp, const fuse_core::UUID& device_id = fuse_core::uuid::NIL);
 
   /**
    * @brief Read-write access to the X-axis position.
    */
-  double& x() { return data_[X]; }
+  double& x()
+  {
+    return data_[X];
+  }
 
   /**
    * @brief Read-only access to the X-axis position.
    */
-  const double& x() const { return data_[X]; }
+  const double& x() const
+  {
+    return data_[X];
+  }
 
   /**
    * @brief Read-write access to the Y-axis position.
    */
-  double& y() { return data_[Y]; }
+  double& y()
+  {
+    return data_[Y];
+  }
 
   /**
    * @brief Read-only access to the Y-axis position.
    */
-  const double& y() const { return data_[Y]; }
+  const double& y() const
+  {
+    return data_[Y];
+  }
 
   /**
    * @brief Read-write access to the Z-axis position.
    */
-  double& z() { return data_[Z]; }
+  double& z()
+  {
+    return data_[Z];
+  }
 
   /**
    * @brief Read-only access to the Z-axis position.
    */
-  const double& z() const { return data_[Z]; }
+  const double& z() const
+  {
+    return data_[Z];
+  }
 
   /**
    * @brief Print a human-readable description of the variable to the provided stream.
@@ -134,11 +150,11 @@ private:
    * @param[in/out] archive - The archive object that holds the serialized class members
    * @param[in] version - The version of the archive being read/written. Generally unused.
    */
-  template<class Archive>
+  template <class Archive>
   void serialize(Archive& archive, const unsigned int /* version */)
   {
-    archive & boost::serialization::base_object<FixedSizeVariable<SIZE>>(*this);
-    archive & boost::serialization::base_object<Stamped>(*this);
+    archive& boost::serialization::base_object<FixedSizeVariable<SIZE>>(*this);
+    archive& boost::serialization::base_object<Stamped>(*this);
   }
 };
 

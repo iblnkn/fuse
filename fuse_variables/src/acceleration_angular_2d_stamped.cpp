@@ -43,13 +43,10 @@
 
 #include <ostream>
 
-
 namespace fuse_variables
 {
-
-AccelerationAngular2DStamped::AccelerationAngular2DStamped(const ros::Time& stamp, const fuse_core::UUID& device_id) :
-  FixedSizeVariable<1>(fuse_core::uuid::generate(detail::type(), stamp, device_id)),
-  Stamped(stamp, device_id)
+AccelerationAngular2DStamped::AccelerationAngular2DStamped(const ros::Time& stamp, const fuse_core::UUID& device_id)
+  : FixedSizeVariable<1>(fuse_core::uuid::generate(detail::type(), stamp, device_id)), Stamped(stamp, device_id)
 {
 }
 

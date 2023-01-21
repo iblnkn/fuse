@@ -45,7 +45,6 @@
 #include <ostream>
 #include <string>
 
-
 /**
  * @brief Dummy loss implementation for testing
  */
@@ -58,9 +57,13 @@ public:
   {
   }
 
-  void initialize(const std::string& /*name*/) override {}
+  void initialize(const std::string& /*name*/) override
+  {
+  }
 
-  void print(std::ostream& /*stream = std::cout*/) const override {}
+  void print(std::ostream& /*stream = std::cout*/) const override
+  {
+  }
 
   ceres::LossFunction* lossFunction() const override
   {
@@ -79,11 +82,11 @@ private:
    * @param[in/out] archive - The archive object that holds the serialized class members
    * @param[in] version - The version of the archive being read/written. Generally unused.
    */
-  template<class Archive>
+  template <class Archive>
   void serialize(Archive& archive, const unsigned int /* version */)
   {
-    archive & boost::serialization::base_object<fuse_core::Loss>(*this);
-    archive & a;
+    archive& boost::serialization::base_object<fuse_core::Loss>(*this);
+    archive& a;
   }
 };
 

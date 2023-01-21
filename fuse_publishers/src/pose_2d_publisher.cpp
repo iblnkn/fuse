@@ -53,30 +53,22 @@
 #include <utility>
 #include <vector>
 
-
 // Register this publisher with ROS as a plugin.
 PLUGINLIB_EXPORT_CLASS(fuse_publishers::Pose2DPublisher, fuse_core::Publisher);
 
 // Some file-scope functions in an anonymous namespace
 namespace
 {
-
-bool findPose(
-  const fuse_core::Graph& graph,
-  const ros::Time& stamp,
-  const fuse_core::UUID& device_id,
-  fuse_core::UUID& orientation_uuid,
-  fuse_core::UUID& position_uuid,
-  geometry_msgs::Pose& pose)
+bool findPose(const fuse_core::Graph& graph, const ros::Time& stamp, const fuse_core::UUID& device_id,
+              fuse_core::UUID& orientation_uuid, fuse_core::UUID& position_uuid, geometry_msgs::Pose& pose)
 {
   try
   {
     orientation_uuid = fuse_variables::Orientation2DStamped(stamp, device_id).uuid();
-    auto orientation_variable = dynamic_cast<const fuse_variables::Orientation2DStamped&>(
-      graph.getVariable(orientation_uuid));
+    auto orientation_variable =
+        dynamic_cast<const fuse_variables::Orientation2DStamped&>(graph.getVariable(orientation_uuid));
     position_uuid = fuse_variables::Position2DStamped(stamp, device_id).uuid();
-    auto position_variable = dynamic_cast<const fuse_variables::Position2DStamped&>(
-      graph.getVariable(position_uuid));
+    auto position_variable = dynamic_cast<const fuse_variables::Position2DStamped&>(graph.getVariable(position_uuid));
     pose.position.x = position_variable.x();
     pose.position.y = position_variable.y();
     pose.position.z = 0.0;
@@ -102,12 +94,8 @@ bool findPose(
 
 namespace fuse_publishers
 {
-
-Pose2DPublisher::Pose2DPublisher() :
-  fuse_core::AsyncPublisher(1),
-  device_id_(fuse_core::uuid::NIL),
-  publish_to_tf_(false),
-  use_tf_lookup_(false)
+Pose2DPublisher::Pose2DPublisher()
+  : fuse_core::AsyncPublisher(1), device_id_(fuse_core::uuid::NIL), publish_to_tf_(false), use_tf_lookup_(false)
 {
 }
 
@@ -139,8 +127,8 @@ void Pose2DPublisher::onInit()
       private_node_handle_.param("tf_cache_time", tf_cache_time, default_tf_cache_time);
       if (tf_cache_time <= 0)
       {
-        ROS_WARN_STREAM("The requested tf_cache_time is <= 0. Using the default value (" <<
-                        default_tf_cache_time << "s) instead.");
+        ROS_WARN_STREAM("The requested tf_cache_time is <= 0. Using the default value (" << default_tf_cache_time
+                                                                                         << "s) instead.");
         tf_cache_time = default_tf_cache_time;
       }
 
@@ -149,8 +137,8 @@ void Pose2DPublisher::onInit()
       private_node_handle_.param("tf_timeout", tf_timeout, default_tf_timeout);
       if (tf_timeout <= 0)
       {
-        ROS_WARN_STREAM("The requested tf_timeout is <= 0. Using the default value (" <<
-                        default_tf_timeout << "s) instead.");
+        ROS_WARN_STREAM("The requested tf_timeout is <= 0. Using the default value (" << default_tf_timeout
+                                                                                      << "s) instead.");
         tf_timeout = default_tf_timeout;
       }
       tf_timeout_ = ros::Duration(tf_timeout);
@@ -164,18 +152,18 @@ void Pose2DPublisher::onInit()
     private_node_handle_.param("tf_publish_frequency", tf_publish_frequency, default_tf_publish_frequency);
     if (tf_publish_frequency <= 0)
     {
-      ROS_WARN_STREAM("The requested tf_publish_frequency is <= 0. Using the default value (" <<
-                      default_tf_publish_frequency << "hz) instead.");
+      ROS_WARN_STREAM("The requested tf_publish_frequency is <= 0. Using the default value ("
+                      << default_tf_publish_frequency << "hz) instead.");
       tf_publish_frequency = default_tf_publish_frequency;
     }
-    tf_publish_timer_ = private_node_handle_.createTimer(
-      ros::Duration(1.0 / tf_publish_frequency), &Pose2DPublisher::tfPublishTimerCallback, this, false, false);
+    tf_publish_timer_ = private_node_handle_.createTimer(ros::Duration(1.0 / tf_publish_frequency),
+                                                         &Pose2DPublisher::tfPublishTimerCallback, this, false, false);
   }
 
   // Advertise the topics
   pose_publisher_ = private_node_handle_.advertise<geometry_msgs::PoseStamped>("pose", 1);
-  pose_with_covariance_publisher_ = private_node_handle_.advertise<geometry_msgs::PoseWithCovarianceStamped>(
-    "pose_with_covariance", 1);
+  pose_with_covariance_publisher_ =
+      private_node_handle_.advertise<geometry_msgs::PoseWithCovarianceStamped>("pose_with_covariance", 1);
 }
 
 void Pose2DPublisher::onStart()
@@ -200,15 +188,14 @@ void Pose2DPublisher::onStop()
   }
 }
 
-void Pose2DPublisher::notifyCallback(
-  fuse_core::Transaction::ConstSharedPtr transaction,
-  fuse_core::Graph::ConstSharedPtr graph)
+void Pose2DPublisher::notifyCallback(fuse_core::Transaction::ConstSharedPtr transaction,
+                                     fuse_core::Graph::ConstSharedPtr graph)
 {
   auto latest_stamp = synchronizer_->findLatestCommonStamp(*transaction, *graph);
   if (latest_stamp == Synchronizer::TIME_ZERO)
   {
-    ROS_WARN_STREAM_THROTTLE(
-        10.0, "Failed to find a matching set of stamped pose variables with device id '" << device_id_ << "'.");
+    ROS_WARN_STREAM_THROTTLE(10.0, "Failed to find a matching set of stamped pose variables with device id '"
+                                       << device_id_ << "'.");
     return;
   }
   // Get the pose values associated with the selected timestamp
@@ -246,8 +233,8 @@ void Pose2DPublisher::notifyCallback(
       }
       catch (const std::exception& e)
       {
-        ROS_WARN_STREAM_THROTTLE(2.0, "Could not lookup the transform " << base_frame_ << "->" << odom_frame_ <<
-                                      ". Error: " << e.what());
+        ROS_WARN_STREAM_THROTTLE(2.0, "Could not lookup the transform " << base_frame_ << "->" << odom_frame_
+                                                                        << ". Error: " << e.what());
       }
     }
     else

@@ -51,17 +51,12 @@
 #include <utility>
 #include <vector>
 
-
 // Register this publisher with ROS as a plugin.
 PLUGINLIB_EXPORT_CLASS(fuse_publishers::Path3DPublisher, fuse_core::Publisher);
 
 namespace fuse_publishers
 {
-
-Path3DPublisher::Path3DPublisher() :
-  fuse_core::AsyncPublisher(1),
-  device_id_(fuse_core::uuid::NIL),
-  frame_id_("map")
+Path3DPublisher::Path3DPublisher() : fuse_core::AsyncPublisher(1), device_id_(fuse_core::uuid::NIL), frame_id_("map")
 {
 }
 
@@ -84,9 +79,8 @@ void Path3DPublisher::onInit()
   pose_array_publisher_ = private_node_handle_.advertise<geometry_msgs::PoseArray>("pose_array", 1);
 }
 
-void Path3DPublisher::notifyCallback(
-  fuse_core::Transaction::ConstSharedPtr /*transaction*/,
-  fuse_core::Graph::ConstSharedPtr graph)
+void Path3DPublisher::notifyCallback(fuse_core::Transaction::ConstSharedPtr /*transaction*/,
+                                     fuse_core::Graph::ConstSharedPtr graph)
 {
   // Exit early if no one is listening
   if ((path_publisher_.getNumSubscribers() == 0) && (pose_array_publisher_.getNumSubscribers() == 0))
@@ -98,8 +92,7 @@ void Path3DPublisher::notifyCallback(
   for (const auto& variable : graph->getVariables())
   {
     auto orientation = dynamic_cast<const fuse_variables::Orientation3DStamped*>(&variable);
-    if (orientation &&
-       (orientation->deviceId() == device_id_))
+    if (orientation && (orientation->deviceId() == device_id_))
     {
       const auto& stamp = orientation->stamp();
       auto position_uuid = fuse_variables::Position3DStamped(stamp, device_id_).uuid();
@@ -128,8 +121,7 @@ void Path3DPublisher::notifyCallback(
     return;
   }
   // Sort the poses by timestamp
-  auto compare_stamps = [](const geometry_msgs::PoseStamped& pose1, const geometry_msgs::PoseStamped& pose2)
-  {
+  auto compare_stamps = [](const geometry_msgs::PoseStamped& pose1, const geometry_msgs::PoseStamped& pose2) {
     return pose1.header.stamp < pose2.header.stamp;
   };
   std::sort(poses.begin(), poses.end(), compare_stamps);
@@ -150,13 +142,8 @@ void Path3DPublisher::notifyCallback(
   {
     geometry_msgs::PoseArray pose_array_msg;
     pose_array_msg.header = header;
-    std::transform(poses.begin(),
-                   poses.end(),
-                   std::back_inserter(pose_array_msg.poses),
-                   [](const geometry_msgs::PoseStamped& pose)
-                   {
-                     return pose.pose;
-                   });  // NOLINT(whitespace/braces)
+    std::transform(poses.begin(), poses.end(), std::back_inserter(pose_array_msg.poses),
+                   [](const geometry_msgs::PoseStamped& pose) { return pose.pose; });  // NOLINT(whitespace/braces)
     pose_array_publisher_.publish(pose_array_msg);
   }
 }

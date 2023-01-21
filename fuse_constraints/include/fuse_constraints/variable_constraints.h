@@ -41,13 +41,11 @@
 #include <unordered_set>
 #include <vector>
 
-
 namespace fuse_constraints
 {
-
 /**
  * @brief Holds the per-variable constraint list
- * 
+ *
  * Each variable is represented by a unique index. The indices are expected to be "small and compact",
  * i.e. sequentially numbered starting from zero. Failure to meet this expectation will result in excess memory
  * allocation.
@@ -129,7 +127,7 @@ void VariableConstraints::insert(const unsigned int constraint, VariableIndexIte
   }
 }
 
-template<class OutputIterator>
+template <class OutputIterator>
 OutputIterator VariableConstraints::getConstraints(const unsigned int variable_id, OutputIterator result) const
 {
   const auto& constraints = variable_constraints_[variable_id];
@@ -139,7 +137,7 @@ OutputIterator VariableConstraints::getConstraints(const unsigned int variable_i
 /**
  * Stream operator for printing VariableConstraints objects.
  */
-std::ostream& operator <<(std::ostream& stream, const VariableConstraints& variable_constraints);
+std::ostream& operator<<(std::ostream& stream, const VariableConstraints& variable_constraints);
 
 }  // namespace fuse_constraints
 

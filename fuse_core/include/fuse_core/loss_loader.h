@@ -39,10 +39,8 @@
 
 #include <string>
 
-
 namespace fuse_core
 {
-
 /**
  * @brief Load a loss function using pluginlib::ClassLoader
  *
@@ -85,8 +83,7 @@ protected:
   /**
    * @brief Constructor
    */
-  LossLoader()
-    : loss_loader_("fuse_core", "fuse_core::Loss")
+  LossLoader() : loss_loader_("fuse_core", "fuse_core::Loss")
   {
   }
 

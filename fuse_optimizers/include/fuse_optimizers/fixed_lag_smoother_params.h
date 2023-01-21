@@ -45,10 +45,8 @@
 #include <string>
 #include <vector>
 
-
 namespace fuse_optimizers
 {
-
 /**
  * @brief Defines the set of parameters required by the fuse_optimizers::FixedLagSmoother class
  */
@@ -58,7 +56,7 @@ public:
   /**
    * @brief The duration of the smoothing window in seconds
    */
-  ros::Duration lag_duration { 5.0 };
+  ros::Duration lag_duration{ 5.0 };
 
   /**
    * @brief The target duration for optimization cycles
@@ -67,12 +65,12 @@ public:
    * may be specified in either the "optimization_period" parameter in seconds, or in the "optimization_frequency"
    * parameter in Hz.
    */
-  ros::Duration optimization_period { 0.1 };
+  ros::Duration optimization_period{ 0.1 };
 
   /**
    * @brief The topic name of the advertised reset service
    */
-  std::string reset_service { "~reset" };
+  std::string reset_service{ "~reset" };
 
   /**
    * @brief The maximum time to wait for motion models to be generated for a received transaction.
@@ -80,7 +78,7 @@ public:
    * Transactions are processed sequentially, so no new transactions will be added to the graph while waiting for
    * motion models to be generated. Once the timeout expires, that transaction will be deleted from the queue.
    */
-  ros::Duration transaction_timeout { 0.1 };
+  ros::Duration transaction_timeout{ 0.1 };
 
   /**
    * @brief Ceres Solver::Options object that controls various aspects of the optimizer.

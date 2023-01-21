@@ -46,7 +46,6 @@
 using fuse_core::Transaction;
 using fuse_core::UUID;
 
-
 /**
  * @brief Test that a collection of stamps exist in a Transaction object's involved stamps container
  *
@@ -355,7 +354,7 @@ TEST(Transaction, AddConstraint)
   // Add a single constraint and verify it exists in the added constraints
   {
     UUID variable_uuid = fuse_core::uuid::generate();
-    auto constraint = ExampleConstraint::make_shared("test", std::initializer_list<UUID>{variable_uuid});  // NOLINT
+    auto constraint = ExampleConstraint::make_shared("test", std::initializer_list<UUID>{ variable_uuid });  // NOLINT
 
     Transaction transaction;
     transaction.addConstraint(constraint);
@@ -368,7 +367,7 @@ TEST(Transaction, AddConstraint)
   // Add the same constraint multiple times. Verify only one constraint exists in the Transaction.
   {
     UUID variable_uuid = fuse_core::uuid::generate();
-    auto constraint = ExampleConstraint::make_shared("test", std::initializer_list<UUID>{variable_uuid});  // NOLINT
+    auto constraint = ExampleConstraint::make_shared("test", std::initializer_list<UUID>{ variable_uuid });  // NOLINT
 
     Transaction transaction;
     transaction.addConstraint(constraint);
@@ -383,11 +382,11 @@ TEST(Transaction, AddConstraint)
   // Add multiple constraints. Verify they all exist in the Transaction.
   {
     UUID variable1_uuid = fuse_core::uuid::generate();
-    auto constraint1 = ExampleConstraint::make_shared("test", std::initializer_list<UUID>{variable1_uuid});  // NOLINT
+    auto constraint1 = ExampleConstraint::make_shared("test", std::initializer_list<UUID>{ variable1_uuid });  // NOLINT
     UUID variable2_uuid = fuse_core::uuid::generate();
-    auto constraint2 = ExampleConstraint::make_shared("test", std::initializer_list<UUID>{variable2_uuid});  // NOLINT
+    auto constraint2 = ExampleConstraint::make_shared("test", std::initializer_list<UUID>{ variable2_uuid });  // NOLINT
     UUID variable3_uuid = fuse_core::uuid::generate();
-    auto constraint3 = ExampleConstraint::make_shared("test", std::initializer_list<UUID>{variable3_uuid});  // NOLINT
+    auto constraint3 = ExampleConstraint::make_shared("test", std::initializer_list<UUID>{ variable3_uuid });  // NOLINT
 
     Transaction transaction;
     transaction.addConstraint(constraint1);
@@ -405,7 +404,7 @@ TEST(Transaction, AddConstraint)
   // from the 'removed' container.
   {
     UUID variable1_uuid = fuse_core::uuid::generate();
-    auto constraint1 = ExampleConstraint::make_shared("test", std::initializer_list<UUID>{variable1_uuid});  // NOLINT
+    auto constraint1 = ExampleConstraint::make_shared("test", std::initializer_list<UUID>{ variable1_uuid });  // NOLINT
 
     UUID constraint2_uuid = fuse_core::uuid::generate();
 
@@ -425,7 +424,7 @@ TEST(Transaction, AddConstraint)
   {
     // Create and add the constraint to the transaction
     UUID variable_uuid = fuse_core::uuid::generate();
-    auto constraint1 = ExampleConstraint::make_shared("test", std::initializer_list<UUID>{variable_uuid});  // NOLINT
+    auto constraint1 = ExampleConstraint::make_shared("test", std::initializer_list<UUID>{ variable_uuid });  // NOLINT
     constraint1->data = 1.0;
 
     Transaction transaction;
@@ -514,10 +513,10 @@ TEST(Transaction, RemoveConstraint)
   // instead it should be deleted from the added constraints.
   {
     UUID variable1_uuid = fuse_core::uuid::generate();
-    auto constraint1 = ExampleConstraint::make_shared("test", std::initializer_list<UUID>{variable1_uuid});  // NOLINT
+    auto constraint1 = ExampleConstraint::make_shared("test", std::initializer_list<UUID>{ variable1_uuid });  // NOLINT
 
     UUID variable2_uuid = fuse_core::uuid::generate();
-    auto constraint2 = ExampleConstraint::make_shared("test", std::initializer_list<UUID>{variable2_uuid});  // NOLINT
+    auto constraint2 = ExampleConstraint::make_shared("test", std::initializer_list<UUID>{ variable2_uuid });  // NOLINT
 
     Transaction transaction;
     transaction.addConstraint(constraint1);
@@ -719,9 +718,12 @@ TEST(Transaction, Merge)
   UUID variable1_uuid = fuse_core::uuid::generate();
   UUID variable2_uuid = fuse_core::uuid::generate();
   UUID variable3_uuid = fuse_core::uuid::generate();
-  auto added_constraint1 = ExampleConstraint::make_shared("test", std::initializer_list<UUID>{variable1_uuid});  // NOLINT
-  auto added_constraint2 = ExampleConstraint::make_shared("test", std::initializer_list<UUID>{variable2_uuid});  // NOLINT
-  auto added_constraint3 = ExampleConstraint::make_shared("test", std::initializer_list<UUID>{variable3_uuid});  // NOLINT
+  auto added_constraint1 =
+      ExampleConstraint::make_shared("test", std::initializer_list<UUID>{ variable1_uuid });  // NOLINT
+  auto added_constraint2 =
+      ExampleConstraint::make_shared("test", std::initializer_list<UUID>{ variable2_uuid });  // NOLINT
+  auto added_constraint3 =
+      ExampleConstraint::make_shared("test", std::initializer_list<UUID>{ variable3_uuid });  // NOLINT
 
   UUID removed_constraint1 = fuse_core::uuid::generate();
   UUID removed_constraint2 = fuse_core::uuid::generate();
@@ -805,8 +807,10 @@ TEST(Transaction, Clone)
 
   UUID variable1_uuid = fuse_core::uuid::generate();
   UUID variable2_uuid = fuse_core::uuid::generate();
-  auto added_constraint1 = ExampleConstraint::make_shared("test", std::initializer_list<UUID>{variable1_uuid});  // NOLINT
-  auto added_constraint2 = ExampleConstraint::make_shared("test", std::initializer_list<UUID>{variable2_uuid});  // NOLINT
+  auto added_constraint1 =
+      ExampleConstraint::make_shared("test", std::initializer_list<UUID>{ variable1_uuid });  // NOLINT
+  auto added_constraint2 =
+      ExampleConstraint::make_shared("test", std::initializer_list<UUID>{ variable2_uuid });  // NOLINT
 
   UUID removed_constraint1 = fuse_core::uuid::generate();
   UUID removed_constraint2 = fuse_core::uuid::generate();
@@ -867,8 +871,10 @@ TEST(Transaction, Serialize)
 
   UUID variable1_uuid = fuse_core::uuid::generate();
   UUID variable2_uuid = fuse_core::uuid::generate();
-  auto added_constraint1 = ExampleConstraint::make_shared("test", std::initializer_list<UUID>{variable1_uuid});  // NOLINT
-  auto added_constraint2 = ExampleConstraint::make_shared("test", std::initializer_list<UUID>{variable2_uuid});  // NOLINT
+  auto added_constraint1 =
+      ExampleConstraint::make_shared("test", std::initializer_list<UUID>{ variable1_uuid });  // NOLINT
+  auto added_constraint2 =
+      ExampleConstraint::make_shared("test", std::initializer_list<UUID>{ variable2_uuid });  // NOLINT
 
   UUID removed_constraint1 = fuse_core::uuid::generate();
   UUID removed_constraint2 = fuse_core::uuid::generate();
@@ -913,7 +919,7 @@ TEST(Transaction, Serialize)
   EXPECT_TRUE(testRemovedVariables(expected.removedVariables(), actual));
 }
 
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
   testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();

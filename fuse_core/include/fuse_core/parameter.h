@@ -45,7 +45,6 @@
 
 namespace fuse_core
 {
-
 /**
  * @brief Utility method for handling required ROS params
  *
@@ -74,8 +73,7 @@ void getParamRequired(const ros::NodeHandle& nh, const std::string& key, T& valu
  *                                 has the loaded (or default) value
  * @param[in] strict - Whether to check the loaded value is strictly positive or not, i.e. whether 0 is accepted or not
  */
-template <typename T,
-          typename = std::enable_if_t<std::is_integral<T>::value || std::is_floating_point<T>::value>>
+template <typename T, typename = std::enable_if_t<std::is_integral<T>::value || std::is_floating_point<T>::value>>
 void getPositiveParam(const ros::NodeHandle& node_handle, const std::string& parameter_name, T& default_value,
                       const bool strict = true)
 {
@@ -83,8 +81,8 @@ void getPositiveParam(const ros::NodeHandle& node_handle, const std::string& par
   node_handle.param(parameter_name, value, default_value);
   if (value < 0 || (strict && value == 0))
   {
-    ROS_WARN_STREAM("The requested " << parameter_name << " is <" << (strict ? "=" : "") <<
-                    " 0. Using the default value (" << default_value << ") instead.");
+    ROS_WARN_STREAM("The requested " << parameter_name << " is <" << (strict ? "=" : "")
+                                     << " 0. Using the default value (" << default_value << ") instead.");
   }
   else
   {

@@ -37,23 +37,16 @@
 #include <Eigen/Core>
 #include <glog/logging.h>
 
-
 namespace fuse_constraints
 {
-
-NormalDeltaPose2D::NormalDeltaPose2D(const fuse_core::MatrixXd& A, const fuse_core::Vector3d& b) :
-  A_(A),
-  b_(b)
+NormalDeltaPose2D::NormalDeltaPose2D(const fuse_core::MatrixXd& A, const fuse_core::Vector3d& b) : A_(A), b_(b)
 {
   CHECK_GT(A_.rows(), 0);
   CHECK_EQ(A_.cols(), 3);
   set_num_residuals(A_.rows());
 }
 
-bool NormalDeltaPose2D::Evaluate(
-  double const* const* parameters,
-  double* residuals,
-  double** jacobians) const
+bool NormalDeltaPose2D::Evaluate(double const* const* parameters, double* residuals, double** jacobians) const
 {
   const fuse_core::Matrix2d R1_transpose = fuse_core::rotationMatrix2D(parameters[1][0]).transpose();  // orientation1
   const fuse_core::Vector2d position_delta =

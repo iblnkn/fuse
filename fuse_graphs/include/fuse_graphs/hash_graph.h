@@ -57,12 +57,11 @@
 #include <utility>
 #include <vector>
 
-
 namespace fuse_graphs
 {
-
 /**
- * @brief This is a concrete implementation of the Graph interface using hashmaps to store the constraints and variables.
+ * @brief This is a concrete implementation of the Graph interface using hashmaps to store the constraints and
+ * variables.
  *
  * This is reasonable graph implementation when a large number of variables and constraints are expected, such as with
  * full SLAM and mapping applications. The hashmap overhead may be too expensive for use in high-frequency systems with
@@ -295,11 +294,10 @@ public:
    *                                 space/local coordinates. Otherwise it is computed in the variable's parameter
    *                                 space.
    */
-  void getCovariance(
-    const std::vector<std::pair<fuse_core::UUID, fuse_core::UUID>>& covariance_requests,
-    std::vector<std::vector<double>>& covariance_matrices,
-    const ceres::Covariance::Options& options = ceres::Covariance::Options(),
-    const bool use_tangent_space = true) const override;
+  void getCovariance(const std::vector<std::pair<fuse_core::UUID, fuse_core::UUID>>& covariance_requests,
+                     std::vector<std::vector<double>>& covariance_matrices,
+                     const ceres::Covariance::Options& options = ceres::Covariance::Options(),
+                     const bool use_tangent_space = true) const override;
 
   /**
    * @brief Optimize the values of the current set of variables, given the current set of constraints.
@@ -328,9 +326,8 @@ public:
    *                    See https://ceres-solver.googlesource.com/ceres-solver/+/master/include/ceres/solver.h#59
    * @return            A Ceres Solver Summary structure containing information about the optimization process
    */
-  ceres::Solver::Summary optimizeFor(
-    const ros::Duration& max_optimization_time,
-    const ceres::Solver::Options& options = ceres::Solver::Options()) override;
+  ceres::Solver::Summary optimizeFor(const ros::Duration& max_optimization_time,
+                                     const ceres::Solver::Options& options = ceres::Solver::Options()) override;
 
   /**
    * @brief Evalute the values of the current set of variables, given the current set of constraints.
@@ -369,11 +366,11 @@ protected:
   using VariableSet = std::unordered_set<fuse_core::UUID, fuse_core::uuid::hash>;
   using CrossReference = std::unordered_map<fuse_core::UUID, std::vector<fuse_core::UUID>, fuse_core::uuid::hash>;
 
-  Constraints constraints_;  //!< The set of all constraints
+  Constraints constraints_;                      //!< The set of all constraints
   CrossReference constraints_by_variable_uuid_;  //!< Index all of the constraints by variable uuids
   ceres::Problem::Options problem_options_;  //!< User-defined options to be applied to all constructed ceres::Problems
-  Variables variables_;  //!< The set of all variables
-  VariableSet variables_on_hold_;  //!< The set of variables that should be held constant
+  Variables variables_;                      //!< The set of all variables
+  VariableSet variables_on_hold_;            //!< The set of variables that should be held constant
 
   /**
    * @brief Populate a ceres::Problem object using the current set of variables and constraints
@@ -395,15 +392,15 @@ private:
    * @param[in/out] archive - The archive object that holds the serialized class members
    * @param[in] version - The version of the archive being read/written. Generally unused.
    */
-  template<class Archive>
+  template <class Archive>
   void serialize(Archive& archive, const unsigned int /* version */)
   {
-    archive & boost::serialization::base_object<fuse_core::Graph>(*this);
-    archive & constraints_;
-    archive & constraints_by_variable_uuid_;
-    archive & problem_options_;
-    archive & variables_;
-    archive & variables_on_hold_;
+    archive& boost::serialization::base_object<fuse_core::Graph>(*this);
+    archive& constraints_;
+    archive& constraints_by_variable_uuid_;
+    archive& problem_options_;
+    archive& variables_;
+    archive& variables_on_hold_;
   }
 };
 
@@ -413,18 +410,17 @@ namespace boost
 {
 namespace serialization
 {
-
 /**
  * @brief Serialize a ceres::Problem::Options object using Boost Serialization
  */
-template<class Archive>
+template <class Archive>
 void serialize(Archive& archive, ceres::Problem::Options& options, const unsigned int /* version */)
 {
-  archive & options.cost_function_ownership;
-  archive & options.disable_all_safety_checks;
-  archive & options.enable_fast_removal;
-  archive & options.manifold_ownership;
-  archive & options.loss_function_ownership;
+  archive& options.cost_function_ownership;
+  archive& options.disable_all_safety_checks;
+  archive& options.enable_fast_removal;
+  archive& options.manifold_ownership;
+  archive& options.loss_function_ownership;
 }
 
 }  // namespace serialization

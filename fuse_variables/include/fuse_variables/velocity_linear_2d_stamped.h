@@ -47,10 +47,8 @@
 
 #include <ostream>
 
-
 namespace fuse_variables
 {
-
 /**
  * @brief Variable representing a 2D linear velocity (vx, vy) at a specific time, with a specific piece of hardware.
  *
@@ -88,22 +86,34 @@ public:
   /**
    * @brief Read-write access to the X-axis linear velocity.
    */
-  double& x() { return data_[X]; }
+  double& x()
+  {
+    return data_[X];
+  }
 
   /**
    * @brief Read-only access to the X-axis linear velocity.
    */
-  const double& x() const { return data_[X]; }
+  const double& x() const
+  {
+    return data_[X];
+  }
 
   /**
    * @brief Read-write access to the Y-axis linear velocity.
    */
-  double& y() { return data_[Y]; }
+  double& y()
+  {
+    return data_[Y];
+  }
 
   /**
    * @brief Read-only access to the Y-axis linear velocity.
    */
-  const double& y() const { return data_[Y]; }
+  const double& y() const
+  {
+    return data_[Y];
+  }
 
   /**
    * @brief Print a human-readable description of the variable to the provided stream.
@@ -122,11 +132,11 @@ private:
    * @param[in/out] archive - The archive object that holds the serialized class members
    * @param[in] version - The version of the archive being read/written. Generally unused.
    */
-  template<class Archive>
+  template <class Archive>
   void serialize(Archive& archive, const unsigned int /* version */)
   {
-    archive & boost::serialization::base_object<FixedSizeVariable<SIZE>>(*this);
-    archive & boost::serialization::base_object<Stamped>(*this);
+    archive& boost::serialization::base_object<FixedSizeVariable<SIZE>>(*this);
+    archive& boost::serialization::base_object<Stamped>(*this);
   }
 };
 

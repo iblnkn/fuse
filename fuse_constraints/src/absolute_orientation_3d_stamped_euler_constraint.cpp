@@ -43,20 +43,15 @@
 #include <string>
 #include <vector>
 
-
 namespace fuse_constraints
 {
-
 AbsoluteOrientation3DStampedEulerConstraint::AbsoluteOrientation3DStampedEulerConstraint(
-  const std::string& source,
-  const fuse_variables::Orientation3DStamped& orientation,
-  const fuse_core::VectorXd& mean,
-  const fuse_core::MatrixXd& covariance,
-  const std::vector<Euler> &axes) :
-    fuse_core::Constraint(source, {orientation.uuid()}),  // NOLINT(whitespace/braces)
-    mean_(mean),
-    sqrt_information_(covariance.inverse().llt().matrixU()),
-    axes_(axes)
+    const std::string& source, const fuse_variables::Orientation3DStamped& orientation, const fuse_core::VectorXd& mean,
+    const fuse_core::MatrixXd& covariance, const std::vector<Euler>& axes)
+  : fuse_core::Constraint(source, { orientation.uuid() })
+  , mean_(mean)
+  , sqrt_information_(covariance.inverse().llt().matrixU())
+  , axes_(axes)
 {
   assert(covariance.rows() == static_cast<int>(axes.size()));
   assert(covariance.cols() == static_cast<int>(axes.size()));
@@ -87,7 +82,7 @@ void AbsoluteOrientation3DStampedEulerConstraint::print(std::ostream& stream) co
 ceres::CostFunction* AbsoluteOrientation3DStampedEulerConstraint::costFunction() const
 {
   return new ceres::AutoDiffCostFunction<NormalPriorOrientation3DEulerCostFunctor, ceres::DYNAMIC, 4>(
-    new NormalPriorOrientation3DEulerCostFunctor(sqrt_information_, mean_, axes_), axes_.size());
+      new NormalPriorOrientation3DEulerCostFunctor(sqrt_information_, mean_, axes_), axes_.size());
 }
 
 }  // namespace fuse_constraints

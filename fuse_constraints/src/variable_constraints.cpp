@@ -36,10 +36,8 @@
 #include <initializer_list>
 #include <numeric>
 
-
 namespace fuse_constraints
 {
-
 void VariableConstraints::reserve(const size_t variable_count)
 {
   variable_constraints_.reserve(variable_count);
@@ -52,10 +50,7 @@ bool VariableConstraints::empty() const
 
 size_t VariableConstraints::size() const
 {
-  auto sum_edges = [](const size_t input, const ConstraintCollection& edges)
-  {
-    return input + edges.size();
-  };
+  auto sum_edges = [](const size_t input, const ConstraintCollection& edges) { return input + edges.size(); };
   return std::accumulate(variable_constraints_.begin(), variable_constraints_.end(), 0u, sum_edges);
 }
 
@@ -102,7 +97,7 @@ void VariableConstraints::print(std::ostream& stream) const
   }
 }
 
-std::ostream& operator <<(std::ostream& stream, const VariableConstraints& variable_constraints)
+std::ostream& operator<<(std::ostream& stream, const VariableConstraints& variable_constraints)
 {
   variable_constraints.print(stream);
   return stream;

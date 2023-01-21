@@ -59,7 +59,7 @@ void RangeSensorModel::priorBeaconsCallback(const sensor_msgs::PointCloud2::Cons
   sensor_msgs::PointCloud2ConstIterator<unsigned int> id_it(*msg, "id");
   for (; x_it != x_it.end(); ++x_it, ++y_it, ++z_it, ++sigma_it, ++id_it)
   {
-    beacon_db_[*id_it] = Beacon { *x_it, *y_it, *sigma_it };
+    beacon_db_[*id_it] = Beacon{ *x_it, *y_it, *sigma_it };
   }
   ROS_INFO_STREAM("Updated Beacon Database.");
 }
@@ -138,12 +138,8 @@ void RangeSensorModel::rangesCallback(const sensor_msgs::PointCloud2::ConstPtr& 
     transaction->addVariable(beacon_position);
 
     // Now that we have the involved variables defined, create a constraint for this sensor measurement
-    auto constraint = fuse_tutorials::RangeConstraint::make_shared(
-      this->name(),
-      *robot_position,
-      *beacon_position,
-      *range_it,
-      *sigma_it);
+    auto constraint = fuse_tutorials::RangeConstraint::make_shared(this->name(), *robot_position, *beacon_position,
+                                                                   *range_it, *sigma_it);
     transaction->addConstraint(constraint);
 
     // If this is the very first measurement, add a prior position constraint on all of the beacons as well. This
@@ -159,10 +155,7 @@ void RangeSensorModel::rangesCallback(const sensor_msgs::PointCloud2::ConstPtr& 
       auto cov = fuse_core::Matrix2d();
       cov << beacon.sigma * beacon.sigma, 0.0, 0.0, beacon.sigma * beacon.sigma;
       auto prior = fuse_constraints::AbsoluteConstraint<fuse_variables::Point2DLandmark>::make_shared(
-        this->name(),
-        *beacon_position,
-        mean,
-        cov);
+          this->name(), *beacon_position, mean, cov);
       transaction->addConstraint(prior);
     }
   }

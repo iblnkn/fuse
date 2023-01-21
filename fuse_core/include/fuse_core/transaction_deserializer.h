@@ -40,10 +40,8 @@
 #include <fuse_core/variable.h>
 #include <pluginlib/class_loader.h>
 
-
 namespace fuse_core
 {
-
 /**
  * @brief Serialize a transaction into a message
  */

@@ -52,10 +52,10 @@
  *
  * For a given Ceres Solver Option <T>, the function ToString calls ceres::<T>ToString
  */
-#define CERES_OPTION_TO_STRING_DEFINITION(Option) \
-  static inline const char* ToString(ceres::Option value) \
-  { \
-    return ceres::Option##ToString(value); \
+#define CERES_OPTION_TO_STRING_DEFINITION(Option)                                                                      \
+  static inline const char* ToString(ceres::Option value)                                                              \
+  {                                                                                                                    \
+    return ceres::Option##ToString(value);                                                                             \
   }
 
 /**
@@ -63,10 +63,10 @@
  *
  * For a given Ceres Solver Option <T>, the function FromString calls ceres::StringTo<T>
  */
-#define CERES_OPTION_FROM_STRING_DEFINITION(Option) \
-  static inline bool FromString(std::string string_value, ceres::Option* value) \
-  { \
-    return ceres::StringTo##Option(string_value, value); \
+#define CERES_OPTION_FROM_STRING_DEFINITION(Option)                                                                    \
+  static inline bool FromString(std::string string_value, ceres::Option* value)                                        \
+  {                                                                                                                    \
+    return ceres::StringTo##Option(string_value, value);                                                               \
   }
 
 /**
@@ -74,8 +74,8 @@
  *
  * See CERES_OPTION_TO_STRING_DEFINITION and CERES_OPTION_FROM_STRING_DEFINITION.
  */
-#define CERES_OPTION_STRING_DEFINITIONS(Option) \
-  CERES_OPTION_TO_STRING_DEFINITION(Option) \
+#define CERES_OPTION_STRING_DEFINITIONS(Option)                                                                        \
+  CERES_OPTION_TO_STRING_DEFINITION(Option)                                                                            \
   CERES_OPTION_FROM_STRING_DEFINITION(Option)
 
 #if !CERES_VERSION_AT_LEAST(2, 0, 0)
@@ -86,9 +86,15 @@
 
 namespace ceres
 {
-
-#define CASESTR(x) case x: return #x
-#define STRENUM(x) if (value == #x) { *type = x; return true;}
+#define CASESTR(x)                                                                                                     \
+  case x:                                                                                                              \
+    return #x
+#define STRENUM(x)                                                                                                     \
+  if (value == #x)                                                                                                     \
+  {                                                                                                                    \
+    *type = x;                                                                                                         \
+    return true;                                                                                                       \
+  }
 
 static void UpperCase(std::string* input)
 {
@@ -146,7 +152,6 @@ inline bool StringToDumpFormatType(std::string value, DumpFormatType* type)
  */
 namespace ceres
 {
-
 inline bool StringToLoggingType(std::string value, LoggingType* type)
 {
   return StringtoLoggingType(value, type);
@@ -162,7 +167,6 @@ inline bool StringToDumpFormatType(std::string value, DumpFormatType* type)
 
 namespace fuse_core
 {
-
 /**
  * String definitions for all Ceres options.
  */

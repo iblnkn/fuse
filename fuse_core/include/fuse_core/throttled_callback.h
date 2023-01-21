@@ -39,10 +39,8 @@
 #include <functional>
 #include <utility>
 
-
 namespace fuse_core
 {
-
 /**
  * @brief A throttled callback that encapsulates the logic to throttle a callback so it is only called after a given
  * period in seconds (or more). The dropped calls can optionally be received in a dropped callback, that could be used

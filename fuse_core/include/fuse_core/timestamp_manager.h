@@ -47,10 +47,8 @@
 #include <map>
 #include <vector>
 
-
 namespace fuse_core
 {
-
 /**
  * @brief A utility class that manages the set of timestamps that have been used to generate motion model constraints.
  *
@@ -80,10 +78,9 @@ public:
    * @param[out] variables       One or more variables at both the \p beginning_stamp and \p ending_stamp. The
    *                             variables should include initial values for the optimizer.
    */
-  using MotionModelFunction = std::function<void(const ros::Time& beginning_stamp,
-                                                 const ros::Time& ending_stamp,
-                                                 std::vector<Constraint::SharedPtr>& constraints,
-                                                 std::vector<Variable::SharedPtr>& variables)>;
+  using MotionModelFunction =
+      std::function<void(const ros::Time& beginning_stamp, const ros::Time& ending_stamp,
+                         std::vector<Constraint::SharedPtr>& constraints, std::vector<Variable::SharedPtr>& variables)>;
 
   /**
    * @brief A range of timestamps
@@ -115,13 +112,11 @@ public:
    * @param[in] buffer_length The length of the motion model history. If queries arrive involving timestamps
    *                          that are older than the buffer length, an exception will be thrown.
    */
-  template<class T>
-  TimestampManager(void(T::*fp)(const ros::Time& beginning_stamp,
-                                const ros::Time& ending_stamp,
-                                std::vector<Constraint::SharedPtr>& constraints,
-                                std::vector<Variable::SharedPtr>& variables),
-                   T* obj,
-                   const ros::Duration& buffer_length = ros::DURATION_MAX);
+  template <class T>
+  TimestampManager(void (T::*fp)(const ros::Time& beginning_stamp, const ros::Time& ending_stamp,
+                                 std::vector<Constraint::SharedPtr>& constraints,
+                                 std::vector<Variable::SharedPtr>& variables),
+                   T* obj, const ros::Duration& buffer_length = ros::DURATION_MAX);
 
   /**
    * @brief Constructor that accepts the motion model generator as a const member function pointer and object pointer
@@ -134,13 +129,11 @@ public:
    * @param[in] buffer_length The length of the motion model history. If queries arrive involving timestamps
    *                          that are older than the buffer length, an exception will be thrown.
    */
-  template<class T>
-  TimestampManager(void(T::*fp)(const ros::Time& beginning_stamp,
-                                const ros::Time& ending_stamp,
-                                std::vector<Constraint::SharedPtr>& constraints,
-                                std::vector<Variable::SharedPtr>& variables) const,
-                   T* obj,
-                   const ros::Duration& buffer_length = ros::DURATION_MAX);
+  template <class T>
+  TimestampManager(void (T::*fp)(const ros::Time& beginning_stamp, const ros::Time& ending_stamp,
+                                 std::vector<Constraint::SharedPtr>& constraints,
+                                 std::vector<Variable::SharedPtr>& variables) const,
+                   T* obj, const ros::Duration& buffer_length = ros::DURATION_MAX);
 
   /**
    * @brief Destructor
@@ -207,15 +200,10 @@ protected:
 
     MotionModelSegment() = default;
 
-    MotionModelSegment(
-      const ros::Time& beginning_stamp,
-      const ros::Time& ending_stamp,
-      const std::vector<Constraint::SharedPtr>& constraints,
-      const std::vector<Variable::SharedPtr>& variables) :
-        beginning_stamp(beginning_stamp),
-        ending_stamp(ending_stamp),
-        constraints(constraints),
-        variables(variables)
+    MotionModelSegment(const ros::Time& beginning_stamp, const ros::Time& ending_stamp,
+                       const std::vector<Constraint::SharedPtr>& constraints,
+                       const std::vector<Variable::SharedPtr>& variables)
+      : beginning_stamp(beginning_stamp), ending_stamp(ending_stamp), constraints(constraints), variables(variables)
     {
     }
   };
@@ -229,8 +217,8 @@ protected:
   using MotionModelHistory = std::map<ros::Time, MotionModelSegment>;
 
   MotionModelFunction generator_;  //!< Users upplied function that generates motion model constraints
-  ros::Duration buffer_length_;  //!< The length of the motion model history. Segments older than \p buffer_length_
-                                 //!< will be removed from the motion model history
+  ros::Duration buffer_length_;    //!< The length of the motion model history. Segments older than \p buffer_length_
+                                   //!< will be removed from the motion model history
   MotionModelHistory motion_model_history_;  //!< Container that stores all previously generated motion models
 
   /**
@@ -242,10 +230,7 @@ protected:
    * @param[in]  ending_stamp    The ending timestamp of the new segment
    * @param[out] transaction     A transaction object to be updated with the changes caused by addSegment
    */
-  void addSegment(
-    const ros::Time& beginning_stamp,
-    const ros::Time& ending_stamp,
-    Transaction& transaction);
+  void addSegment(const ros::Time& beginning_stamp, const ros::Time& ending_stamp, Transaction& transaction);
 
   /**
    * @brief Remove an existing MotionModelSegment, updating the provided transaction.
@@ -255,9 +240,7 @@ protected:
    * @param[in]  iter        An iterator to the MotionModelSegment to remove. The iterator will be invalid afterwards.
    * @param[out] transaction A transaction object to be updated with the changes caused by removeSegment
    */
-  void removeSegment(
-    MotionModelHistory::iterator& iter,
-    Transaction& transaction);
+  void removeSegment(MotionModelHistory::iterator& iter, Transaction& transaction);
 
   /**
    * @brief Split an existing MotionModelSegment into two pieces at the provided timestamp, updating the provided
@@ -269,10 +252,7 @@ protected:
    * @param[in]  stamp       The timestamp where the MotionModelSegment should be split
    * @param[out] transaction A transaction object to be updated with the changes caused by splitSegment
    */
-  void splitSegment(
-      MotionModelHistory::iterator& iter,
-      const ros::Time& stamp,
-      Transaction& transaction);
+  void splitSegment(MotionModelHistory::iterator& iter, const ros::Time& stamp, Transaction& transaction);
 
   /**
    * @brief Remove any motion model segments that are older than \p buffer_length_
@@ -280,37 +260,25 @@ protected:
   void purgeHistory();
 };
 
-template<class T>
-TimestampManager::TimestampManager(void(T::*fp)(const ros::Time& beginning_stamp,
-                                                const ros::Time& ending_stamp,
-                                                std::vector<Constraint::SharedPtr>& constraints,
-                                                std::vector<Variable::SharedPtr>& variables),
-                                   T* obj,
-                                   const ros::Duration& buffer_length) :
-  TimestampManager(std::bind(fp,
-                             obj,
-                             std::placeholders::_1,
-                             std::placeholders::_2,
-                             std::placeholders::_3,
-                             std::placeholders::_4),
-                   buffer_length)
+template <class T>
+TimestampManager::TimestampManager(void (T::*fp)(const ros::Time& beginning_stamp, const ros::Time& ending_stamp,
+                                                 std::vector<Constraint::SharedPtr>& constraints,
+                                                 std::vector<Variable::SharedPtr>& variables),
+                                   T* obj, const ros::Duration& buffer_length)
+  : TimestampManager(
+        std::bind(fp, obj, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4),
+        buffer_length)
 {
 }
 
-template<class T>
-TimestampManager::TimestampManager(void(T::*fp)(const ros::Time& beginning_stamp,
-                                                const ros::Time& ending_stamp,
-                                                std::vector<Constraint::SharedPtr>& constraints,
-                                                std::vector<Variable::SharedPtr>& variables) const,
-                                   T* obj,
-                                   const ros::Duration& buffer_length) :
-  TimestampManager(std::bind(fp,
-                             obj,
-                             std::placeholders::_1,
-                             std::placeholders::_2,
-                             std::placeholders::_3,
-                             std::placeholders::_4),
-                   buffer_length)
+template <class T>
+TimestampManager::TimestampManager(void (T::*fp)(const ros::Time& beginning_stamp, const ros::Time& ending_stamp,
+                                                 std::vector<Constraint::SharedPtr>& constraints,
+                                                 std::vector<Variable::SharedPtr>& variables) const,
+                                   T* obj, const ros::Duration& buffer_length)
+  : TimestampManager(
+        std::bind(fp, obj, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4),
+        buffer_length)
 {
 }
 

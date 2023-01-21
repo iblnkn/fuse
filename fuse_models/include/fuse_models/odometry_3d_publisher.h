@@ -57,10 +57,9 @@
 
 namespace fuse_models
 {
-
 /**
- * @class Odometry3DPublisher plugin that publishes a nav_msgs::Odometry message and broadcasts a tf transform for optimized 3D
- * state data (combination of Position3DStamped, Orientation3DStamped, VelocityLinear3DStamped, and
+ * @class Odometry3DPublisher plugin that publishes a nav_msgs::Odometry message and broadcasts a tf transform for
+ * optimized 3D state data (combination of Position3DStamped, Orientation3DStamped, VelocityLinear3DStamped, and
  * VelocityAngular3DStamped, AccelerationLinear3DStamped).
  *
  * Parameters:
@@ -122,9 +121,8 @@ protected:
    * @param[in] transaction A Transaction object, describing the set of variables that have been added and/or removed
    * @param[in] graph       A read-only pointer to the graph object, allowing queries to be performed whenever needed
    */
-  void notifyCallback(
-    fuse_core::Transaction::ConstSharedPtr transaction,
-    fuse_core::Graph::ConstSharedPtr graph) override;
+  void notifyCallback(fuse_core::Transaction::ConstSharedPtr transaction,
+                      fuse_core::Graph::ConstSharedPtr graph) override;
 
   /**
    * @brief Perform any required operations before the first call to notify() occurs
@@ -152,20 +150,13 @@ protected:
    * @param[out] acceleration All of the fuse acceleration variable values get packed into this structure
    * @return true if the checks pass, false otherwise
    */
-  bool getState(
-    const fuse_core::Graph& graph,
-    const ros::Time& stamp,
-    const fuse_core::UUID& device_id,
-    fuse_core::UUID& position_uuid,
-    fuse_core::UUID& orientation_uuid,
-    fuse_core::UUID& velocity_linear_uuid,
-    fuse_core::UUID& velocity_angular_uuid,
-    fuse_core::UUID& acceleration_linear_uuid,
-    fuse_core::UUID& acceleration_angular_uuid,
-    nav_msgs::Odometry& odometry,
-    geometry_msgs::AccelWithCovarianceStamped& acceleration);
+  bool getState(const fuse_core::Graph& graph, const ros::Time& stamp, const fuse_core::UUID& device_id,
+                fuse_core::UUID& position_uuid, fuse_core::UUID& orientation_uuid,
+                fuse_core::UUID& velocity_linear_uuid, fuse_core::UUID& velocity_angular_uuid,
+                fuse_core::UUID& acceleration_linear_uuid, fuse_core::UUID& acceleration_angular_uuid,
+                nav_msgs::Odometry& odometry, geometry_msgs::AccelWithCovarianceStamped& acceleration);
 
-    /**
+  /**
    * @brief Retrieves the given variable values at the requested time from the graph
    * @param[in] graph The graph from which we will retrieve the state
    * @param[in] stamp The time stamp at which we want the state
@@ -179,18 +170,11 @@ protected:
    * @param[out] acceleration All of the fuse acceleration variable values get packed into this structure
    * @return true if the checks pass, false otherwise
    */
-  bool getState(
-    const fuse_core::Graph& graph,
-    const ros::Time& stamp,
-    const fuse_core::UUID& device_id,
-    fuse_core::UUID& position_uuid,
-    fuse_core::UUID& orientation_uuid,
-    fuse_core::UUID& velocity_linear_uuid,
-    fuse_core::UUID& velocity_angular_uuid,
-    fuse_core::UUID& acceleration_linear_uuid,
-    nav_msgs::Odometry& odometry,
-    geometry_msgs::AccelWithCovarianceStamped& acceleration);
-
+  bool getState(const fuse_core::Graph& graph, const ros::Time& stamp, const fuse_core::UUID& device_id,
+                fuse_core::UUID& position_uuid, fuse_core::UUID& orientation_uuid,
+                fuse_core::UUID& velocity_linear_uuid, fuse_core::UUID& velocity_angular_uuid,
+                fuse_core::UUID& acceleration_linear_uuid, nav_msgs::Odometry& odometry,
+                geometry_msgs::AccelWithCovarianceStamped& acceleration);
 
   /**
    * @brief Timer callback method for the filtered state publication and tf broadcasting
@@ -201,12 +185,10 @@ protected:
   /**
    * @brief Object that searches for the most recent common timestamp for a set of variables
    */
-  using Synchronizer = fuse_publishers::StampedVariableSynchronizer<fuse_variables::Orientation3DStamped,
-                                                                    fuse_variables::Position3DStamped,
-                                                                    fuse_variables::VelocityLinear3DStamped,
-                                                                    fuse_variables::VelocityAngular3DStamped,
-                                                                    fuse_variables::AccelerationLinear3DStamped,
-                                                                    fuse_variables::AccelerationAngular3DStamped>;
+  using Synchronizer = fuse_publishers::StampedVariableSynchronizer<
+      fuse_variables::Orientation3DStamped, fuse_variables::Position3DStamped, fuse_variables::VelocityLinear3DStamped,
+      fuse_variables::VelocityAngular3DStamped, fuse_variables::AccelerationLinear3DStamped,
+      fuse_variables::AccelerationAngular3DStamped>;
 
   fuse_core::UUID device_id_;  //!< The UUID of this device
 

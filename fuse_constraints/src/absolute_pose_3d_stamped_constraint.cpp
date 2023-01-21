@@ -41,20 +41,14 @@
 
 #include <string>
 
-
-
 namespace fuse_constraints
 {
-
 AbsolutePose3DStampedConstraint::AbsolutePose3DStampedConstraint(
-  const std::string& source,
-  const fuse_variables::Position3DStamped& position,
-  const fuse_variables::Orientation3DStamped& orientation,
-  const fuse_core::VectorXd& partial_mean,
-  const fuse_core::MatrixXd& partial_covariance,
-  const std::vector<size_t>& linear_indices,
-  const std::vector<size_t>& angular_indices) :
-    fuse_core::Constraint(source, {position.uuid(), orientation.uuid()})  // NOLINT(whitespace/braces)
+    const std::string& source, const fuse_variables::Position3DStamped& position,
+    const fuse_variables::Orientation3DStamped& orientation, const fuse_core::VectorXd& partial_mean,
+    const fuse_core::MatrixXd& partial_covariance, const std::vector<size_t>& linear_indices,
+    const std::vector<size_t>& angular_indices)
+  : fuse_core::Constraint(source, { position.uuid(), orientation.uuid() })
 {
   size_t total_variable_size = position.size() + orientation.size();
   size_t total_indices = linear_indices.size() + angular_indices.size();

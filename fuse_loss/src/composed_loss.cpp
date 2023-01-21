@@ -44,10 +44,8 @@
 #include <ostream>
 #include <string>
 
-
 namespace fuse_loss
 {
-
 ComposedLoss::ComposedLoss(const std::shared_ptr<fuse_core::Loss>& f_loss,
                            const std::shared_ptr<fuse_core::Loss>& g_loss)
   : f_loss_(f_loss), g_loss_(g_loss)

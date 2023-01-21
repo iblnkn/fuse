@@ -44,10 +44,8 @@
 
 #include <type_traits>
 
-
 namespace fuse_publishers
 {
-
 /**
  * @brief A utility class that finds the most recent timestamp shared by a set of stamped variables
  *
@@ -63,7 +61,7 @@ namespace fuse_publishers
  *
  * This class only functions with variables derived from the fuse_variables::Stamped base class.
  */
-template <typename ...Ts>
+template <typename... Ts>
 class StampedVariableSynchronizer
 {
 public:
@@ -87,7 +85,7 @@ public:
   ros::Time findLatestCommonStamp(const fuse_core::Transaction& transaction, const fuse_core::Graph& graph);
 
 private:
-  fuse_core::UUID device_id_;  //!< The device_id to use with the Stamped classes
+  fuse_core::UUID device_id_;      //!< The device_id to use with the Stamped classes
   ros::Time latest_common_stamp_;  //!< The previously discovered common stamp
 
   /**
@@ -103,55 +101,55 @@ private:
 
 namespace detail
 {
-
 /**
  * @brief Some helper structs for testing properties of all types in a template parameter pack
  */
-template<bool...> struct bool_pack;
-template<bool ...bs>
+template <bool...>
+struct bool_pack;
+template <bool... bs>
 using all_true_helper = std::is_same<bool_pack<bs..., true>, bool_pack<true, bs...>>;
 
 /**
  * @brief Test if a property is true for all types in a template parameter pack. This is a type.
  */
-template <typename ...Ts>
+template <typename... Ts>
 using all_true = all_true_helper<Ts::value...>;
 
 /**
  * @brief Test if a property is true for all types in a template parameter pack. This is a boolean value.
  */
-template<typename ...Ts>
+template <typename... Ts>
 constexpr bool allTrue = all_true<Ts...>::value;
 
 /**
  * @brief Test if a class is derived from the fuse_variables::Stamped base class. This is a type.
  */
-template<typename T>
+template <typename T>
 using is_stamped = std::is_base_of<fuse_variables::Stamped, T>;
 
 /**
  * @brief Test if a class is derived from the fuse_variables::Stamped base class. This is a boolean value.
  */
-template<typename T>
+template <typename T>
 constexpr bool isStamped = is_stamped<T>::value;
 
 /**
  * @brief Test if a class is derived from the fuse_core::Variable base class. This is a type.
  */
-template<typename T>
+template <typename T>
 using is_variable = std::is_base_of<fuse_core::Variable, T>;
 
 /**
  * @brief Test if a class is derived from the fuse_core::Variable base class. This is a boolean value.
  */
-template<typename T>
+template <typename T>
 constexpr bool isVariable = is_variable<T>::value;
 
 /**
  * @brief Test if a class is derived from both the fuse_core::Variable base class and the fuse_variables::Stamped
  *        base class. This is a type.
  */
-template<typename T>
+template <typename T>
 struct is_stamped_variable
 {
   static constexpr bool value = isStamped<T> && isVariable<T>;
@@ -161,21 +159,21 @@ struct is_stamped_variable
  * @brief Test if a class is derived from both the fuse_core::Variable base class and the fuse_variables::Stamped
  *        base class. This is a boolean value.
  */
-template<typename T>
+template <typename T>
 constexpr bool isStampedVariable = is_stamped_variable<T>::value;
 
 /**
  * @brief Test if all of the template parameter pack types are fuse_core::Variable and fuse_variables::Stamped.
  *        This is a type.
  */
-template <typename ...Ts>
+template <typename... Ts>
 using all_stamped_variables = all_true<is_stamped_variable<Ts>...>;
 
 /**
  * @brief Test if all of the template parameter pack types are fuse_core::Variable and fuse_variables::Stamped.
  *        This is a boolean value.
  */
-template<typename ...Ts>
+template <typename... Ts>
 constexpr bool allStampedVariables = all_stamped_variables<Ts...>::value;
 
 /**
@@ -210,7 +208,7 @@ struct all_variables_exist
  * @param[in] device_id The device id used to construct all variable types
  * @return True if all variables exist, false otherwise
  */
-template <typename T, typename ...Ts>
+template <typename T, typename... Ts>
 struct all_variables_exist<T, Ts...>
 {
   static bool value(const fuse_core::Graph& graph, const ros::Time& stamp, const fuse_core::UUID& device_id)
@@ -248,36 +246,34 @@ struct is_variable_in_pack
  * @param[in] variable The variable to check against the template parameter pack
  * @return True if the variable's type is part of the template parameter pack, false otherwise
  */
-template <typename T, typename ...Ts>
+template <typename T, typename... Ts>
 struct is_variable_in_pack<T, Ts...>
 {
   static bool value(const fuse_core::Variable& variable)
   {
     auto derived = dynamic_cast<const T*>(&variable);
-    return static_cast<bool>(derived) ||
-           is_variable_in_pack<Ts...>::value(variable);
+    return static_cast<bool>(derived) || is_variable_in_pack<Ts...>::value(variable);
   }
 };
 
 }  // namespace detail
 
-template <typename ...Ts>
+template <typename... Ts>
 const ros::Time StampedVariableSynchronizer<Ts...>::TIME_ZERO = ros::Time(0, 0);
 
-template <typename ...Ts>
-StampedVariableSynchronizer<Ts...>::StampedVariableSynchronizer(const fuse_core::UUID& device_id) :
-  device_id_(device_id),
-  latest_common_stamp_(TIME_ZERO)
+template <typename... Ts>
+StampedVariableSynchronizer<Ts...>::StampedVariableSynchronizer(const fuse_core::UUID& device_id)
+  : device_id_(device_id), latest_common_stamp_(TIME_ZERO)
 {
-  static_assert(detail::allStampedVariables<Ts...>, "All synchronized types must be derived from both "
-                                                    "fuse_core::Variable and fuse_variable::Stamped.");
+  static_assert(detail::allStampedVariables<Ts...>,
+                "All synchronized types must be derived from both "
+                "fuse_core::Variable and fuse_variable::Stamped.");
   static_assert(sizeof...(Ts) > 0, "At least one type must be specified.");
 }
 
-template <typename ...Ts>
-ros::Time StampedVariableSynchronizer<Ts...>::findLatestCommonStamp(
-  const fuse_core::Transaction& transaction,
-  const fuse_core::Graph& graph)
+template <typename... Ts>
+ros::Time StampedVariableSynchronizer<Ts...>::findLatestCommonStamp(const fuse_core::Transaction& transaction,
+                                                                    const fuse_core::Graph& graph)
 {
   // Clear the previous stamp if the variable was deleted
   if (latest_common_stamp_ != TIME_ZERO &&
@@ -295,19 +291,16 @@ ros::Time StampedVariableSynchronizer<Ts...>::findLatestCommonStamp(
   return latest_common_stamp_;
 }
 
-template <typename ...Ts>
+template <typename... Ts>
 template <typename VariableRange>
-void StampedVariableSynchronizer<Ts...>::updateTime(
-  const VariableRange& variable_range,
-  const fuse_core::Graph& graph)
+void StampedVariableSynchronizer<Ts...>::updateTime(const VariableRange& variable_range, const fuse_core::Graph& graph)
 {
   for (const auto& candidate_variable : variable_range)
   {
     if (detail::is_variable_in_pack<Ts...>::value(candidate_variable))
     {
       const auto& stamped_variable = dynamic_cast<const fuse_variables::Stamped&>(candidate_variable);
-      if ((stamped_variable.stamp() > latest_common_stamp_) &&
-          (stamped_variable.deviceId() == device_id_) &&
+      if ((stamped_variable.stamp() > latest_common_stamp_) && (stamped_variable.deviceId() == device_id_) &&
           (detail::all_variables_exist<Ts...>::value(graph, stamped_variable.stamp(), device_id_)))
       {
         latest_common_stamp_ = stamped_variable.stamp();

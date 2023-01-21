@@ -36,7 +36,6 @@
 
 #include <gtest/gtest.h>
 
-
 /**
  * @brief Flag used to track the execution of the transaction callback
  */
@@ -57,9 +56,7 @@ void transactionCallback(fuse_core::Transaction::SharedPtr /*transaction*/)
 class MySensor : public fuse_core::AsyncSensorModel
 {
 public:
-  MySensor() :
-    fuse_core::AsyncSensorModel(1),
-    initialized(false)
+  MySensor() : fuse_core::AsyncSensorModel(1), initialized(false)
   {
   }
 

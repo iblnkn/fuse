@@ -54,7 +54,6 @@
 
 #include <vector>
 
-
 namespace fuse_core
 {
 using BinaryInputArchive = boost::archive::binary_iarchive;
@@ -98,7 +97,7 @@ public:
 
 private:
   const std::vector<unsigned char>& data_;  //!< Reference to the source container
-  size_t index_;  //!< The next vector index to read
+  size_t index_;                            //!< The next vector index to read
 };
 
 /**
@@ -145,15 +144,14 @@ namespace boost
 {
 namespace serialization
 {
-
 /**
  * @brief Serialize a ros::Time variable using Boost Serialization
  */
-template<class Archive>
+template <class Archive>
 void serialize(Archive& archive, ros::Time& stamp, const unsigned int /* version */)
 {
-  archive & stamp.sec;
-  archive & stamp.nsec;
+  archive& stamp.sec;
+  archive& stamp.nsec;
 }
 
 /**
@@ -162,22 +160,20 @@ void serialize(Archive& archive, ros::Time& stamp, const unsigned int /* version
  * https://stackoverflow.com/questions/54534047/eigen-matrix-boostserialization-c17/54535484#54535484
  */
 template <class Archive, typename Scalar, int Rows, int Cols, int Options, int MaxRows, int MaxCols>
-inline void serialize(
-  Archive& archive,
-  Eigen::Matrix<Scalar, Rows, Cols, Options, MaxRows, MaxCols>& matrix,
-  const unsigned int /* version */)
+inline void serialize(Archive& archive, Eigen::Matrix<Scalar, Rows, Cols, Options, MaxRows, MaxCols>& matrix,
+                      const unsigned int /* version */)
 {
   Eigen::Index rows = matrix.rows();
   Eigen::Index cols = matrix.cols();
-  archive & rows;
-  archive & cols;
+  archive& rows;
+  archive& cols;
   if (rows != matrix.rows() || cols != matrix.cols())
   {
     matrix.resize(rows, cols);
   }
   if (matrix.size() != 0)
   {
-    archive & boost::serialization::make_array(matrix.data(), rows * cols);
+    archive& boost::serialization::make_array(matrix.data(), rows * cols);
   }
 }
 

@@ -50,10 +50,8 @@
 #include <thread>
 #include <vector>
 
-
 namespace fuse_optimizers
 {
-
 /**
  * @brief A fixed-lag smoother implementation that marginalizes out variables that are older than a defined lag time
  *
@@ -116,10 +114,8 @@ public:
    * @param[in] node_handle         A node handle in the global namespace
    * @param[in] private_node_handle A node handle in the node's private namespace
    */
-  FixedLagSmoother(
-    fuse_core::Graph::UniquePtr graph,
-    const ros::NodeHandle& node_handle = ros::NodeHandle(),
-    const ros::NodeHandle& private_node_handle = ros::NodeHandle("~"));
+  FixedLagSmoother(fuse_core::Graph::UniquePtr graph, const ros::NodeHandle& node_handle = ros::NodeHandle(),
+                   const ros::NodeHandle& private_node_handle = ros::NodeHandle("~"));
 
   /**
    * @brief Destructor
@@ -135,9 +131,18 @@ protected:
     std::string sensor_name;
     fuse_core::Transaction::SharedPtr transaction;
 
-    const ros::Time& stamp() const { return transaction->stamp(); }
-    const ros::Time& minStamp() const { return transaction->minStamp(); }
-    const ros::Time& maxStamp() const { return transaction->maxStamp(); }
+    const ros::Time& stamp() const
+    {
+      return transaction->stamp();
+    }
+    const ros::Time& minStamp() const
+    {
+      return transaction->minStamp();
+    }
+    const ros::Time& maxStamp() const
+    {
+      return transaction->maxStamp();
+    }
   };
 
   /**
@@ -154,7 +159,7 @@ protected:
 
   // Read-only after construction
   std::thread optimization_thread_;  //!< Thread used to run the optimizer as a background process
-  ParameterType params_;  //!< Configuration settings for this fixed-lag smoother
+  ParameterType params_;             //!< Configuration settings for this fixed-lag smoother
 
   // Inherently thread-safe
   std::atomic<bool> ignited_;  //!< Flag indicating the optimizer has received a transaction from an ignition sensor
@@ -171,24 +176,24 @@ protected:
   // Guarded by optimization_mutex_
   std::mutex optimization_mutex_;  //!< Mutex held while the graph is begin optimized
   // fuse_core::Graph* graph_ member from the base class
-  ros::Time lag_expiration_;  //!< The oldest stamp that is inside the fixed-lag smoother window
+  ros::Time lag_expiration_;                     //!< The oldest stamp that is inside the fixed-lag smoother window
   fuse_core::Transaction marginal_transaction_;  //!< The marginals to add during the next optimization cycle
-  VariableStampIndex timestamp_tracking_;  //!< Object that tracks the timestamp associated with each variable
+  VariableStampIndex timestamp_tracking_;        //!< Object that tracks the timestamp associated with each variable
   ceres::Solver::Summary summary_;  //!< Optimization summary, written by optimizationLoop and read by setDiagnostics
 
   // Guarded by optimization_requested_mutex_
   std::mutex optimization_requested_mutex_;  //!< Required condition variable mutex
   ros::Time optimization_deadline_;  //!< The deadline for the optimization to complete. Triggers a warning if exceeded.
-  bool optimization_request_;  //!< Flag to trigger a new optimization
+  bool optimization_request_;        //!< Flag to trigger a new optimization
   std::condition_variable optimization_requested_;  //!< Condition variable used by the optimization thread to wait
                                                     //!< until a new optimization is requested by the main thread
 
   // Guarded by start_time_mutex_
   mutable std::mutex start_time_mutex_;  //!< Synchronize modification to the start_time_ variable
-  ros::Time start_time_;  //!< The timestamp of the first ignition sensor transaction
+  ros::Time start_time_;                 //!< The timestamp of the first ignition sensor transaction
 
   // Ordering ROS objects with callbacks last
-  ros::Timer optimize_timer_;  //!< Trigger an optimization operation at a fixed frequency
+  ros::Timer optimize_timer_;                //!< Trigger an optimization operation at a fixed frequency
   ros::ServiceServer reset_service_server_;  //!< Service that resets the optimizer to its initial state
 
   /**
@@ -299,9 +304,7 @@ protected:
    * @param[in] name        The name of the sensor that produced the Transaction
    * @param[in] transaction The populated Transaction object created by the loaded SensorModel plugin
    */
-  void transactionCallback(
-    const std::string& sensor_name,
-    fuse_core::Transaction::SharedPtr transaction) override;
+  void transactionCallback(const std::string& sensor_name, fuse_core::Transaction::SharedPtr transaction) override;
 
   /**
    * @brief Update and publish diagnotics

@@ -116,7 +116,6 @@ bool NormalDeltaPose3DCostFunctor::operator()(const T* const position1, const T*
   full_residuals_vector(3) = fuse_core::wrapAngle2D(orientation2Euler[0] - orientation1Euler[0] - T(b_(0)));
   full_residuals_vector(4) = fuse_core::wrapAngle2D(orientation2Euler[1] - orientation1Euler[1] - T(b_(1)));
   full_residuals_vector(5) = fuse_core::wrapAngle2D(orientation2Euler[2] - orientation1Euler[2] - T(b_(2)));
-  // TODO(iblankena): THIS MATH IS WRONG> CONVERT TO QUATS.
   // Scale the residuals by the square root information matrix to account for
   // the measurement uncertainty.
   Eigen::Map<Eigen::Matrix<T, Eigen::Dynamic, 1>> residuals_vector(residual, A_.rows());

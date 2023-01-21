@@ -51,10 +51,8 @@
 #include <string>
 #include <vector>
 
-
 namespace fuse_constraints
 {
-
 /**
  * @brief A constraint that represents a measurement on the difference between two 3D poses.
  *
@@ -90,16 +88,16 @@ public:
    *                               e.g., "{fuse_variables::Orientation2DStamped::Yaw}"
    */
   RelativePose3DStampedConstraint(
-    const std::string& source,
-    const fuse_variables::Position3DStamped& position1,
-    const fuse_variables::Orientation3DStamped& orientation1,
-    const fuse_variables::Position3DStamped& position2,
-    const fuse_variables::Orientation3DStamped& orientation2,
-     const fuse_core::VectorXd& partial_delta,
-    const fuse_core::MatrixXd& partial_covariance,
-    const std::vector<size_t>& linear_indices =
-      {fuse_variables::Position3DStamped::X, fuse_variables::Position3DStamped::Y, fuse_variables::Position3DStamped::Z},             // NOLINT
-    const std::vector<size_t>& angular_indices = {fuse_variables::Orientation3DStamped::X, fuse_variables::Orientation3DStamped::Y, fuse_variables::Orientation3DStamped::Z, fuse_variables::Orientation3DStamped::W});  // NOLINT
+      const std::string& source, const fuse_variables::Position3DStamped& position1,
+      const fuse_variables::Orientation3DStamped& orientation1, const fuse_variables::Position3DStamped& position2,
+      const fuse_variables::Orientation3DStamped& orientation2, const fuse_core::VectorXd& partial_delta,
+      const fuse_core::MatrixXd& partial_covariance,
+      const std::vector<size_t>& linear_indices = { fuse_variables::Position3DStamped::X,
+                                                    fuse_variables::Position3DStamped::Y,
+                                                    fuse_variables::Position3DStamped::Z },  // NOLINT
+      const std::vector<size_t>& angular_indices = {
+          fuse_variables::Orientation3DStamped::X, fuse_variables::Orientation3DStamped::Y,
+          fuse_variables::Orientation3DStamped::Z, fuse_variables::Orientation3DStamped::W });  // NOLINT
 
   /**
    * @brief Destructor
@@ -109,12 +107,18 @@ public:
   /**
    * @brief Read-only access to the measured pose change.
    */
-  const fuse_core::Vector7d& delta() const { return delta_; }
+  const fuse_core::Vector7d& delta() const
+  {
+    return delta_;
+  }
 
   /**
    * @brief Read-only access to the square root information matrix.
    */
-  const fuse_core::MatrixXd& sqrtInformation() const { return sqrt_information_; }
+  const fuse_core::MatrixXd& sqrtInformation() const
+  {
+    return sqrt_information_;
+  }
 
   /**
    * @brief Compute the measurement covariance matrix.
@@ -140,7 +144,7 @@ public:
   ceres::CostFunction* costFunction() const override;
 
 protected:
-  fuse_core::Vector7d delta_;  //!< The measured pose change (dx, dy, dz, dqw, dqx, dqy, dqz)
+  fuse_core::Vector7d delta_;             //!< The measured pose change (dx, dy, dz, dqw, dqx, dqy, dqz)
   fuse_core::MatrixXd sqrt_information_;  //!< The square root information matrix (derived from the covariance matrix)
 
 private:
@@ -153,12 +157,12 @@ private:
    * @param[in/out] archive - The archive object that holds the serialized class members
    * @param[in] version - The version of the archive being read/written. Generally unused.
    */
-  template<class Archive>
+  template <class Archive>
   void serialize(Archive& archive, const unsigned int /* version */)
   {
-    archive & boost::serialization::base_object<fuse_core::Constraint>(*this);
-    archive & delta_;
-    archive & sqrt_information_;
+    archive& boost::serialization::base_object<fuse_core::Constraint>(*this);
+    archive& delta_;
+    archive& sqrt_information_;
   }
 };
 

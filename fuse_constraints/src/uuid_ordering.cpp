@@ -35,11 +35,10 @@
 
 #include <fuse_core/uuid.h>
 
-
 namespace fuse_constraints
 {
-UuidOrdering::UuidOrdering(std::initializer_list<fuse_core::UUID> uuid_list) :
-  UuidOrdering(uuid_list.begin(), uuid_list.end())
+UuidOrdering::UuidOrdering(std::initializer_list<fuse_core::UUID> uuid_list)
+  : UuidOrdering(uuid_list.begin(), uuid_list.end())
 {
 }
 

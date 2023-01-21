@@ -47,10 +47,8 @@
 
 #include <ostream>
 
-
 namespace fuse_variables
 {
-
 /**
  * @brief Variable representing a 2D angular acceleration at a specific time, with a specific piece of hardware.
  *
@@ -81,19 +79,24 @@ public:
    * @param[in] stamp     The timestamp attached to this velocity.
    * @param[in] device_id An optional device id, for use when variables originate from multiple robots or devices
    */
-  explicit AccelerationAngular2DStamped(
-    const ros::Time& stamp,
-    const fuse_core::UUID& device_id = fuse_core::uuid::NIL);
+  explicit AccelerationAngular2DStamped(const ros::Time& stamp,
+                                        const fuse_core::UUID& device_id = fuse_core::uuid::NIL);
 
   /**
    * @brief Read-write access to the angular acceleration.
    */
-  double& yaw() { return data_[YAW]; }
+  double& yaw()
+  {
+    return data_[YAW];
+  }
 
   /**
    * @brief Read-only access to the angular acceleration.
    */
-  const double& yaw() const { return data_[YAW]; }
+  const double& yaw() const
+  {
+    return data_[YAW];
+  }
 
   /**
    * @brief Print a human-readable description of the variable to the provided stream.
@@ -112,11 +115,11 @@ private:
    * @param[in/out] archive - The archive object that holds the serialized class members
    * @param[in] version - The version of the archive being read/written. Generally unused.
    */
-  template<class Archive>
+  template <class Archive>
   void serialize(Archive& archive, const unsigned int /* version */)
   {
-    archive & boost::serialization::base_object<FixedSizeVariable<SIZE>>(*this);
-    archive & boost::serialization::base_object<Stamped>(*this);
+    archive& boost::serialization::base_object<FixedSizeVariable<SIZE>>(*this);
+    archive& boost::serialization::base_object<Stamped>(*this);
   }
 };
 

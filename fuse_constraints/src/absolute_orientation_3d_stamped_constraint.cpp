@@ -45,36 +45,29 @@
 
 #include <string>
 
-
 namespace fuse_constraints
 {
-
 AbsoluteOrientation3DStampedConstraint::AbsoluteOrientation3DStampedConstraint(
-  const std::string& source,
-  const fuse_variables::Orientation3DStamped& orientation,
-  const fuse_core::Vector4d& mean,
-  const fuse_core::Matrix3d& covariance) :
-    fuse_core::Constraint(source, {orientation.uuid()}),  // NOLINT(whitespace/braces)
-    mean_(mean),
-    sqrt_information_(covariance.inverse().llt().matrixU())
+    const std::string& source, const fuse_variables::Orientation3DStamped& orientation, const fuse_core::Vector4d& mean,
+    const fuse_core::Matrix3d& covariance)
+  : fuse_core::Constraint(source, { orientation.uuid() })
+  ,  // NOLINT(whitespace/braces)
+  mean_(mean)
+  , sqrt_information_(covariance.inverse().llt().matrixU())
 {
 }
 
 AbsoluteOrientation3DStampedConstraint::AbsoluteOrientation3DStampedConstraint(
-  const std::string& source,
-  const fuse_variables::Orientation3DStamped& orientation,
-  const Eigen::Quaterniond& mean,
-  const fuse_core::Matrix3d& covariance) :
-    AbsoluteOrientation3DStampedConstraint(source, orientation, toEigen(mean), covariance)
+    const std::string& source, const fuse_variables::Orientation3DStamped& orientation, const Eigen::Quaterniond& mean,
+    const fuse_core::Matrix3d& covariance)
+  : AbsoluteOrientation3DStampedConstraint(source, orientation, toEigen(mean), covariance)
 {
 }
 
 AbsoluteOrientation3DStampedConstraint::AbsoluteOrientation3DStampedConstraint(
-  const std::string& source,
-  const fuse_variables::Orientation3DStamped& orientation,
-  const geometry_msgs::Quaternion& mean,
-  const std::array<double, 9>& covariance) :
-    AbsoluteOrientation3DStampedConstraint(source, orientation, toEigen(mean), toEigen(covariance))
+    const std::string& source, const fuse_variables::Orientation3DStamped& orientation,
+    const geometry_msgs::Quaternion& mean, const std::array<double, 9>& covariance)
+  : AbsoluteOrientation3DStampedConstraint(source, orientation, toEigen(mean), toEigen(covariance))
 {
 }
 
@@ -102,7 +95,7 @@ void AbsoluteOrientation3DStampedConstraint::print(std::ostream& stream) const
 ceres::CostFunction* AbsoluteOrientation3DStampedConstraint::costFunction() const
 {
   return new ceres::AutoDiffCostFunction<NormalPriorOrientation3DCostFunctor, 3, 4>(
-    new NormalPriorOrientation3DCostFunctor(sqrt_information_, mean_));
+      new NormalPriorOrientation3DCostFunctor(sqrt_information_, mean_));
 }
 
 fuse_core::Vector4d AbsoluteOrientation3DStampedConstraint::toEigen(const Eigen::Quaterniond& quaternion)

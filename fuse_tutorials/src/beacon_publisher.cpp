@@ -59,9 +59,8 @@ void BeaconPublisher::onInit()
   beacon_publisher_ = private_node_handle_.advertise<sensor_msgs::PointCloud2>("beacons", 1);
 }
 
-void BeaconPublisher::notifyCallback(
-  fuse_core::Transaction::ConstSharedPtr transaction,
-  fuse_core::Graph::ConstSharedPtr graph)
+void BeaconPublisher::notifyCallback(fuse_core::Transaction::ConstSharedPtr transaction,
+                                     fuse_core::Graph::ConstSharedPtr graph)
 {
   // This is where all of the processing happens in this publisher implementation. All of the beacons are represented
   // as fuse_variables::Point2DLandmark objects. We loop through the variables in the graph and keep a pointer to the

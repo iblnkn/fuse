@@ -48,10 +48,8 @@
 
 #include <memory>
 
-
 namespace fuse_models
 {
-
 /**
  * @brief An adapter-type sensor that produces pose (relative or absolute) and velocity constraints from sensor data
  * published by another node

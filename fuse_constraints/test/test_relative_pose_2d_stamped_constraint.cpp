@@ -48,11 +48,10 @@
 #include <utility>
 #include <vector>
 
-using fuse_variables::Orientation2DStamped;
-using fuse_variables::Position2DStamped;
 using fuse_constraints::AbsolutePose2DStampedConstraint;
 using fuse_constraints::RelativePose2DStampedConstraint;
-
+using fuse_variables::Orientation2DStamped;
+using fuse_variables::Position2DStamped;
 
 TEST(RelativePose2DStampedConstraint, Constructor)
 {
@@ -66,7 +65,7 @@ TEST(RelativePose2DStampedConstraint, Constructor)
   fuse_core::Matrix3d cov;
   cov << 1.0, 0.1, 0.2, 0.1, 2.0, 0.3, 0.2, 0.3, 3.0;
   EXPECT_NO_THROW(
-    RelativePose2DStampedConstraint constraint("test", position1, orientation1, position2, orientation2, delta, cov));
+      RelativePose2DStampedConstraint constraint("test", position1, orientation1, position2, orientation2, delta, cov));
 }
 
 TEST(RelativePose2DStampedConstraint, Covariance)
@@ -80,19 +79,11 @@ TEST(RelativePose2DStampedConstraint, Covariance)
   delta << 1.0, 2.0, 3.0;
   fuse_core::Matrix3d cov;
   cov << 1.0, 0.1, 0.2, 0.1, 2.0, 0.3, 0.2, 0.3, 3.0;
-  RelativePose2DStampedConstraint constraint(
-    "test",
-    position1,
-    orientation1,
-    position2,
-    orientation2,
-    delta,
-    cov);
+  RelativePose2DStampedConstraint constraint("test", position1, orientation1, position2, orientation2, delta, cov);
   // Define the expected matrices (used Octave to compute sqrt_info)
   fuse_core::Matrix3d expected_sqrt_info;
-  expected_sqrt_info <<  1.008395589795798, -0.040950074712520, -0.063131365181801,
-                         0.000000000000000,  0.712470499879096, -0.071247049987910,
-                         0.000000000000000,  0.000000000000000,  0.577350269189626;
+  expected_sqrt_info << 1.008395589795798, -0.040950074712520, -0.063131365181801, 0.000000000000000, 0.712470499879096,
+      -0.071247049987910, 0.000000000000000, 0.000000000000000, 0.577350269189626;
   fuse_core::Matrix3d expected_cov = cov;
   // Compare
   EXPECT_MATRIX_NEAR(expected_cov, constraint.covariance(), 1.0e-9);
@@ -119,61 +110,32 @@ TEST(RelativePose2DStampedConstraint, OptimizationFull)
   mean1 << 0.0, 0.0, 0.0;
   fuse_core::Matrix3d cov1;
   cov1 << 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0;
-  auto prior = AbsolutePose2DStampedConstraint::make_shared(
-    "test",
-    *position1,
-    *orientation1,
-    mean1,
-    cov1);
+  auto prior = AbsolutePose2DStampedConstraint::make_shared("test", *position1, *orientation1, mean1, cov1);
   // Create a relative pose constraint for 1m in the x direction
   fuse_core::Vector3d delta2;
   delta2 << 1.0, 0.0, 0.0;
   fuse_core::Matrix3d cov2;
   cov2 << 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0;
-  auto relative = RelativePose2DStampedConstraint::make_shared(
-    "test",
-    *position1,
-    *orientation1,
-    *position2,
-    *orientation2,
-    delta2,
-    cov2);
+  auto relative = RelativePose2DStampedConstraint::make_shared("test", *position1, *orientation1, *position2,
+                                                               *orientation2, delta2, cov2);
   // Build the problem
   ceres::Problem::Options problem_options;
   problem_options.loss_function_ownership = fuse_core::Loss::Ownership;
   ceres::Problem problem(problem_options);
-  problem.AddParameterBlock(
-    orientation1->data(),
-    orientation1->size(),
-    orientation1->manifold());
-  problem.AddParameterBlock(
-    position1->data(),
-    position1->size(),
-    position1->manifold());
-  problem.AddParameterBlock(
-    orientation2->data(),
-    orientation2->size(),
-    orientation2->manifold());
-  problem.AddParameterBlock(
-    position2->data(),
-    position2->size(),
-    position2->manifold());
+  problem.AddParameterBlock(orientation1->data(), orientation1->size(), orientation1->manifold());
+  problem.AddParameterBlock(position1->data(), position1->size(), position1->manifold());
+  problem.AddParameterBlock(orientation2->data(), orientation2->size(), orientation2->manifold());
+  problem.AddParameterBlock(position2->data(), position2->size(), position2->manifold());
   std::vector<double*> prior_parameter_blocks;
   prior_parameter_blocks.push_back(position1->data());
   prior_parameter_blocks.push_back(orientation1->data());
-  problem.AddResidualBlock(
-    prior->costFunction(),
-    prior->lossFunction(),
-    prior_parameter_blocks);
+  problem.AddResidualBlock(prior->costFunction(), prior->lossFunction(), prior_parameter_blocks);
   std::vector<double*> relative_parameter_blocks;
   relative_parameter_blocks.push_back(position1->data());
   relative_parameter_blocks.push_back(orientation1->data());
   relative_parameter_blocks.push_back(position2->data());
   relative_parameter_blocks.push_back(orientation2->data());
-  problem.AddResidualBlock(
-    relative->costFunction(),
-    relative->lossFunction(),
-    relative_parameter_blocks);
+  problem.AddResidualBlock(relative->costFunction(), relative->lossFunction(), relative_parameter_blocks);
   // Run the solver
   ceres::Solver::Options options;
   ceres::Solver::Summary summary;
@@ -268,91 +230,49 @@ TEST(RelativePose2DStampedConstraint, OptimizationPartial)
   mean1 << 0.0, 0.0, 0.0;
   fuse_core::Matrix3d cov1;
   cov1 << 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0;
-  auto prior = AbsolutePose2DStampedConstraint::make_shared(
-    "test",
-    *position1,
-    *orientation1,
-    mean1,
-    cov1);
+  auto prior = AbsolutePose2DStampedConstraint::make_shared("test", *position1, *orientation1, mean1, cov1);
 
   // Create a relative pose constraint for 1m in the x direction
   fuse_core::Vector2d delta1;
   delta1 << 1.0, 0.0;
   fuse_core::Matrix2d cov_rel1;
   cov_rel1 << 1.0, 0.0, 0.0, 1.0;
-  std::vector<size_t> axes_lin1 = {fuse_variables::Position2DStamped::X};
-  std::vector<size_t> axes_ang1 = {fuse_variables::Orientation2DStamped::YAW};
-  auto relative1 = RelativePose2DStampedConstraint::make_shared(
-    "test",
-    *position1,
-    *orientation1,
-    *position2,
-    *orientation2,
-    delta1,
-    cov_rel1,
-    axes_lin1,
-    axes_ang1);
+  std::vector<size_t> axes_lin1 = { fuse_variables::Position2DStamped::X };
+  std::vector<size_t> axes_ang1 = { fuse_variables::Orientation2DStamped::YAW };
+  auto relative1 = RelativePose2DStampedConstraint::make_shared("test", *position1, *orientation1, *position2,
+                                                                *orientation2, delta1, cov_rel1, axes_lin1, axes_ang1);
 
   // Create a relative pose constraint for 0m in the y direction
   fuse_core::Vector1d delta2;
   delta2 << 0.0;
   fuse_core::Matrix1d cov_rel2;
   cov_rel2 << 1.0;
-  std::vector<size_t> axes_lin2 = {fuse_variables::Position2DStamped::Y};
+  std::vector<size_t> axes_lin2 = { fuse_variables::Position2DStamped::Y };
   std::vector<size_t> axes_ang2 = {};
-  auto relative2 = RelativePose2DStampedConstraint::make_shared(
-    "test",
-    *position1,
-    *orientation1,
-    *position2,
-    *orientation2,
-    delta2,
-    cov_rel2,
-    axes_lin2,
-    axes_ang2);
+  auto relative2 = RelativePose2DStampedConstraint::make_shared("test", *position1, *orientation1, *position2,
+                                                                *orientation2, delta2, cov_rel2, axes_lin2, axes_ang2);
 
   // Build the problem
   ceres::Problem::Options problem_options;
   problem_options.loss_function_ownership = fuse_core::Loss::Ownership;
   ceres::Problem problem(problem_options);
-  problem.AddParameterBlock(
-    orientation1->data(),
-    orientation1->size(),
-    orientation1->manifold());
-  problem.AddParameterBlock(
-    position1->data(),
-    position1->size(),
-    position1->manifold());
-  problem.AddParameterBlock(
-    orientation2->data(),
-    orientation2->size(),
-    orientation2->manifold());
-  problem.AddParameterBlock(
-    position2->data(),
-    position2->size(),
-    position2->manifold());
+  problem.AddParameterBlock(orientation1->data(), orientation1->size(), orientation1->manifold());
+  problem.AddParameterBlock(position1->data(), position1->size(), position1->manifold());
+  problem.AddParameterBlock(orientation2->data(), orientation2->size(), orientation2->manifold());
+  problem.AddParameterBlock(position2->data(), position2->size(), position2->manifold());
 
   std::vector<double*> prior_parameter_blocks;
   prior_parameter_blocks.push_back(position1->data());
   prior_parameter_blocks.push_back(orientation1->data());
-  problem.AddResidualBlock(
-    prior->costFunction(),
-    prior->lossFunction(),
-    prior_parameter_blocks);
+  problem.AddResidualBlock(prior->costFunction(), prior->lossFunction(), prior_parameter_blocks);
 
   std::vector<double*> relative_parameter_blocks;
   relative_parameter_blocks.push_back(position1->data());
   relative_parameter_blocks.push_back(orientation1->data());
   relative_parameter_blocks.push_back(position2->data());
   relative_parameter_blocks.push_back(orientation2->data());
-  problem.AddResidualBlock(
-    relative1->costFunction(),
-    relative1->lossFunction(),
-    relative_parameter_blocks);
-  problem.AddResidualBlock(
-    relative2->costFunction(),
-    relative2->lossFunction(),
-    relative_parameter_blocks);
+  problem.AddResidualBlock(relative1->costFunction(), relative1->lossFunction(), relative_parameter_blocks);
+  problem.AddResidualBlock(relative2->costFunction(), relative2->lossFunction(), relative_parameter_blocks);
 
   // Run the solver
   ceres::Solver::Options options;
@@ -468,7 +388,7 @@ TEST(RelativePose2DStampedConstraint, Serialization)
   EXPECT_MATRIX_EQ(expected.sqrtInformation(), actual.sqrtInformation());
 }
 
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
   testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();

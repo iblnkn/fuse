@@ -84,7 +84,7 @@ public:
    * @param[in] mean        The measured/prior Euler orientations in the order specified in /p axes
    * @param[in] covariance  The measurement/prior covariance
    * @param[in] axes        Used to specify which of the Euler axes they want to include in the constraint,
-   *                        e.g. "{ Euler::ROLL, EULER::YAW }"
+   *                        e.g. "{ Euler::ROLL, Euler::YAW }"
    */
   AbsoluteOrientation3DStampedEulerConstraint(
     const std::string& source,

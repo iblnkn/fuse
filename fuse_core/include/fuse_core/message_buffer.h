@@ -43,10 +43,8 @@
 #include <deque>
 #include <utility>
 
-
 namespace fuse_core
 {
-
 /**
  * @brief A utility class that maintains a history of received messages, and allows a range of messages to be easily
  * queried by timestamp.
@@ -147,7 +145,7 @@ public:
 
 protected:
   using Buffer = std::deque<std::pair<ros::Time, Message>>;
-  Buffer buffer_;  //!< The container of received messages, sorted by timestamp
+  Buffer buffer_;                //!< The container of received messages, sorted by timestamp
   ros::Duration buffer_length_;  //!< The length of the motion model history. Segments older than \p buffer_length_
                                  //!< will be removed from the motion model history
 

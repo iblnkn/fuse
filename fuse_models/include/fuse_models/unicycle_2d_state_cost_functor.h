@@ -40,13 +40,11 @@
 #include <fuse_core/fuse_macros.h>
 #include <fuse_core/util.h>
 
-
 namespace fuse_models
 {
-
 /**
  * @brief Create a cost function for a 2D state vector
- * 
+ *
  * The state vector includes the following quantities, given in this order:
  *   x position
  *   y position
@@ -70,7 +68,7 @@ namespace fuse_models
  *             ||    [  yaw_vel_t2 - proj(yaw_vel_t1) ] ||
  *             ||    [    x_acc_t2 - proj(x_acc_t1)   ] ||
  *             ||    [    y_acc_t2 - proj(y_acc_t1)   ] ||
- * 
+ *
  * where, the matrix A is fixed, the state variables are provided at two discrete time steps, and proj is a function
  * that projects the state variables from time t1 to time t2. In case the user is interested in implementing a cost
  * function of the form
@@ -109,61 +107,32 @@ public:
    * @param[out] residual - The computed residual (error)
    */
   template <typename T>
-  bool operator()(
-    const T* const position1,
-    const T* const yaw1,
-    const T* const vel_linear1,
-    const T* const vel_yaw1,
-    const T* const acc_linear1,
-    const T* const position2,
-    const T* const yaw2,
-    const T* const vel_linear2,
-    const T* const vel_yaw2,
-    const T* const acc_linear2,
-    T* residual) const;
+  bool operator()(const T* const position1, const T* const yaw1, const T* const vel_linear1, const T* const vel_yaw1,
+                  const T* const acc_linear1, const T* const position2, const T* const yaw2, const T* const vel_linear2,
+                  const T* const vel_yaw2, const T* const acc_linear2, T* residual) const;
 
 private:
   double dt_;
   fuse_core::Matrix8d A_;  //!< The residual weighting matrix, most likely the square root information matrix
 };
 
-Unicycle2DStateCostFunctor::Unicycle2DStateCostFunctor(const double dt, const fuse_core::Matrix8d& A) :
-  dt_(dt),
-  A_(A)
+Unicycle2DStateCostFunctor::Unicycle2DStateCostFunctor(const double dt, const fuse_core::Matrix8d& A) : dt_(dt), A_(A)
 {
 }
 
 template <typename T>
-bool Unicycle2DStateCostFunctor::operator()(
-  const T* const position1,
-  const T* const yaw1,
-  const T* const vel_linear1,
-  const T* const vel_yaw1,
-  const T* const acc_linear1,
-  const T* const position2,
-  const T* const yaw2,
-  const T* const vel_linear2,
-  const T* const vel_yaw2,
-  const T* const acc_linear2,
-  T* residual) const
+bool Unicycle2DStateCostFunctor::operator()(const T* const position1, const T* const yaw1, const T* const vel_linear1,
+                                            const T* const vel_yaw1, const T* const acc_linear1,
+                                            const T* const position2, const T* const yaw2, const T* const vel_linear2,
+                                            const T* const vel_yaw2, const T* const acc_linear2, T* residual) const
 {
   T position_pred[2];
   T yaw_pred[1];
   T vel_linear_pred[2];
   T vel_yaw_pred[1];
   T acc_linear_pred[2];
-  predict(
-    position1,
-    yaw1,
-    vel_linear1,
-    vel_yaw1,
-    acc_linear1,
-    T(dt_),
-    position_pred,
-    yaw_pred,
-    vel_linear_pred,
-    vel_yaw_pred,
-    acc_linear_pred);
+  predict(position1, yaw1, vel_linear1, vel_yaw1, acc_linear1, T(dt_), position_pred, yaw_pred, vel_linear_pred,
+          vel_yaw_pred, acc_linear_pred);
 
   Eigen::Map<Eigen::Matrix<T, 8, 1>> residuals_map(residual);
   residuals_map(0) = position2[0] - position_pred[0];

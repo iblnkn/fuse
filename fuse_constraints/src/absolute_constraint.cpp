@@ -37,7 +37,6 @@
 
 #include <boost/serialization/export.hpp>
 
-
 BOOST_CLASS_EXPORT_IMPLEMENT(fuse_constraints::AbsoluteAccelerationAngular2DStampedConstraint);
 BOOST_CLASS_EXPORT_IMPLEMENT(fuse_constraints::AbsoluteAccelerationAngular3DStampedConstraint);
 BOOST_CLASS_EXPORT_IMPLEMENT(fuse_constraints::AbsoluteAccelerationLinear2DStampedConstraint);
@@ -50,7 +49,6 @@ BOOST_CLASS_EXPORT_IMPLEMENT(fuse_constraints::AbsoluteVelocityAngular2DStampedC
 BOOST_CLASS_EXPORT_IMPLEMENT(fuse_constraints::AbsoluteVelocityAngular3DStampedConstraint);
 BOOST_CLASS_EXPORT_IMPLEMENT(fuse_constraints::AbsoluteVelocityLinear2DStampedConstraint);
 BOOST_CLASS_EXPORT_IMPLEMENT(fuse_constraints::AbsoluteVelocityLinear3DStampedConstraint);
-
 
 PLUGINLIB_EXPORT_CLASS(fuse_constraints::AbsoluteAccelerationAngular2DStampedConstraint, fuse_core::Constraint);
 PLUGINLIB_EXPORT_CLASS(fuse_constraints::AbsoluteAccelerationAngular3DStampedConstraint, fuse_core::Constraint);

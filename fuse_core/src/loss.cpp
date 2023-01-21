@@ -35,11 +35,9 @@
 
 #include <ostream>
 
-
 namespace fuse_core
 {
-
-std::ostream& operator <<(std::ostream& stream, const Loss& loss)
+std::ostream& operator<<(std::ostream& stream, const Loss& loss)
 {
   loss.print(stream);
   return stream;

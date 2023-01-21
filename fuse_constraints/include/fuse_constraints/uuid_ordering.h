@@ -40,10 +40,8 @@
 #include <boost/bimap/unordered_set_of.hpp>
 #include <boost/bimap/vector_of.hpp>
 
-
 namespace fuse_constraints
 {
-
 /**
  * @brief A class that represents a sequential ordering of UUIDs
  *
@@ -150,8 +148,8 @@ public:
   unsigned int at(const fuse_core::UUID& uuid) const;
 
 private:
-  using UuidOrderMapping = boost::bimaps::bimap<boost::bimaps::vector_of<unsigned int>,
-                                                boost::bimaps::unordered_set_of<fuse_core::UUID>>;
+  using UuidOrderMapping =
+      boost::bimaps::bimap<boost::bimaps::vector_of<unsigned int>, boost::bimaps::unordered_set_of<fuse_core::UUID>>;
   UuidOrderMapping order_;  //!< Collection that contains the Index<-->UUID mapping
 };
 

@@ -43,10 +43,8 @@
 
 #include <vector>
 
-
 namespace fuse_constraints
 {
-
 /**
  * @brief Create a prior cost function on a 3D orientation variable using Euler roll, pitch, and yaw measurements
  *
@@ -85,13 +83,12 @@ public:
    * @param[in] b The orientation measurement or prior. Its order must match the values in \p axes.
    * @param[in] axes The Euler angle axes for which we want to compute errors. Defaults to all axes.
    */
-  NormalPriorOrientation3DEulerCostFunctor(
-    const fuse_core::MatrixXd& A,
-    const fuse_core::VectorXd& b,
-    const std::vector<Euler> &axes = {Euler::ROLL, Euler::PITCH, Euler::YAW}) :  //NOLINT
-      A_(A),
-      b_(b),
-      axes_(axes)
+  NormalPriorOrientation3DEulerCostFunctor(const fuse_core::MatrixXd& A, const fuse_core::VectorXd& b,
+                                           const std::vector<Euler>& axes = { Euler::ROLL, Euler::PITCH, Euler::YAW })
+    :  // NOLINT
+    A_(A)
+    , b_(b)
+    , axes_(axes)
   {
   }
 
@@ -108,25 +105,22 @@ public:
       T angle;
       switch (axes_[i])
       {
-        case Euler::ROLL:
-        {
+        case Euler::ROLL: {
           angle = fuse_core::getRoll(orientation[0], orientation[1], orientation[2], orientation[3]);
           break;
         }
-        case Euler::PITCH:
-        {
+        case Euler::PITCH: {
           angle = fuse_core::getPitch(orientation[0], orientation[1], orientation[2], orientation[3]);
           break;
         }
-        case Euler::YAW:
-        {
+        case Euler::YAW: {
           angle = fuse_core::getYaw(orientation[0], orientation[1], orientation[2], orientation[3]);
           break;
         }
-        default:
-        {
-          throw std::runtime_error("The provided axis specified is unknown. "
-                                   "I should probably be more informative here");
+        default: {
+          throw std::runtime_error(
+              "The provided axis specified is unknown. "
+              "I should probably be more informative here");
         }
       }
       residuals[i] = angle - T(b_[i]);
@@ -139,8 +133,8 @@ public:
   }
 
 private:
-  fuse_core::MatrixXd A_;  //!< The residual weighting matrix, most likely the square root information matrix
-  fuse_core::VectorXd b_;  //!< The measured 3D orientation (quaternion) value
+  fuse_core::MatrixXd A_;    //!< The residual weighting matrix, most likely the square root information matrix
+  fuse_core::VectorXd b_;    //!< The measured 3D orientation (quaternion) value
   std::vector<Euler> axes_;  //!< The Euler angle axes that we're measuring
 };
 

@@ -38,10 +38,8 @@
 
 #include <ceres/sized_cost_function.h>
 
-
 namespace fuse_constraints
 {
-
 /**
  * @brief Create a prior cost function on both the position and orientation variables at once.
  *
@@ -62,7 +60,7 @@ namespace fuse_constraints
  * where, mu is a vector and S is a covariance matrix, then, A = S^{-1/2}, i.e the matrix A is the square root
  * information matrix (the inverse of the covariance).
  */
-class NormalPriorPose3D : public ceres::SizedCostFunction<ceres::DYNAMIC, 3, 4> 
+class NormalPriorPose3D : public ceres::SizedCostFunction<ceres::DYNAMIC, 3, 4>
 {
 public:
   /**
@@ -87,10 +85,7 @@ public:
    * @brief Compute the cost values/residuals, and optionally the Jacobians, using the provided variable/parameter
    *        values
    */
-  virtual bool Evaluate(
-    double const* const* parameters,
-    double* residuals,
-    double** jacobians) const;
+  virtual bool Evaluate(double const* const* parameters, double* residuals, double** jacobians) const;
 
 private:
   fuse_core::MatrixXd A_;  //!< The residual weighting matrix, most likely the square root information matrix

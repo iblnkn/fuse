@@ -42,7 +42,6 @@
 #include <numeric>
 #include <vector>
 
-
 class MyClass
 {
 public:
@@ -60,9 +59,9 @@ public:
 TEST(CallbackWrapper, Double)
 {
   MyClass my_object;
-  std::vector<double> data = {1.0, 2.0, 3.0, 4.0, 5.0};
+  std::vector<double> data = { 1.0, 2.0, 3.0, 4.0, 5.0 };
   auto callback = boost::make_shared<fuse_core::CallbackWrapper<double>>(
-    std::bind(&MyClass::processData, &my_object, std::ref(data)));
+      std::bind(&MyClass::processData, &my_object, std::ref(data)));
   auto result = callback->getFuture();
   ros::getGlobalCallbackQueue()->addCallback(callback);
   result.wait();
@@ -73,10 +72,10 @@ TEST(CallbackWrapper, Double)
 TEST(CallbackWrapper, Void)
 {
   MyClass my_object;
-  std::vector<double> data = {1.0, 2.0, 3.0, 4.0, 5.0};
+  std::vector<double> data = { 1.0, 2.0, 3.0, 4.0, 5.0 };
   double output;
   auto callback = boost::make_shared<fuse_core::CallbackWrapper<void>>(
-    std::bind(&MyClass::processDataInPlace, &my_object, std::ref(data), std::ref(output)));
+      std::bind(&MyClass::processDataInPlace, &my_object, std::ref(data), std::ref(output)));
   auto result = callback->getFuture();
   ros::getGlobalCallbackQueue()->addCallback(callback);
   result.wait();

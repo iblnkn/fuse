@@ -44,7 +44,6 @@
 using fuse_core::UUID;
 using UUIDs = std::vector<fuse_core::UUID>;
 
-
 TEST(UUID, Generate)
 {
   // These tests are mostly just calling the different generate() signatures to verify they compile and work.
@@ -217,7 +216,7 @@ TEST(UUID, CollisionManyThreads)
   }
 }
 
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
   testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();

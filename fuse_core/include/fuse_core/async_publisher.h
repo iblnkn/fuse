@@ -44,10 +44,8 @@
 
 #include <string>
 
-
 namespace fuse_core
 {
-
 /**
  * @brief A publisher base class that provides node handles attached to an internal callback queue serviced by
  * a local thread (or threads) using a spinner.
@@ -84,7 +82,10 @@ public:
   /**
    * @brief Get the unique name of this publisher
    */
-  const std::string& name() const override { return name_; }
+  const std::string& name() const override
+  {
+    return name_;
+  }
 
   /**
    * @brief Notify the publisher that an optimization cycle is complete, and about changes to the Graph.
@@ -133,11 +134,11 @@ public:
   void stop() override;
 
 protected:
-  ros::CallbackQueue callback_queue_;  //!< The local callback queue used for all subscriptions
-  std::string name_;  //!< The unique name for this publisher instance
-  ros::NodeHandle node_handle_;  //!< A node handle in the global namespace using the local callback queue
+  ros::CallbackQueue callback_queue_;    //!< The local callback queue used for all subscriptions
+  std::string name_;                     //!< The unique name for this publisher instance
+  ros::NodeHandle node_handle_;          //!< A node handle in the global namespace using the local callback queue
   ros::NodeHandle private_node_handle_;  //!< A node handle in the private namespace using the local callback queue
-  ros::AsyncSpinner spinner_;  //!< A single/multi-threaded spinner assigned to the local callback queue
+  ros::AsyncSpinner spinner_;            //!< A single/multi-threaded spinner assigned to the local callback queue
 
   /**
    * @brief Constructor
@@ -158,7 +159,9 @@ protected:
    * Derived classes should override this method to implement any additional initialization steps needed (access the
    * parameter server, advertise, subscribe, etc.).
    */
-  virtual void onInit() {}
+  virtual void onInit()
+  {
+  }
 
   /**
    * @brief Callback method executed in response to the optimizer completing an optimization cycle. All variables
@@ -170,7 +173,9 @@ protected:
    * @param[in] transaction A Transaction object, describing the set of variables that have been added and/or removed
    * @param[in] graph       A read-only pointer to the graph object, allowing queries to be performed whenever needed
    */
-  virtual void notifyCallback(Transaction::ConstSharedPtr /*transaction*/, Graph::ConstSharedPtr /*graph*/) {}
+  virtual void notifyCallback(Transaction::ConstSharedPtr /*transaction*/, Graph::ConstSharedPtr /*graph*/)
+  {
+  }
 
   /**
    * @brief Perform any required operations to prepare for servicing calls to notify()
@@ -178,7 +183,9 @@ protected:
    * This function will be called once after initialize() but before any calls to notify(). It may also be called
    * at any time after a call to stop().
    */
-  virtual void onStart() {}
+  virtual void onStart()
+  {
+  }
 
   /**
    * @brief Perform any required operations to clean up the internal state
@@ -186,7 +193,9 @@ protected:
    * This function will be called once before destruction. It may also be called at any time after a call to start().
    * No calls to notify() will occur after stop() is called, but before start() is called.
    */
-  virtual void onStop() {}
+  virtual void onStop()
+  {
+  }
 };
 
 }  // namespace fuse_core

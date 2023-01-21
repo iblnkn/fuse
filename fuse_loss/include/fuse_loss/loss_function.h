@@ -59,7 +59,6 @@
 // * cost w/  loss: https://github.com/ceres-solver/ceres-solver/blob/master/internal/ceres/residual_block.cc#L165
 namespace ceres
 {
-
 // Dynamic Covariance Scaling (DCS), equivalent to Switchable Constraints and similar to the Geman-McClure with the
 // tuning constant 'a'.
 //

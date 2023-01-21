@@ -39,10 +39,8 @@
 #include <functional>
 #include <future>
 
-
 namespace fuse_core
 {
-
 /**
  * @brief Object that wraps a generic function call so that it may be inserted into a ROS callback queue.
  *
@@ -97,8 +95,7 @@ public:
    *
    * @param[in] callback The function to be called from the callback queue
    */
-  explicit CallbackWrapper(CallbackFunction callback) :
-    callback_(callback)
+  explicit CallbackWrapper(CallbackFunction callback) : callback_(callback)
   {
   }
 
@@ -121,7 +118,7 @@ public:
 
 private:
   CallbackFunction callback_;  //!< The function to execute within the
-  std::promise<T> promise_;  //!< Promise/Future used to return data after the callback is executed
+  std::promise<T> promise_;    //!< Promise/Future used to return data after the callback is executed
 };
 
 // Specialization to handle 'void' return types

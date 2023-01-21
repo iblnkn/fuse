@@ -43,10 +43,8 @@
 #include <ostream>
 #include <string>
 
-
 namespace fuse_loss
 {
-
 ScaledLoss::ScaledLoss(const double a, const std::shared_ptr<fuse_core::Loss>& loss) : a_(a), loss_(loss)
 {
 }

@@ -35,7 +35,6 @@
 
 #include <gtest/gtest.h>
 
-
 TEST(Eigen, isSymmetric)
 {
   const auto random_matrix = fuse_core::Matrix3d::Random().eval();
@@ -98,7 +97,7 @@ TEST(Eigen, isPositiveDefinite)
   // EXPECT_FALSE(fuse_core::isPositiveDefinite(non_square_matrix));
 }
 
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
   testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();

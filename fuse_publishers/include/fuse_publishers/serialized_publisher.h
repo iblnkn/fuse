@@ -43,10 +43,8 @@
 
 #include <string>
 
-
 namespace fuse_publishers
 {
-
 /**
  * @brief Publisher plugin that publishes the transaction and graph as serialized messages
  */
@@ -77,9 +75,8 @@ public:
    * @param[in] transaction A Transaction object, describing the set of variables that have been added and/or removed
    * @param[in] graph       A read-only pointer to the graph object, allowing queries to be performed whenever needed
    */
-  void notifyCallback(
-    fuse_core::Transaction::ConstSharedPtr transaction,
-    fuse_core::Graph::ConstSharedPtr graph) override;
+  void notifyCallback(fuse_core::Transaction::ConstSharedPtr transaction,
+                      fuse_core::Graph::ConstSharedPtr graph) override;
 
 protected:
   /**

@@ -57,11 +57,12 @@ TEST(HuberLoss, Constructor)
 
 struct CostFunctor
 {
-  explicit CostFunctor(const double data)
-    : data(data)
-  {}
+  explicit CostFunctor(const double data) : data(data)
+  {
+  }
 
-  template <typename T> bool operator()(const T* const x, T* residual) const
+  template <typename T>
+  bool operator()(const T* const x, T* residual) const
   {
     residual[0] = x[0] - T(data);
     return true;
@@ -95,20 +96,16 @@ TEST(HuberLoss, Optimization)
   const size_t num_inliers{ 1000 };
   for (size_t i = 0; i < num_inliers; ++i)
   {
-    problem.AddResidualBlock(
-      new ceres::AutoDiffCostFunction<CostFunctor, 1, 1>(new CostFunctor(inlier)),
-      loss.lossFunction(),  // A nullptr here would produce a slightly better solution
-      &x);
+    problem.AddResidualBlock(new ceres::AutoDiffCostFunction<CostFunctor, 1, 1>(new CostFunctor(inlier)),
+                             loss.lossFunction(),  // A nullptr here would produce a slightly better solution
+                             &x);
   }
 
   // Add outlier constraints
   const size_t num_outliers{ 9 };
   for (size_t i = 0; i < num_outliers; ++i)
   {
-    problem.AddResidualBlock(
-      cost_function_outlier,
-      loss.lossFunction(),
-      &x);
+    problem.AddResidualBlock(cost_function_outlier, loss.lossFunction(), &x);
   }
 
   // Run the solver
@@ -160,7 +157,7 @@ TEST(HuberLoss, Serialization)
 
   // Test inlier (s <= a*a)
   const double s = 0.95 * a * a;
-  double rho[3] = {0.0};
+  double rho[3] = { 0.0 };
   actual.lossFunction()->Evaluate(s, rho);
 
   EXPECT_EQ(s, rho[0]);
