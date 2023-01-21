@@ -69,7 +69,7 @@ public:
 
 private:
   fuse_core::MatrixXd A_;  //!< The residual weighting matrix, most likely the square root information matrix
-  fuse_core::Vector6d b_;  //!< The measured difference between variable x0 and variable x1
+  fuse_core::Vector7d b_;  //!< The measured difference between variable x0 and variable x1
 };
 
 }  // namespace fuse_constraints
