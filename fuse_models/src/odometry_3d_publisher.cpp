@@ -284,7 +284,7 @@ bool Odometry3DPublisher::getState(const fuse_core::Graph& graph, const ros::Tim
     odometry.pose.pose.orientation.w = orientation_variable.w();
     odometry.pose.pose.orientation.x = orientation_variable.x();
     odometry.pose.pose.orientation.y = orientation_variable.y();
-    odometry.pose.pose.orientation.x = orientation_variable.z();
+    odometry.pose.pose.orientation.z = orientation_variable.z();
     odometry.twist.twist.linear.x = velocity_linear_variable.x();
     odometry.twist.twist.linear.y = velocity_linear_variable.y();
     odometry.twist.twist.linear.z = velocity_linear_variable.z();

@@ -331,10 +331,10 @@ void SkidSteer3D::generateMotionModel(const ros::Time& beginning_stamp, const ro
   position1->data()[fuse_variables::Position3DStamped::X] = state1.pose.position.x;
   position1->data()[fuse_variables::Position3DStamped::Y] = state1.pose.position.y;
   position1->data()[fuse_variables::Position3DStamped::Z] = state1.pose.position.z;
+  orientation1->data()[fuse_variables::Orientation3DStamped::W] = state1.pose.orientation.w;
   orientation1->data()[fuse_variables::Orientation3DStamped::X] = state1.pose.orientation.x;
   orientation1->data()[fuse_variables::Orientation3DStamped::Y] = state1.pose.orientation.y;
   orientation1->data()[fuse_variables::Orientation3DStamped::Z] = state1.pose.orientation.z;
-  orientation1->data()[fuse_variables::Orientation3DStamped::W] = state1.pose.orientation.w;
   velocity_linear1->data()[fuse_variables::VelocityLinear3DStamped::X] = state1.velocity_linear.linear.x;
   velocity_linear1->data()[fuse_variables::VelocityLinear3DStamped::Y] = state1.velocity_linear.linear.y;
   velocity_linear1->data()[fuse_variables::VelocityLinear3DStamped::Y] = state1.velocity_linear.linear.z;
@@ -353,10 +353,10 @@ void SkidSteer3D::generateMotionModel(const ros::Time& beginning_stamp, const ro
   position2->data()[fuse_variables::Position3DStamped::X] = state2.pose.position.x;
   position2->data()[fuse_variables::Position3DStamped::Y] = state2.pose.position.y;
   position2->data()[fuse_variables::Position3DStamped::Z] = state2.pose.position.z;
+  orientation2->data()[fuse_variables::Orientation3DStamped::W] = state2.pose.orientation.w;
   orientation2->data()[fuse_variables::Orientation3DStamped::X] = state2.pose.orientation.x;
   orientation2->data()[fuse_variables::Orientation3DStamped::Y] = state2.pose.orientation.y;
   orientation2->data()[fuse_variables::Orientation3DStamped::Z] = state2.pose.orientation.z;
-  orientation2->data()[fuse_variables::Orientation3DStamped::W] = state2.pose.orientation.w;
   velocity_linear2->data()[fuse_variables::VelocityLinear3DStamped::X] = state2.velocity_linear.linear.x;
   velocity_linear2->data()[fuse_variables::VelocityLinear3DStamped::Y] = state2.velocity_linear.linear.y;
   velocity_linear2->data()[fuse_variables::VelocityLinear3DStamped::Y] = state2.velocity_linear.linear.z;
@@ -481,10 +481,10 @@ void SkidSteer3D::updateStateHistoryEstimates(const fuse_core::Graph& graph, Sta
       current_state.pose.position.x = (position.data()[fuse_variables::Position3DStamped::X]);
       current_state.pose.position.y = (position.data()[fuse_variables::Position3DStamped::Y]);
       current_state.pose.position.z = (position.data()[fuse_variables::Position3DStamped::Z]);
+      current_state.pose.orientation.w = (orientation.data()[fuse_variables::Orientation3DStamped::W]);
       current_state.pose.orientation.x = (orientation.data()[fuse_variables::Orientation3DStamped::X]);
       current_state.pose.orientation.y = (orientation.data()[fuse_variables::Orientation3DStamped::Y]);
       current_state.pose.orientation.z = (orientation.data()[fuse_variables::Orientation3DStamped::Z]);
-      current_state.pose.orientation.w = (orientation.data()[fuse_variables::Orientation3DStamped::W]);
       current_state.velocity_linear.linear.x = (vel_linear.data()[fuse_variables::VelocityLinear3DStamped::X]);
       current_state.velocity_linear.linear.y = (vel_linear.data()[fuse_variables::VelocityLinear3DStamped::Y]);
       current_state.velocity_linear.linear.z = (vel_linear.data()[fuse_variables::VelocityLinear3DStamped::Z]);

@@ -60,6 +60,7 @@ bool NormalPriorOrientation3D::Evaluate(double const* const* parameters, double*
   // Scale the residuals by the square root information matrix to account for the measurement uncertainty.
   Eigen::Map<Eigen::Matrix<double, 3, 1>> residuals_map(residuals);
   residuals_map.applyOnTheLeft(A_.template cast<double>());
+  //TODO:: These jacobians are not correct
   jacobians[0][0] = 1;
   jacobians[0][1] = 0;
   jacobians[0][2] = 0;

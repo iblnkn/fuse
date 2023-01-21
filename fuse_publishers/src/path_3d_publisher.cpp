@@ -114,10 +114,11 @@ void Path3DPublisher::notifyCallback(
       pose.pose.position.x = position->x();
       pose.pose.position.y = position->y();
       pose.pose.position.y = position->z();
+      pose.pose.orientation.w = orientation->w();
       pose.pose.orientation.x = orientation->x();
       pose.pose.orientation.y = orientation->y();
       pose.pose.orientation.z = orientation->z();
-      pose.pose.orientation.w = orientation->w();
+
       poses.push_back(std::move(pose));
     }
   }

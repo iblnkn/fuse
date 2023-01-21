@@ -104,13 +104,18 @@ bool NormalDeltaPose3DCostFunctor::operator()(const T* const position1, const T*
   Eigen::Map<const Eigen::Matrix<T, 3, 1>> position2_vector(position2);
   Eigen::Matrix<T, 6, 1> full_residuals_vector;
 
+  T orientation1Euler[3];
+  T orientation2Euler[3];
+  ceres::QuaternionToAngleAxis(orientation1, orientation1Euler);
+  ceres::QuaternionToAngleAxis(orientation2, orientation2Euler);
+
   full_residuals_vector.template head<3>() =
-      fuse_core::rotationMatrix3D(orientation1[0], orientation1[1], orientation1[2]).transpose() *
+      fuse_core::rotationMatrix3D(orientation1Euler[0], orientation1Euler[1], orientation1Euler[2]).transpose() *
           (position2_vector - position1_vector) -
       b_.head<3>().template cast<T>();
-  full_residuals_vector(3) = fuse_core::wrapAngle2D(orientation2[0] - orientation1[0] - T(b_(0)));
-  full_residuals_vector(4) = fuse_core::wrapAngle2D(orientation2[1] - orientation1[1] - T(b_(1)));
-  full_residuals_vector(5) = fuse_core::wrapAngle2D(orientation2[2] - orientation1[2] - T(b_(2)));
+  full_residuals_vector(3) = fuse_core::wrapAngle2D(orientation2Euler[0] - orientation1Euler[0] - T(b_(0)));
+  full_residuals_vector(4) = fuse_core::wrapAngle2D(orientation2Euler[1] - orientation1Euler[1] - T(b_(1)));
+  full_residuals_vector(5) = fuse_core::wrapAngle2D(orientation2Euler[2] - orientation1Euler[2] - T(b_(2)));
   // TODO(iblankena): THIS MATH IS WRONG> CONVERT TO QUATS.
   // Scale the residuals by the square root information matrix to account for
   // the measurement uncertainty.
