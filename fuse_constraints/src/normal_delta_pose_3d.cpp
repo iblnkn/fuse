@@ -47,7 +47,7 @@ NormalDeltaPose3D::NormalDeltaPose3D(const fuse_core::MatrixXd& A, const fuse_co
 }
 
 bool NormalDeltaPose3D::Evaluate(double const* const* parameters, double* residuals, double** jacobians) const
-{  // TODO::There is no way this is right
+{
   const fuse_core::Matrix3d R1_transpose =
       fuse_core::rotationMatrix3D(parameters[1][0], parameters[1][0], parameters[1][0]).transpose();  // orientation1
   const fuse_core::Vector3d position_delta =

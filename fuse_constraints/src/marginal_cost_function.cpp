@@ -65,7 +65,7 @@ bool MarginalCostFunction::Evaluate(double const* const* parameters, double* res
     fuse_core::VectorXd delta(A_[i].cols());
     if (manifolds_[i])
     {
-      manifolds_[i]->Minus(parameters[i], x_bar_[i].data(), delta.data());  // TODO: THIS NEEDS UPDATED
+      manifolds_[i]->Minus(parameters[i], x_bar_[i].data(), delta.data());
     }
     else
     {

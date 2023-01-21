@@ -149,7 +149,7 @@ std::enable_if_t<is_angular_2d<T>::value, size_t> toIndex(const std::string& dim
  * @return the index of the enumerated dimension for that type
  * @throws runtime_error if the dimension name is invalid
  */
-template <typename T>  // TODO(iblankena): It may be interesting to modify Orientation3DStamped handle the coversion
+template <typename T>  // TODO(iblankenau): It may be interesting to modify Orientation3DStamped handle the coversion
                        // from euler to quaternion so you can initialize with euler angles like R_L
 std::enable_if_t<is_quat_3d<T>::value, size_t> toIndex(const std::string& dimension)
 {
@@ -177,7 +177,7 @@ std::enable_if_t<is_quat_3d<T>::value, size_t> toIndex(const std::string& dimens
  * @return the index of the enumerated dimension for that type
  * @throws runtime_error if the dimension name is invalid
  */
-template <typename T>  // TODO(iblankena): It may be interesting to modify Orientation3DStamped handle the coversion
+template <typename T>  // TODO(iblankenau): It may be interesting to modify Orientation3DStamped handle the coversion
                        // from euler to quaternion so you can initialize with euler angles like R_L
 std::enable_if_t<is_euler_3d<T>::value, size_t> toIndex(const std::string& dimension)
 {

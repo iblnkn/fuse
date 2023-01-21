@@ -1014,7 +1014,6 @@ inline bool processDifferentialPose3DWithCovariance(
     // double x_diff = pose2.pose.pose.position.x - pose1.pose.pose.position.x;
     // double y_diff = pose2.pose.pose.position.y - pose1.pose.pose.position.y;
     // double z_diff = pose2.pose.pose.position.z - pose1.pose.pose.position.z;
-    // TODO:: THESE JACOBIANS ARE INCRORRECT
 
     fuse_core::Matrix6d j_pose1;
     j_pose1 << -1, 0, 0, 0, 0, 0, 0, -1, 0, 0, 0, 0, 0, 0, -1, 0, 0, 0, 0, 0, 0, -1, 0, 0, 0, 0, 0, 0, -1, 0, 0, 0, 0,
@@ -2340,7 +2339,7 @@ inline void scaleProcessNoiseCovariance(fuse_core::Matrix15d& process_noise_cova
                pow((pow(velocity_in.linear.x, 2) + pow(velocity_in.linear.y, 2) + pow(velocity_in.linear.z, 2) +
                     pow(velocity_in.angular.x, 2) + pow(velocity_in.angular.y, 2) + pow(velocity_in.angular.z, 2)),
                    0.5));
-  // TODO:: While this technically should work. It is not very pretty. Probably
+  // TODO(iblankenau) While this technically should work. It is not very pretty. Probably
   // better to take norm of the linear norm and the angular norm.
   process_noise_covariance.topLeftCorner<6, 6>() =
       velocity * process_noise_covariance.topLeftCorner<6, 6>() * velocity.transpose();
@@ -2355,7 +2354,7 @@ inline void scaleProcessNoiseCovariance(fuse_core::Matrix18d& process_noise_cova
                pow((pow(velocity_in.linear.x, 2) + pow(velocity_in.linear.y, 2) + pow(velocity_in.linear.z, 2) +
                     pow(velocity_in.angular.x, 2) + pow(velocity_in.angular.y, 2) + pow(velocity_in.angular.z, 2)),
                    0.5));
-  // TODO:: While this technically should work. It is not very pretty. Probably
+  // TODO(iblankenau) While this technically should work. It is not very pretty. Probably
   // better to take norm of the linear norm and the angular norm.
   process_noise_covariance.topLeftCorner<6, 6>() =
       velocity * process_noise_covariance.topLeftCorner<6, 6>() * velocity.transpose();
@@ -2372,7 +2371,7 @@ inline void scaleProcessNoiseCovariance(fuse_core::Matrix18d& process_noise_cova
                                        pow(velocity_linear.linear.z, 2) + pow(velocity_angular.angular.x, 2) +
                                        pow(velocity_angular.angular.y, 2) + pow(velocity_angular.angular.z, 2)),
                                       0.5));
-  // TODO:: While this technically should work. It is not very pretty. Probably
+  // TODO(iblankenau) While this technically should work. It is not very pretty. Probably
   // better to take norm of the linear norm and the angular norm.
   process_noise_covariance.topLeftCorner<6, 6>() =
       velocity * process_noise_covariance.topLeftCorner<6, 6>() * velocity.transpose();

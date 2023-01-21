@@ -116,7 +116,6 @@ inline void predict(const T position1_x, const T position1_y, const T position1_
   const T orientation1_yaw = orientation1_euler[2];
 
   // There are better models for this projection, but this matches the one used by r_l.
-  // TODO::Convert Quaternions to Euler
   T delta_x = vel_linear1_x * dt + T(0.5) * acc_linear1_x * dt * dt;
   T delta_y = vel_linear1_y * dt + T(0.5) * acc_linear1_y * dt * dt;
   T delta_z = vel_linear1_z * dt + T(0.5) * acc_linear1_z * dt * dt;
@@ -256,7 +255,6 @@ inline void predict(const T position1_x, const T position1_y, const T position1_
   const T orientation1_pitch = orientation1_euler[1];
   const T orientation1_yaw = orientation1_euler[2];
 
-  // TODO::Convert Quaternions to Euler
   T delta_x = vel_linear1_x * dt + T(0.5) * acc_linear1_x * dt * dt;
   T delta_y = vel_linear1_y * dt + T(0.5) * acc_linear1_y * dt * dt;
   T delta_z = vel_linear1_z * dt + T(0.5) * acc_linear1_z * dt * dt;

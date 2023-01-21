@@ -146,7 +146,7 @@ inline ceres::CostFunction* AbsoluteConstraint<fuse_variables::Orientation3DStam
   return new ceres::AutoDiffCostFunction<NormalPriorOrientation3DCostFunctor, 3, 4>(
       new NormalPriorOrientation3DCostFunctor(sqrt_information_, mean_));
 
-  // TODO(iblankenau): Cost function implementation does not
+  // TODO(iblankenau) Cost function implementation does not
   // currently work as we are relying on Ceres AutoDiff rather
   // than analytically computing the jacobians. Implementing costFunction may yield performance improvements. 
   

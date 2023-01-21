@@ -40,7 +40,7 @@
 
 namespace fuse_constraints
 {
-// TODO(iblankenau): Update this brief when implementing 3D cost function.
+// TODO(iblankenau) Update this brief when implementing 3D cost function.
 /**
  * @brief Implements a cost function that models a difference between pose variables.
  *

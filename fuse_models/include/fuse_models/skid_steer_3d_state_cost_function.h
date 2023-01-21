@@ -133,26 +133,26 @@ public:
     double acc_linear_pred_z;
     double acc_angular_pred_x;
     double acc_angular_pred_y;
-    double acc_angular_pred_z;  // TODO: Fix quaternion represetation and Jacobian if checks
-    predict(parameters[0][0],   // position1_x
-            parameters[0][1],   // position1_y
-            parameters[0][2],   // position1_y
-            parameters[1][0],   // orientation1_w
-            parameters[1][1],   // orientation1_x
-            parameters[1][2],   // orientation1_y
-            parameters[1][3],   // orientation1_z
-            parameters[2][0],   // vel_linear1_x
-            parameters[2][1],   // vel_linear1_y
-            parameters[2][2],   // vel_linear1_z
-            parameters[3][0],   // vel_angular1_x
-            parameters[3][1],   // vel_angular1_y
-            parameters[3][2],   // vel_angular1_z
-            parameters[4][0],   // acc_linear1_x
-            parameters[4][1],   // acc_linear1_y
-            parameters[4][2],   // acc_linear1_z
-            parameters[5][0],   // acc_angular1_x
-            parameters[5][1],   // acc_angular1_y
-            parameters[5][2],   // acc_angular1_z
+    double acc_angular_pred_z;
+    predict(parameters[0][0],  // position1_x
+            parameters[0][1],  // position1_y
+            parameters[0][2],  // position1_y
+            parameters[1][0],  // orientation1_w
+            parameters[1][1],  // orientation1_x
+            parameters[1][2],  // orientation1_y
+            parameters[1][3],  // orientation1_z
+            parameters[2][0],  // vel_linear1_x
+            parameters[2][1],  // vel_linear1_y
+            parameters[2][2],  // vel_linear1_z
+            parameters[3][0],  // vel_angular1_x
+            parameters[3][1],  // vel_angular1_y
+            parameters[3][2],  // vel_angular1_z
+            parameters[4][0],  // acc_linear1_x
+            parameters[4][1],  // acc_linear1_y
+            parameters[4][2],  // acc_linear1_z
+            parameters[5][0],  // acc_angular1_x
+            parameters[5][1],  // acc_angular1_y
+            parameters[5][2],  // acc_angular1_z
             dt_, position_pred_x, position_pred_y, position_pred_z, orientation_pred_w, orientation_pred_x,
             orientation_pred_y, orientation_pred_z, vel_linear_pred_x, vel_linear_pred_y, vel_linear_pred_z,
             vel_angular_pred_x, vel_angular_pred_y, vel_angular_pred_z, acc_linear_pred_x, acc_linear_pred_y,
@@ -161,8 +161,8 @@ public:
     residuals[0] = parameters[6][0] - position_pred_x;
     residuals[1] = parameters[6][1] - position_pred_y;
     residuals[2] = parameters[6][2] - position_pred_z;
-    residuals[3] =
-        parameters[7][0] - orientation_pred_x;  // TODO(iblankenau): convert from quat to euler to get 3 dim residual
+    // TODO(iblankenau) Convert from quat to euler for orientation to get 3 dim residual
+    residuals[3] = parameters[7][0] - orientation_pred_x;
     residuals[4] = parameters[7][1] - orientation_pred_y;
     residuals[5] = parameters[7][2] - orientation_pred_z;
     residuals[6] = parameters[8][0] - vel_linear_pred_x;

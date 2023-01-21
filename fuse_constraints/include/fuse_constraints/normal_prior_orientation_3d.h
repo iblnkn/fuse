@@ -57,8 +57,7 @@ namespace fuse_constraints
  * information matrix (the inverse of the covariance). This is a specialization of the generic "normal prior" provided
  * by the Ceres library that handles the 2*pi roll-over that occurs with rotations.
  */
-class NormalPriorOrientation3D : public ceres::SizedCostFunction<3, 4>  // TODO:: HAVE NOT VERIFIED THAT THIS WAS A GOOD
-                                                                        // IDEA. PERHAPS SHOULD BE <3,3>
+class NormalPriorOrientation3D : public ceres::SizedCostFunction<3, 4> 
 {
 public:
   /**
