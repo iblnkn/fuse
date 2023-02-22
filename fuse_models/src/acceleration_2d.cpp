@@ -33,26 +33,22 @@
  */
 #include <fuse_models/common/sensor_proc.h>
 #include <fuse_models/acceleration_2d.h>
-
 #include <fuse_core/transaction.h>
 #include <fuse_core/uuid.h>
-
 #include <geometry_msgs/AccelWithCovarianceStamped.h>
 #include <pluginlib/class_list_macros.h>
 #include <ros/ros.h>
-
 
 // Register this sensor model with ROS as a plugin.
 PLUGINLIB_EXPORT_CLASS(fuse_models::Acceleration2D, fuse_core::SensorModel)
 
 namespace fuse_models
 {
-
-Acceleration2D::Acceleration2D() :
-  fuse_core::AsyncSensorModel(1),
-  device_id_(fuse_core::uuid::NIL),
-  tf_listener_(tf_buffer_),
-  throttled_callback_(std::bind(&Acceleration2D::process, this, std::placeholders::_1))
+Acceleration2D::Acceleration2D()
+  : fuse_core::AsyncSensorModel(1)
+  , device_id_(fuse_core::uuid::NIL)
+  , tf_listener_(tf_buffer_)
+  , throttled_callback_(std::bind(&Acceleration2D::process, this, std::placeholders::_1))
 {
 }
 
@@ -68,8 +64,8 @@ void Acceleration2D::onInit()
 
   if (params_.indices.empty())
   {
-    ROS_WARN_STREAM("No dimensions were specified. Data from topic " << ros::names::resolve(params_.topic) <<
-                    " will be ignored.");
+    ROS_WARN_STREAM("No dimensions were specified. Data from topic " << ros::names::resolve(params_.topic)
+                                                                     << " will be ignored.");
   }
 }
 
@@ -94,17 +90,8 @@ void Acceleration2D::process(const geometry_msgs::AccelWithCovarianceStamped::Co
   auto transaction = fuse_core::Transaction::make_shared();
   transaction->stamp(msg->header.stamp);
 
-  common::processAccel2DWithCovariance(
-    name(),
-    device_id_,
-    *msg,
-    params_.loss,
-    params_.target_frame,
-    params_.indices,
-    tf_buffer_,
-    !params_.disable_checks,
-    *transaction,
-    params_.tf_timeout);
+  common::processAccel2DWithCovariance(name(), device_id_, *msg, params_.loss, params_.target_frame, params_.indices,
+                                       tf_buffer_, !params_.disable_checks, *transaction, params_.tf_timeout);
 
   // Send the transaction object to the plugin's parent
   sendTransaction(transaction);

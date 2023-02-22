@@ -31,14 +31,12 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  */
-#include <fuse_models/odometry_3d_publisher.h>
-#include <fuse_models/skid_steer_3d_predict.h>
-#include <fuse_models/common/sensor_proc.h>
-
 #include <fuse_core/async_publisher.h>
 #include <fuse_core/eigen.h>
 #include <fuse_core/uuid.h>
-
+#include <fuse_models/common/sensor_proc.h>
+#include <fuse_models/odometry_3d_publisher.h>
+#include <fuse_models/skid_steer_3d_predict.h>
 #include <geometry_msgs/AccelWithCovarianceStamped.h>
 #include <nav_msgs/Odometry.h>
 #include <pluginlib/class_list_macros.h>
@@ -69,43 +67,58 @@ Odometry3DPublisher::Odometry3DPublisher()
 
 void Odometry3DPublisher::onInit()
 {
-  // Read settings from the parameter sever
+  // Read settings from the parameter server
   device_id_ = fuse_variables::loadDeviceId(private_node_handle_);
 
+  // Load parameters from the ROS parameter server
   params_.loadFromROS(private_node_handle_);
 
+  // If the transform is not inverted and the world and map frame IDs are the
+  // same, create a TransformListener
   if (!params_.invert_tf && params_.world_frame_id == params_.map_frame_id)
   {
     tf_buffer_ = std::make_unique<tf2_ros::Buffer>(params_.tf_cache_time);
     tf_listener_ = std::make_unique<tf2_ros::TransformListener>(*tf_buffer_, node_handle_);
   }
 
+  // Advertise a topic to publish odometry messages
   odom_pub_ = node_handle_.advertise<nav_msgs::Odometry>(ros::names::resolve(params_.topic), params_.queue_size);
+
+  // Advertise a topic to publish acceleration messages
   acceleration_pub_ = node_handle_.advertise<geometry_msgs::AccelWithCovarianceStamped>(
       ros::names::resolve(params_.acceleration_topic), params_.queue_size);
 
+  // Set up a timer to periodically publish odometry messages
   publish_timer_node_handle_.setCallbackQueue(&publish_timer_callback_queue_);
 
   publish_timer_ = publish_timer_node_handle_.createTimer(
       ros::Duration(1.0 / params_.publish_frequency), &Odometry3DPublisher::publishTimerCallback, this, false, false);
 
+  // Start spinning the callback queue for the timer
   publish_timer_spinner_.start();
 }
 
-void Odometry3DPublisher::notifyCallback(fuse_core::Transaction::ConstSharedPtr transaction,
-                                         fuse_core::Graph::ConstSharedPtr graph)
-{
+void Odometry3DPublisher::notifyCallback(
+    fuse_core::Transaction::ConstSharedPtr transaction,  // the new transaction that has just been added to the
+                                                         // graph
+    fuse_core::Graph::ConstSharedPtr graph)
+{  // the current graph of poses
   // Find the most recent common timestamp
-  const auto latest_stamp = synchronizer_.findLatestCommonStamp(*transaction, *graph);
+  const auto latest_stamp =
+      synchronizer_.findLatestCommonStamp(*transaction,
+                                          *graph);  // Find the timestamp when the robot state is most recent.
+
   if (latest_stamp == Synchronizer::TIME_ZERO)
-  {
+  {  // if the time is not found
     {
-      std::lock_guard<std::mutex> lock(mutex_);
-      latest_stamp_ = latest_stamp;
+      std::lock_guard<std::mutex> lock(mutex_);  // acquire the lock
+      latest_stamp_ = latest_stamp;              // Set the latest timestamp to TIME_ZERO
     }
 
-    ROS_WARN_STREAM_THROTTLE(10.0,
-                             "Failed to find a matching set of state variables with device id '" << device_id_ << "'.");
+    ROS_WARN_STREAM_THROTTLE(10.0,  // The message is throttled, meaning the message is printed every
+                                    // 10 seconds
+                             "Failed to find a matching set of state variables with device id '"
+                                 << device_id_ << "'.");  // print warning message with robot device id
     return;
   }
 
@@ -117,27 +130,41 @@ void Odometry3DPublisher::notifyCallback(fuse_core::Transaction::ConstSharedPtr 
   fuse_core::UUID acceleration_linear_uuid;
   fuse_core::UUID acceleration_angular_uuid;
 
-  nav_msgs::Odometry odom_output;
-  geometry_msgs::AccelWithCovarianceStamped acceleration_output;
-  if (!getState(*graph, latest_stamp, device_id_, position_uuid, orientation_uuid, velocity_linear_uuid,
-                velocity_angular_uuid, acceleration_linear_uuid, acceleration_angular_uuid, odom_output,
-                acceleration_output))
-  {
-    std::lock_guard<std::mutex> lock(mutex_);
-    latest_stamp_ = latest_stamp;
+  nav_msgs::Odometry odom_output;                                 // message to be published
+  geometry_msgs::AccelWithCovarianceStamped acceleration_output;  // message to be published
+  if (!getState(*graph, latest_stamp, device_id_,
+                position_uuid,  // get the most recent state estimate at timestamp
+                orientation_uuid, velocity_linear_uuid, velocity_angular_uuid, acceleration_linear_uuid,
+                acceleration_angular_uuid, odom_output, acceleration_output))
+  {                                            // returns false if it is not possible to get
+                                               // the state estimate
+    std::lock_guard<std::mutex> lock(mutex_);  // acquire the lock
+    latest_stamp_ = latest_stamp;              // Set the latest timestamp to the current timestamp
     return;
   }
 
+  // set the header of the odometry message with the world frame id
   odom_output.header.frame_id = params_.world_frame_id;
-  odom_output.header.stamp = latest_stamp;
-  odom_output.child_frame_id = params_.base_link_output_frame_id;
 
+  // set the header of the odometry message with the most recent timestamp
+  odom_output.header.stamp = latest_stamp;
+
+  // set the child frame id of the odometry message
+  odom_output.child_frame_id = params_.base_link_output_frame_id;
+  // set the header of the acceleration message with the base link output frame
+  // id
   acceleration_output.header.frame_id = params_.base_link_output_frame_id;
-  acceleration_output.header.stamp = latest_stamp;
+  acceleration_output.header.stamp = latest_stamp;  // set the header of the acceleration message with the most
+                                                    // recent timestamp
 
   // Don't waste CPU computing the covariance if nobody is listening
-  ros::Time latest_covariance_stamp = latest_covariance_stamp_;
-  bool latest_covariance_valid = latest_covariance_valid_;
+  ros::Time latest_covariance_stamp = latest_covariance_stamp_;  // set the latest_covariance_stamp to the
+                                                                 // current value of the class member variable
+  bool latest_covariance_valid = latest_covariance_valid_;       // set the latest_covariance_valid flag to the
+                                                                 // current value of the class member variable
+
+  // Compute the covariance only if there is a subscriber for odometry or
+  // acceleration or the covariance throttle period has expired
   if (odom_pub_.getNumSubscribers() > 0 || acceleration_pub_.getNumSubscribers() > 0)
   {
     // Throttle covariance computation
@@ -209,10 +236,12 @@ void Odometry3DPublisher::notifyCallback(fuse_core::Transaction::ConstSharedPtr 
     }
     else
     {
-      // This covariance computation cycle has been skipped, so simply take the last covariance computed
+      // This covariance computation cycle has been skipped, so simply take the
+      // last covariance computed
       //
-      // We do not propagate the latest covariance forward because it would grow unbounded being very different from
-      // the actual covariance we would have computed if not throttling.
+      // We do not propagate the latest covariance forward because it would grow
+      // unbounded being very different from the actual covariance we would have
+      // computed if not throttling.
       odom_output.pose.covariance = odom_output_.pose.covariance;
       odom_output.twist.covariance = odom_output_.twist.covariance;
       acceleration_output.accel.covariance = acceleration_output_.accel.covariance;
@@ -339,7 +368,8 @@ void Odometry3DPublisher::publishTimerCallback(const ros::TimerEvent& event)
   tf2::Transform pose;
   tf2::fromMsg(odom_output.pose.pose, pose);
 
-  // If requested, we need to project our state forward in time using the 3D kinematic model
+  // If requested, we need to project our state forward in time using the 3D
+  // kinematic model
   if (params_.predict_to_current_time)
   {
     tf2::Vector3 velocity_linear;
@@ -385,8 +415,8 @@ void Odometry3DPublisher::publishTimerCallback(const ros::TimerEvent& event)
     odom_output.header.stamp = event.current_real;
     acceleration_output.header.stamp = event.current_real;
 
-    // Either the last covariance computation was skipped because there was no subscriber,
-    // or it failed
+    // Either the last covariance computation was skipped because there was no
+    // subscriber, or it failed
     if (latest_covariance_valid)
     {
       fuse_core::Matrix18d covariance;
@@ -415,9 +445,10 @@ void Odometry3DPublisher::publishTimerCallback(const ros::TimerEvent& event)
       covariance(7, 6) = acceleration_output.accel.covariance[6];
       covariance(7, 7) = acceleration_output.accel.covariance[7];
 
-      // TODO(efernandez) for now we set to zero the out-of-diagonal blocks with the correlations between pose, twist
-      // and acceleration, but we could cache them in another attribute when we retrieve the covariance from the ceres
-      // problem
+      // TODO(efernandez) for now we set to zero the out-of-diagonal blocks with
+      // the correlations between pose, twist and acceleration, but we could
+      // cache them in another attribute when we retrieve the covariance from
+      // the ceres problem
       covariance.topRightCorner<3, 5>().setZero();
       covariance.bottomLeftCorner<5, 3>().setZero();
       covariance.block<3, 2>(3, 6).setZero();

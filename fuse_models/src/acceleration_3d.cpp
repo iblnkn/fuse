@@ -31,83 +31,82 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  */
-#include <fuse_models/common/sensor_proc.h>
-#include <fuse_models/acceleration_3d.h>
-
 #include <fuse_core/transaction.h>
 #include <fuse_core/uuid.h>
-
+#include <fuse_models/acceleration_3d.h>
+#include <fuse_models/common/sensor_proc.h>
 #include <geometry_msgs/AccelWithCovarianceStamped.h>
 #include <pluginlib/class_list_macros.h>
 #include <ros/ros.h>
 
-
-// Register this sensor model with ROS as a plugin.
+// Register this sensor model as a plugin for the SensorModel class in the fuse_core namespace
 PLUGINLIB_EXPORT_CLASS(fuse_models::Acceleration3D, fuse_core::SensorModel)
 
 namespace fuse_models
 {
-
-Acceleration3D::Acceleration3D() :
-  fuse_core::AsyncSensorModel(1),
-  device_id_(fuse_core::uuid::NIL),
-  tf_listener_(tf_buffer_),
-  throttled_callback_(std::bind(&Acceleration3D::process, this, std::placeholders::_1))
+// Define the constructor for the Acceleration3D class
+Acceleration3D::Acceleration3D()
+  // Initialize the base class and bide the process method to the throttled_callback_
+  : fuse_core::AsyncSensorModel(1)
+  , device_id_(fuse_core::uuid::NIL)
+  , tf_listener_(tf_buffer_)
+  , throttled_callback_(std::bind(&Acceleration3D::process, this, std::placeholders::_1))
 {
 }
 
+// Define the onInit() method, which is called when the plugin is initialized
 void Acceleration3D::onInit()
 {
-  // Read settings from the parameter sever
+  // Load the device ID from the parameter server and the paraters for this plugin from the ROS parameter server.
   device_id_ = fuse_variables::loadDeviceId(private_node_handle_);
-
   params_.loadFromROS(private_node_handle_);
 
+  // Set the throttle period and use_wall_time of the throttled callback
   throttled_callback_.setThrottlePeriod(params_.throttle_period);
   throttled_callback_.setUseWallTime(params_.throttle_use_wall_time);
 
+  // Check if linear_indices and angular_indices are empty
   if (params_.linear_indices.empty() || params_.angular_indices.empty())
   {
-    ROS_WARN_STREAM("No dimensions were specified. Data from topic " << ros::names::resolve(params_.topic) <<
-                    " will be ignored.");
+    // Log a warning and ignore the topic if they are
+    ROS_WARN_STREAM_NAMED("Acceleration3D", "No dimensions were specified. Data from topic "
+                                                << ros::names::resolve(params_.topic) << " will be ignored.");
   }
 }
 
+// Define the onStart() method, which is called when the plugin starts receiving data
 void Acceleration3D::onStart()
 {
+  // Check if linear_indices and angular_indices are not empty
   if (!(params_.linear_indices.empty() || params_.angular_indices.empty()))
   {
+    // Subscribe to the topic with the given parameters, and use the throttled_callback_ to process the messages
     subscriber_ = node_handle_.subscribe<geometry_msgs::AccelWithCovarianceStamped>(
         ros::names::resolve(params_.topic), params_.queue_size, &AccelerationThrottledCallback::callback,
         &throttled_callback_, ros::TransportHints().tcpNoDelay(params_.tcp_no_delay));
   }
 }
 
+// Define the onStop() method, which is called when the plugin stops receiving data
 void Acceleration3D::onStop()
 {
+  // Shutdown the subscriber
   subscriber_.shutdown();
 }
 
+// Define the process() method, which is called every time a message is received on the subscribed topic
 void Acceleration3D::process(const geometry_msgs::AccelWithCovarianceStamped::ConstPtr& msg)
 {
-  // Create a transaction object
+  // Create a transaction object and set the stamp to the header stamp of the received message
   auto transaction = fuse_core::Transaction::make_shared();
   transaction->stamp(msg->header.stamp);
 
-  common::processAccel3DWithCovariance(
-    name(),
-    device_id_,
-    *msg,
-    params_.linear_loss,
-    params_.angular_loss,
-    params_.target_frame,
-    params_.linear_indices,
-    params_.angular_indices,
-    tf_buffer_,
-    !params_.disable_checks,
-    *transaction,
-    params_.tf_timeout);
-  // Send the transaction object to the plugin's parent
+  // Process the received message, and add any resulting variables and constraints to the transaction
+  common::processAccel3DWithCovariance(name(), device_id_, *msg, params_.linear_loss, params_.angular_loss,
+                                       params_.target_frame, params_.linear_indices, params_.angular_indices,
+                                       tf_buffer_, !params_.disable_checks, *transaction, params_.tf_timeout);
+
+  // Send the transaction object to the plugin's parent (i.e., the parent of the AsyncSensorModel class)
   sendTransaction(transaction);
 }
 
