@@ -188,6 +188,39 @@ inline void populatePartialMeasurement(const fuse_core::VectorXd& mean_full, con
 }
 
 /**
+ * @brief Method to create sub-measurements from full measurements and append
+ * them to existing partial measurements
+ *
+ * @param[in] mean_full - The full mean vector from which we will generate the
+ * sub-measurement
+ * @param[in] covariance_full - The full covariance matrix from which we will
+ * generate the sub-measurement
+ * @param[in] indices - The indices we want to include in the sub-measurement
+ * @param[in,out] mean_partial - The partial measurement mean to which we want
+ * to append
+ * @param[in,out] covariance_partial - The partial measurement covariance to
+ * which we want to append
+ */
+inline void populatePartialMeasurementPose(const fuse_core::VectorXd& mean_full,
+                                           const fuse_core::MatrixXd& covariance_full,
+                                           const std::vector<size_t>& indices, fuse_core::VectorXd& mean_partial,
+                                           fuse_core::MatrixXd& covariance_partial)
+{
+  for (size_t r = 0; r < indices.size(); ++r)
+  {
+    mean_partial(r) = mean_full(indices[r]);
+  }
+
+  for (size_t r = 0; r < indices.size() - 1; ++r)
+  {
+    for (size_t c = 0; c < indices.size() - 1; ++c)
+    {
+      covariance_partial(r, c) = covariance_full(indices[r], indices[c]);
+    }
+  }
+}
+
+/**
  * @brief Method to validate partial measurements, that checks for finite values
  * and covariance properties
  *
@@ -385,9 +418,10 @@ inline bool processAbsolutePose2DWithCovariance(const std::string& source, const
   }
 
   // Create an absolute pose constraint
-  auto constraint = fuse_constraints::AbsolutePose2DStampedConstraint::make_shared(
-      source, *position, *orientation, pose_mean_partial, pose_covariance_partial, position_indices,
-      orientation_indices);
+  auto constraint =
+      fuse_constraints::AbsolutePose2DStampedConstraint::make_shared(source, *position, *orientation, pose_mean_partial,
+                                                                     pose_covariance_partial, position_indices,
+                                                                     orientation_indices);
 
   constraint->loss(loss);
 
@@ -497,11 +531,12 @@ inline bool processAbsolutePose3DWithCovariance(const std::string& source, const
 
   // Build the sub-vector and sub-matrices based on the requested indices
   fuse_core::VectorXd pose_mean_partial(position_indices.size() + orientation_indices.size());
-  fuse_core::MatrixXd pose_covariance_partial(pose_mean_partial.rows(), pose_mean_partial.rows());
+  fuse_core::MatrixXd pose_covariance_partial(position_indices.size() + 3, position_indices.size() + 3);
 
   const auto indices = mergeIndices(position_indices, orientation_indices, position->size());
 
-  populatePartialMeasurement(pose_mean, pose_covariance, indices, pose_mean_partial, pose_covariance_partial);
+  // populatePartialMeasurement(pose_mean, pose_covariance, indices, pose_mean_partial, pose_covariance_partial);
+  populatePartialMeasurementPose(pose_mean, pose_covariance, indices, pose_mean_partial, pose_covariance_partial);
 
   if (validate)
   {
@@ -518,9 +553,10 @@ inline bool processAbsolutePose3DWithCovariance(const std::string& source, const
   }
 
   // Create an absolute pose constraint
-  auto constraint = fuse_constraints::AbsolutePose3DStampedConstraint::make_shared(
-      source, *position, *orientation, pose_mean_partial, pose_covariance_partial, position_indices,
-      orientation_indices);
+  auto constraint =
+      fuse_constraints::AbsolutePose3DStampedConstraint::make_shared(source, *position, *orientation, pose_mean_partial,
+                                                                     pose_covariance_partial, position_indices,
+                                                                     orientation_indices);
 
   constraint->loss(loss);
 
@@ -1489,10 +1525,9 @@ inline bool processDifferentialPose2DWithTwistCovariance(
     }
     catch (const std::runtime_error& ex)
     {
-      ROS_ERROR_STREAM_THROTTLE(10.0,
-                                "Invalid partial differential pose measurement "
-                                "using the twist covariance from '"
-                                    << source << "' source: " << ex.what());
+      ROS_ERROR_STREAM_THROTTLE(10.0, "Invalid partial differential pose measurement "
+                                      "using the twist covariance from '"
+                                          << source << "' source: " << ex.what());
       return false;
     }
   }
@@ -1650,10 +1685,9 @@ inline bool processDifferentialPose3DWithTwistCovariance(
     }
     catch (const std::runtime_error& ex)
     {
-      ROS_ERROR_STREAM_THROTTLE(10.0,
-                                "Invalid partial differential pose measurement "
-                                "using the twist covariance from '"
-                                    << source << "' source: " << ex.what());
+      ROS_ERROR_STREAM_THROTTLE(10.0, "Invalid partial differential pose measurement "
+                                      "using the twist covariance from '"
+                                          << source << "' source: " << ex.what());
       return false;
     }
   }

@@ -90,8 +90,8 @@ public:
                                                     fuse_variables::Position3DStamped::Y,
                                                     fuse_variables::Position3DStamped::Z },  // NOLINT
       const std::vector<size_t>& angular_indices = {
-          fuse_variables::Orientation3DStamped::X, fuse_variables::Orientation3DStamped::Y,
-          fuse_variables::Orientation3DStamped::Z, fuse_variables::Orientation3DStamped::W });  // NOLINT;
+          fuse_variables::Orientation3DStamped::W, fuse_variables::Orientation3DStamped::X,
+          fuse_variables::Orientation3DStamped::Y, fuse_variables::Orientation3DStamped::Z });  // NOLINT;
 
   /**
    * @brief Destructor
