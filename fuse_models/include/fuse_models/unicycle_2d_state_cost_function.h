@@ -143,7 +143,7 @@ public:
     residuals[6] = parameters[9][0] - acc_linear_pred_x;
     residuals[7] = parameters[9][1] - acc_linear_pred_y;
 
-    fuse_core::wrapAngle2D(residuals[2]);
+    fuse_core::wrapAngle(residuals[2]);
 
     // Scale the residuals by the square root information matrix to account for
     // the measurement uncertainty.

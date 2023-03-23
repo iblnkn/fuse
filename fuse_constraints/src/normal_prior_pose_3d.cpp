@@ -73,9 +73,9 @@ bool NormalPriorPose3D::Evaluate(double const* const* parameters, double* residu
   full_residuals_vector[0] = parameters[0][0] - b_[0];                                   // position x
   full_residuals_vector[1] = parameters[0][1] - b_[1];                                   // position y
   full_residuals_vector[2] = parameters[0][2] - b_[2];                                   // position y
-  full_residuals_vector[3] = fuse_core::wrapAngle2D(parameters_euler[0] - b_euler_[0]);  // orientation
-  full_residuals_vector[4] = fuse_core::wrapAngle2D(parameters_euler[1] - b_euler_[1]);  // orientation
-  full_residuals_vector[5] = fuse_core::wrapAngle2D(parameters_euler[2] - b_euler_[2]);
+  full_residuals_vector[3] = fuse_core::wrapAngle(parameters_euler[0] - b_euler_[0]);  // orientation
+  full_residuals_vector[4] = fuse_core::wrapAngle(parameters_euler[1] - b_euler_[1]);  // orientation
+  full_residuals_vector[5] = fuse_core::wrapAngle(parameters_euler[2] - b_euler_[2]);
 
   // Scale the residuals by the square root information matrix to account for the measurement uncertainty.
   Eigen::Map<fuse_core::VectorXd> residuals_vector(residuals, num_residuals());

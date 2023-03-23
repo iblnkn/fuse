@@ -86,7 +86,7 @@ inline void predict(const T position1_x, const T position1_y, const T yaw1, cons
   acc_linear2_x = acc_linear1_x;
   acc_linear2_y = acc_linear1_y;
 
-  fuse_core::wrapAngle2D(yaw2);
+  fuse_core::wrapAngle(yaw2);
 }
 
 /**
@@ -136,7 +136,7 @@ inline void predict(const double position1_x, const double position1_y, const do
   acc_linear2_x = acc_linear1_x;
   acc_linear2_y = acc_linear1_y;
 
-  fuse_core::wrapAngle2D(yaw2);
+  fuse_core::wrapAngle(yaw2);
 
   if (jacobians)
   {

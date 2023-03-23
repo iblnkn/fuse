@@ -178,15 +178,15 @@ public:
     residuals[16] = parameters[11][1] - acc_angular_pred_y;
     residuals[17] = parameters[11][2] - acc_angular_pred_z;
 
-    fuse_core::wrapAngle2D(residuals[3]);
-    fuse_core::wrapAngle2D(residuals[4]);
-    fuse_core::wrapAngle2D(residuals[5]);
-    fuse_core::wrapAngle2D(residuals[9]);
-    fuse_core::wrapAngle2D(residuals[10]);
-    fuse_core::wrapAngle2D(residuals[11]);
-    fuse_core::wrapAngle2D(residuals[15]);
-    fuse_core::wrapAngle2D(residuals[16]);
-    fuse_core::wrapAngle2D(residuals[17]);
+    fuse_core::wrapAngle(residuals[3]);
+    fuse_core::wrapAngle(residuals[4]);
+    fuse_core::wrapAngle(residuals[5]);
+    fuse_core::wrapAngle(residuals[9]);
+    fuse_core::wrapAngle(residuals[10]);
+    fuse_core::wrapAngle(residuals[11]);
+    fuse_core::wrapAngle(residuals[15]);
+    fuse_core::wrapAngle(residuals[16]);
+    fuse_core::wrapAngle(residuals[17]);
 
     // Scale the residuals by the square root information matrix to account for
     // the measurement uncertainty.

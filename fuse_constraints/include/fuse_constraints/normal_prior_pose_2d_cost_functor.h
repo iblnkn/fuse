@@ -100,7 +100,7 @@ bool NormalPriorPose2DCostFunctor::operator()(const T* const position, const T* 
   Eigen::Matrix<T, 3, 1> full_residuals_vector;
   full_residuals_vector(0) = position[0] - T(b_(0));
   full_residuals_vector(1) = position[1] - T(b_(1));
-  full_residuals_vector(2) = fuse_core::wrapAngle2D(orientation[0] - T(b_(2)));
+  full_residuals_vector(2) = fuse_core::wrapAngle(orientation[0] - T(b_(2)));
 
   // Scale the residuals by the square root information matrix to account for
   // the measurement uncertainty.

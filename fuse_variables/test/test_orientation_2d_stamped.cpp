@@ -106,7 +106,7 @@ struct Orientation2DPlus
   template <typename T>
   bool operator()(const T* x, const T* delta, T* x_plus_delta) const
   {
-    x_plus_delta[0] = fuse_core::wrapAngle2D(x[0] + delta[0]);
+    x_plus_delta[0] = fuse_core::wrapAngle(x[0] + delta[0]);
     return true;
   }
 };
@@ -116,7 +116,7 @@ struct Orientation2DMinus
   template <typename T>
   bool operator()(const T* x2, const T* x1, T* delta) const
   {
-    delta[0] = fuse_core::wrapAngle2D(x2[0] - x1[0]);
+    delta[0] = fuse_core::wrapAngle(x2[0] - x1[0]);
     return true;
   }
 };

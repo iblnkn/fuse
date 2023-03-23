@@ -144,7 +144,7 @@ bool Unicycle2DStateCostFunctor::operator()(const T* const position1, const T* c
   residuals_map(6) = acc_linear2[0] - acc_linear_pred[0];
   residuals_map(7) = acc_linear2[1] - acc_linear_pred[1];
 
-  fuse_core::wrapAngle2D(residuals_map(2));
+  fuse_core::wrapAngle(residuals_map(2));
 
   // Scale the residuals by the square root information matrix to account for
   // the measurement uncertainty.

@@ -74,7 +74,7 @@ public:
   bool Plus(const double* x, const double* delta, double* x_plus_delta) const override
   {
     // Compute the angle increment as a linear update, and handle the 2*Pi rollover
-    x_plus_delta[0] = fuse_core::wrapAngle2D(x[0] + delta[0]);
+    x_plus_delta[0] = fuse_core::wrapAngle(x[0] + delta[0]);
     return true;
   }
 
@@ -87,7 +87,7 @@ public:
   bool Minus(const double* x2, const double* x1, double* delta) const override
   {
     // Compute the difference from x2 to x1, and handle the 2*Pi rollover
-    delta[0] = fuse_core::wrapAngle2D(x2[0] - x1[0]);
+    delta[0] = fuse_core::wrapAngle(x2[0] - x1[0]);
     return true;
   }
 

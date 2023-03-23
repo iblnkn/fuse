@@ -39,36 +39,36 @@
 #include <numeric>
 #include <string>
 
-TEST(Util, wrapAngle2D)
+TEST(Util, wrapAngle)
 {
   // Wrap angle already in [-Pi, +Pi) range
   {
     const double angle = 0.5;
-    EXPECT_EQ(angle, fuse_core::wrapAngle2D(angle));
+    EXPECT_EQ(angle, fuse_core::wrapAngle(angle));
   }
 
   // Wrap angle equal to +Pi
   {
     const double angle = M_PI;
-    EXPECT_EQ(-angle, fuse_core::wrapAngle2D(angle));
+    EXPECT_EQ(-angle, fuse_core::wrapAngle(angle));
   }
 
   // Wrap angle equal to -Pi
   {
     const double angle = -M_PI;
-    EXPECT_EQ(angle, fuse_core::wrapAngle2D(angle));
+    EXPECT_EQ(angle, fuse_core::wrapAngle(angle));
   }
 
   // Wrap angle greater than +Pi
   {
     const double angle = 0.5;
-    EXPECT_EQ(angle, fuse_core::wrapAngle2D(angle + 3.0 * 2.0 * M_PI));
+    EXPECT_EQ(angle, fuse_core::wrapAngle(angle + 3.0 * 2.0 * M_PI));
   }
 
   // Wrap angle smaller than -Pi
   {
     const double angle = 0.5;
-    EXPECT_EQ(angle, fuse_core::wrapAngle2D(angle - 3.0 * 2.0 * M_PI));
+    EXPECT_EQ(angle, fuse_core::wrapAngle(angle - 3.0 * 2.0 * M_PI));
   }
 }
 

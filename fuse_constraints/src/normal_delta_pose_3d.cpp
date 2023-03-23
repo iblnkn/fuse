@@ -57,7 +57,7 @@ bool NormalDeltaPose3D::Evaluate(double const* const* parameters, double* residu
 
   const fuse_core::Vector3d full_residuals_vector(
       position_delta[0] - b_[0], position_delta[1] - b_[1],
-      fuse_core::wrapAngle2D(parameters[3][0] - parameters[1][0] - b_[2]));  // orientation2 - orientation1
+      fuse_core::wrapAngle(parameters[3][0] - parameters[1][0] - b_[2]));  // orientation2 - orientation1
 
   // Scale the residuals by the square root information matrix to account for the measurement uncertainty.
   Eigen::Map<fuse_core::VectorXd> residuals_vector(residuals, num_residuals());

@@ -178,15 +178,15 @@ bool SkidSteer3DStateCostFunctor::operator()(const T* const position1, const T* 
   residuals_map(16) = acc_angular2[1] - acc_angular_pred[1];
   residuals_map(17) = acc_angular2[2] - acc_angular_pred[2];
 
-  fuse_core::wrapAngle2D(residuals_map(3));
-  fuse_core::wrapAngle2D(residuals_map(4));
-  fuse_core::wrapAngle2D(residuals_map(5));
-  fuse_core::wrapAngle2D(residuals_map(9));
-  fuse_core::wrapAngle2D(residuals_map(10));
-  fuse_core::wrapAngle2D(residuals_map(11));
-  fuse_core::wrapAngle2D(residuals_map(15));
-  fuse_core::wrapAngle2D(residuals_map(16));
-  fuse_core::wrapAngle2D(residuals_map(17));
+  fuse_core::wrapAngle(residuals_map(3));
+  fuse_core::wrapAngle(residuals_map(4));
+  fuse_core::wrapAngle(residuals_map(5));
+  fuse_core::wrapAngle(residuals_map(9));
+  fuse_core::wrapAngle(residuals_map(10));
+  fuse_core::wrapAngle(residuals_map(11));
+  fuse_core::wrapAngle(residuals_map(15));
+  fuse_core::wrapAngle(residuals_map(16));
+  fuse_core::wrapAngle(residuals_map(17));
 
   // Scale the residuals by the square root information matrix to account for
   // the measurement uncertainty.

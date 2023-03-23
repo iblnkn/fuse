@@ -66,11 +66,9 @@ namespace common
  */
 inline void throwDimensionError(const std::string& dimension)
 {
-  std::string error = "Dimension " + dimension + " is not valid for this type.";
-  ROS_ERROR_STREAM(error);
-  throw std::runtime_error(error);
+  ROS_ERROR_STREAM("Dimension " << dimension << " is not valid for this type.");
+  throw std::runtime_error("Dimension " + dimension + " is not valid for this type.");
 }
-
 /**
  * @brief Method that converts from 2D linear axis dimension names to index values
  *
@@ -83,7 +81,8 @@ inline void throwDimensionError(const std::string& dimension)
 template <typename T>
 std::enable_if_t<is_linear_2d<T>::value, size_t> toIndex(const std::string& dimension)
 {
-  auto lower_dim = boost::algorithm::to_lower_copy(dimension);
+  // Convert the dimension name to lower case
+  const auto lower_dim = boost::algorithm::to_lower_copy(dimension);
   if (lower_dim == "x")
     return static_cast<size_t>(T::X);
   if (lower_dim == "y")
@@ -106,7 +105,8 @@ std::enable_if_t<is_linear_2d<T>::value, size_t> toIndex(const std::string& dime
 template <typename T>
 std::enable_if_t<is_linear_3d<T>::value, size_t> toIndex(const std::string& dimension)
 {
-  auto lower_dim = boost::algorithm::to_lower_copy(dimension);
+  // Convert the dimension name to lower case
+  const auto lower_dim = boost::algorithm::to_lower_copy(dimension);
   if (lower_dim == "x")
     return static_cast<size_t>(T::X);
   if (lower_dim == "y")
@@ -131,7 +131,9 @@ std::enable_if_t<is_linear_3d<T>::value, size_t> toIndex(const std::string& dime
 template <typename T>
 std::enable_if_t<is_angular_2d<T>::value, size_t> toIndex(const std::string& dimension)
 {
-  auto lower_dim = boost::algorithm::to_lower_copy(dimension);
+  // Convert the dimension name to lowercase
+  const auto lower_dim = boost::algorithm::to_lower_copy(dimension);
+
   if (lower_dim == "yaw" || lower_dim == "z")
     return static_cast<size_t>(fuse_variables::Orientation2DStamped::YAW);
 
@@ -143,17 +145,17 @@ std::enable_if_t<is_angular_2d<T>::value, size_t> toIndex(const std::string& dim
 /**
  * @brief Method that converts from 3D angular axis dimension names to index values
  *
- * This method is enabled only for variables that contain _only_ 3D angular quantities
+ * This method is enabled only for variables that contain _only_ 3D quaternion quantities
  *
  * @param[in] dimension - The dimension name to convert
  * @return the index of the enumerated dimension for that type
  * @throws runtime_error if the dimension name is invalid
  */
-template <typename T>  // TODO(iblankenau): It may be interesting to modify Orientation3DStamped handle the coversion
-                       // from euler to quaternion so you can initialize with euler angles like R_L
+template <typename T>
 std::enable_if_t<is_quat_3d<T>::value, size_t> toIndex(const std::string& dimension)
 {
-  auto lower_dim = boost::algorithm::to_lower_copy(dimension);
+  // Convert the dimension to lower case.
+  const auto lower_dim = boost::algorithm::to_lower_copy(dimension);
   if (lower_dim == "x")
     return static_cast<size_t>(T::X);
   if (lower_dim == "y")
@@ -177,8 +179,9 @@ std::enable_if_t<is_quat_3d<T>::value, size_t> toIndex(const std::string& dimens
  * @return the index of the enumerated dimension for that type
  * @throws runtime_error if the dimension name is invalid
  */
-template <typename T>  // TODO(iblankenau): It may be interesting to modify Orientation3DStamped handle the coversion
-                       // from euler to quaternion so you can initialize with euler angles like R_L
+// TODO(iblankenau): It may be interesting to modify Orientation3DStamped handle the coversion
+// from euler to quaternion so you can initialize with euler angles like R_L
+template <typename T>
 std::enable_if_t<is_euler_3d<T>::value, size_t> toIndex(const std::string& dimension)
 {
   auto lower_dim = boost::algorithm::to_lower_copy(dimension);
@@ -207,6 +210,7 @@ std::enable_if_t<is_euler_3d<T>::value, size_t> toIndex(const std::string& dimen
 template <typename T>
 std::vector<size_t> getDimensionIndices(const std::vector<std::string>& dimension_names)
 {
+  // Convert the dimension names to indices
   std::vector<size_t> indices;
   indices.reserve(dimension_names.size());
 

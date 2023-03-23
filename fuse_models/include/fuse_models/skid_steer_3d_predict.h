@@ -165,9 +165,9 @@ inline void predict(const T position1_x, const T position1_y, const T position1_
   T orientation2_euler[3];
   T orientation2_quat[4];
 
-  fuse_core::wrapAngle2D(orientation2_roll);
-  fuse_core::wrapAngle2D(orientation2_pitch);
-  fuse_core::wrapAngle2D(orientation2_yaw);
+  fuse_core::wrapAngle(orientation2_roll);
+  fuse_core::wrapAngle(orientation2_pitch);
+  fuse_core::wrapAngle(orientation2_yaw);
 
   orientation2_euler[0] = orientation2_roll;
   orientation2_euler[1] = orientation2_pitch;
@@ -179,13 +179,13 @@ inline void predict(const T position1_x, const T position1_y, const T position1_
   orientation2_y = orientation2_quat[2];
   orientation2_z = orientation2_quat[3];
 
-  fuse_core::wrapAngle2D(vel_angular1_x);
-  fuse_core::wrapAngle2D(vel_angular1_y);
-  fuse_core::wrapAngle2D(vel_angular1_z);
+  fuse_core::wrapAngle(vel_angular1_x);
+  fuse_core::wrapAngle(vel_angular1_y);
+  fuse_core::wrapAngle(vel_angular1_z);
 
-  fuse_core::wrapAngle2D(acc_angular1_x);
-  fuse_core::wrapAngle2D(acc_angular1_y);
-  fuse_core::wrapAngle2D(acc_angular1_z);
+  fuse_core::wrapAngle(acc_angular1_x);
+  fuse_core::wrapAngle(acc_angular1_y);
+  fuse_core::wrapAngle(acc_angular1_z);
 }
 
 /**
@@ -304,9 +304,9 @@ inline void predict(const T position1_x, const T position1_y, const T position1_
   T orientation2_euler[3];
   T orientation2_quat[4];
 
-  fuse_core::wrapAngle2D(orientation2_roll);
-  fuse_core::wrapAngle2D(orientation2_pitch);
-  fuse_core::wrapAngle2D(orientation2_yaw);
+  fuse_core::wrapAngle(orientation2_roll);
+  fuse_core::wrapAngle(orientation2_pitch);
+  fuse_core::wrapAngle(orientation2_yaw);
 
   orientation2_euler[0] = orientation2_roll;
   orientation2_euler[1] = orientation2_pitch;
@@ -318,13 +318,13 @@ inline void predict(const T position1_x, const T position1_y, const T position1_
   orientation2_y = orientation2_quat[2];
   orientation2_z = orientation2_quat[3];
 
-  fuse_core::wrapAngle2D(vel_angular1_x);
-  fuse_core::wrapAngle2D(vel_angular1_y);
-  fuse_core::wrapAngle2D(vel_angular1_z);
+  fuse_core::wrapAngle(vel_angular1_x);
+  fuse_core::wrapAngle(vel_angular1_y);
+  fuse_core::wrapAngle(vel_angular1_z);
 
-  fuse_core::wrapAngle2D(acc_angular1_x);
-  fuse_core::wrapAngle2D(acc_angular1_y);
-  fuse_core::wrapAngle2D(acc_angular1_z);
+  fuse_core::wrapAngle(acc_angular1_x);
+  fuse_core::wrapAngle(acc_angular1_y);
+  fuse_core::wrapAngle(acc_angular1_z);
 
   if (jacobians)
   {
@@ -513,9 +513,9 @@ inline void predict(const double position1_x, const double position1_y, const do
   double orientation2_euler[3];
   double orientation2_quat[4];
 
-  fuse_core::wrapAngle2D(orientation2_roll);
-  fuse_core::wrapAngle2D(orientation2_pitch);
-  fuse_core::wrapAngle2D(orientation2_yaw);
+  fuse_core::wrapAngle(orientation2_roll);
+  fuse_core::wrapAngle(orientation2_pitch);
+  fuse_core::wrapAngle(orientation2_yaw);
 
   orientation2_euler[0] = orientation2_roll;
   orientation2_euler[1] = orientation2_pitch;
@@ -543,13 +543,13 @@ inline void predict(const double position1_x, const double position1_y, const do
   acc_angular2_y = acc_angular1_y;
   acc_angular2_z = acc_angular1_z;
 
-  fuse_core::wrapAngle2D(vel_angular1_x);
-  fuse_core::wrapAngle2D(vel_angular1_y);
-  fuse_core::wrapAngle2D(vel_angular1_z);
+  fuse_core::wrapAngle(vel_angular1_x);
+  fuse_core::wrapAngle(vel_angular1_y);
+  fuse_core::wrapAngle(vel_angular1_z);
 
-  fuse_core::wrapAngle2D(acc_angular1_x);
-  fuse_core::wrapAngle2D(acc_angular1_y);
-  fuse_core::wrapAngle2D(acc_angular1_z);
+  fuse_core::wrapAngle(acc_angular1_x);
+  fuse_core::wrapAngle(acc_angular1_y);
+  fuse_core::wrapAngle(acc_angular1_z);
 
   if (jacobians)
   {

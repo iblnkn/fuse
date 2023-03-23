@@ -186,7 +186,7 @@ public:
     residuals_map(0) = position[0] - T(b_(0));
     residuals_map(1) = position[1] - T(b_(1));
     residuals_map(2) = orientation[0] - T(b_(2));
-    wrapAngle2D(residuals_map(2));
+    wrapAngle(residuals_map(2));
     residuals_map.applyOnTheLeft(A_.template cast<T>());
     return true;
   }
@@ -291,7 +291,7 @@ bool operator()(const T* const position, const T* const orientation, T* residual
   residuals_map(0) = position[0] - T(b_(0));
   residuals_map(1) = position[1] - T(b_(1));
   residuals_map(2) = orientation[0] - T(b_(2));
-  wrapAngle2D(residuals_map(2));
+  wrapAngle(residuals_map(2));
   residuals_map.applyOnTheLeft(A_.template cast<T>());
   return true;
 }
@@ -309,7 +309,7 @@ residuals_map.applyOnTheLeft(A_.template cast<T>());
 
 The only other thing of note is the special treatment of the orientation.
 ```C++
-wrapAngle2D(residuals_map(2));
+wrapAngle(residuals_map(2));
 ```
 This ensures the orientation error is always minimum phase, treating &pi;/2 and 5&pi;/2 as the same error.
 

@@ -166,7 +166,7 @@ Changelog for package fuse_models
   not returned, but set in an in/out argument.
   * Move getPositiveParam and other param related functions to
   parameter.h from util.h, and updated the ros/unit tests accordingly.
-  * Fix wrapAngle2D expected range to [-Pi, +Pi)
+  * Fix wrapAngle expected range to [-Pi, +Pi)
   Instead of (-Pi, +Pi], and update unit test to reflect that.
 * Don't require frame if empty indices (`#166 <https://github.com/locusrobotics/fuse/issues/166>`_)
 * Fix Unicycle2DIgnition set_pose (`#154 <https://github.com/locusrobotics/fuse/issues/154>`_)

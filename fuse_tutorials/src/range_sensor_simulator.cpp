@@ -231,7 +231,7 @@ Robot simulateRobotMotion(const Robot& previous_state, const ros::Time& now)
   next_state.stamp = now;
   next_state.x = ROBOT_PATH_RADIUS * std::cos(theta);
   next_state.y = ROBOT_PATH_RADIUS * std::sin(theta);
-  next_state.yaw = fuse_core::wrapAngle2D(theta + (M_PI / 2));
+  next_state.yaw = fuse_core::wrapAngle(theta + (M_PI / 2));
   next_state.vx = previous_state.vx;
   next_state.vy = 0.0;
   next_state.vyaw = previous_state.vyaw;

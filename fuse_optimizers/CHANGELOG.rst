@@ -108,7 +108,7 @@ Changelog for package fuse_optimizers
   not returned, but set in an in/out argument.
   * Move getPositiveParam and other param related functions to
   parameter.h from util.h, and updated the ros/unit tests accordingly.
-  * Fix wrapAngle2D expected range to [-Pi, +Pi)
+  * Fix wrapAngle expected range to [-Pi, +Pi)
   Instead of (-Pi, +Pi], and update unit test to reflect that.
 * Add missed fuse_models dependencies (`#164 <https://github.com/locusrobotics/fuse/issues/164>`_)
 * From a usage standpoint, the 'element' variable is getting modified and should not be const. The const was not causing compilation issues before because of some pointer indirection. (`#160 <https://github.com/locusrobotics/fuse/issues/160>`_)
